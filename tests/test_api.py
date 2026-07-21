@@ -117,9 +117,17 @@ def test_token_offsets_align_with_document_text():
 
 @pytest.mark.negative
 def test_stray_leading_apostrophe_does_not_make_empty_proper_noun(analyzer):
+    # A stray leading apostrophe is NOT a proper-noun boundary: it is dropped and the
+    # residual analyzed normally, never yielding an empty-lemma PROPN via the apostrophe rule.
     result = analyzer.analyze("'da")[0]
     assert result.lemma != ""
-    assert result.source == "guess"
+    assert result.pos != "PROPN"
+    assert result.source != "rule"
+    # For an out-of-lexicon residual the stripped-apostrophe path still falls through to the
+    # guesser, unchanged. (The bare clitic "da" itself became a lexicon function word in the
+    # closed-class milestone, so it now resolves as lexicon rather than a guess.)
+    oov = analyzer.analyze("'zonklardan")[0]
+    assert oov.lemma == "zonk" and oov.source == "guess"
 
 
 @pytest.mark.positive

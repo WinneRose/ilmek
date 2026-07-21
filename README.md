@@ -155,6 +155,16 @@ coverage deferrals, not wrong rules.
 
 ## Coverage & known limitations (v0.1)
 
+**Closed-class function words** — the high-frequency conjunctions (`ve`, `ama`, `çünkü`),
+postpositions (`için`, `gibi`, `göre`), particles (`değil`, `mi`, the clitic `de`/`da`), and
+adverbs (`hala`, `belki`, `artık`) — are enumerated whole (`ve → ve` CONJ, `için → için` ADP)
+so they resolve as `lexicon`, not guesses. They are **indeclinable**: listed as `source`-verified
+whole surfaces with `lemma == surface` and no morphemes, never routed through the FSM (which
+would overgenerate `*amalar`/`*gibiye`, and turn run-on misspellings like `belkide` into false
+locatives). Homographs are preserved, not erased: `de` → particle (primary) keeps the verb
+`de-` imperative as an alternative; `göre`/`bile`/`birden` keep their `gör`/`bil`+optative and
+`bir`(NUM)+ablative readings. Copular inflection (`değildi`, `miyim`) is deferred to the guesser.
+
 **Handled:** Turkish casing/normalization; tokenization incl. apostrophe proper nouns;
 noun plural, all six possessives, all six cases, pronominal `-n-` buffering; verb negation,
 progressive/future/past/evidential, negative imperative, both person paradigms, one copular
