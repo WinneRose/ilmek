@@ -44,6 +44,17 @@ COPULA = "copula"  # past | evidential (ek-fiil stacked on a finite verb)
 PERSON = "person"  # 1sg 2sg 3sg 1pl 2pl 3pl
 PRON_TYPE = "pron_type"  # personal | demonstrative | interrogative (closed-class pronouns)
 EXISTENTIAL = "existential"  # true (existential particle var / yok)
+#: Derivational history: an ordered ``tuple`` of derivational-suffix *names* (a derived stem
+#: inflects normally afterwards, so this makes the derivation-vs-inflection boundary visible).
+#: The value is a tuple (not a list) so an :class:`AnalysisResult`'s features stay hashable
+#: for de-duplication. Vocabulary is the closed set of names below.
+DERIVATION = "derivation"
+
+#: The closed vocabulary of derivational-suffix names recorded under :data:`DERIVATION`.
+#: Noun/adj-forming: li (-lI), siz (-sIz), lik (-lIk), ci (-CI); verb->noun: ma (-mA),
+#: is (-(y)Iş), mak (infinitive -mAk); verb->adj participles: an (-(y)An), dik (-DIk),
+#: acak (-(y)AcAk).
+DERIVATIONS = frozenset({"li", "siz", "lik", "ci", "ma", "is", "mak", "an", "dik", "acak"})
 
 # --- Feature value vocabulary (for validation / documentation) -----------------------
 

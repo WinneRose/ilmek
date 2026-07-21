@@ -78,7 +78,10 @@ class AnalysisResult:
             "stem": self.stem,
             "pos": self.pos,
             "morphemes": list(self.morphemes),
-            "features": dict(self.features),
+            # Tuple-valued features (e.g. the derivation history) render as JSON arrays.
+            "features": {
+                k: list(v) if isinstance(v, tuple) else v for k, v in self.features.items()
+            },
             "confidence": self.confidence,
             "backend": self.backend,
             "source": self.source,
@@ -97,6 +100,9 @@ class AnalysisResult:
             value = self.features[key]
             if value is True:
                 value = "Yes"
+            elif isinstance(value, tuple):
+                # Derivation history: gel+me+si -> derivation=ma; participles keep order.
+                value = "+".join(value)
             parts.append(f"{key}={value}")
         return "|".join(parts)
 

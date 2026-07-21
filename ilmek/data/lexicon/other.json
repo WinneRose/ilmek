@@ -26,6 +26,7 @@
   {"lemma": "sekiz", "pos": "NUM"},
   {"lemma": "dokuz", "pos": "NUM"},
   {"lemma": "on", "pos": "NUM"},
+  {"lemma": "elli", "pos": "NUM"},
   {"lemma": "bin", "pos": "NUM"},
 
   {"lemma": "yüz", "pos": "NUM"},

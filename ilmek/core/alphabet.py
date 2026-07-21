@@ -46,6 +46,16 @@ VOICELESS = frozenset("fstkçşhp")
 VOICING = {"p": "b", "ç": "c", "t": "d", "k": "ğ"}
 DEVOICING = {v: k for k, v in VOICING.items()}
 
+#: Alternating suffix-initial consonants (archiphonemes realized by :mod:`.phonology`).
+#: Each maps an archiphoneme to ``(voiced_default, hardened_after_voiceless)``: the voiced
+#: form appears normally, the hardened form after a voiceless consonant (sertleşme).
+#:   * ``D`` — the alternating stop: ``d`` normally, ``t`` after a voiceless consonant
+#:     (ev+DA -> evde, kitap+DA -> kitapta).
+#:   * ``C`` — the alternating affricate of the agentive/occupational ``-CI``: ``c``
+#:     normally, ``ç`` after a voiceless consonant (yol+CI -> yolcu, kitap+CI -> kitapçı,
+#:     iş+CI -> işçi).
+SUFFIX_ALTERNATIONS = {"D": ("d", "t"), "C": ("c", "ç")}
+
 # --- Vowel-harmony resolution --------------------------------------------------------
 
 

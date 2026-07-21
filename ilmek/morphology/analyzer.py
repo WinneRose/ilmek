@@ -82,38 +82,63 @@ def _apply(
     return stem + morph, morph
 
 
-def _generate(word: str, root: Root, *, source: str = tags.SOURCE_LEXICON) -> list[AnalysisResult]:
-    """All full-word analyses reachable from ``root`` via the morphotactic graph."""
+def _generate(
+    word: str,
+    root: Root,
+    *,
+    source: str = tags.SOURCE_LEXICON,
+    allow_derivation: bool = True,
+) -> list[AnalysisResult]:
+    """All full-word analyses reachable from ``root`` via the morphotactic graph.
+
+    The unified graph spans both the nominal and verbal sides; a derivational edge may
+    cross from a verb root into the nominal states (gelmek, gelen). ``allow_derivation``
+    is set ``False`` on the guesser path so unknown-word stripping is unchanged: with it
+    off, only inflectional edges are walked, exactly as before this milestone.
+    """
     if root.is_nominal:
-        graph, start, finals = mt.NOMINAL_GRAPH, mt.NOMINAL_START, mt.NOMINAL_FINALS
+        start = mt.NOMINAL_START
         base_features = mt.nominal_default_features()
-        is_verb = False
     elif root.is_verbal:
-        graph, start, finals = mt.VERBAL_GRAPH, mt.VERBAL_START, mt.VERBAL_FINALS
+        start = mt.VERBAL_START
         base_features = {}
-        is_verb = True
     else:
         return []
 
+    graph, finals = mt.GRAPH, mt.FINALS
     out: list[AnalysisResult] = []
 
-    def dfs(state, acc, morphemes, features, prev_voice_final):
+    def dfs(state, acc, morphemes, features, prev_voice_final, deriv_names, stem_surface, cur_pos):
         if state in finals and acc == word:
             feats = dict(features)
-            if is_verb:
+            if state in mt.NOMINAL_STATES:
+                # Nominal-side acceptance: fill nominal defaults *under* whatever was
+                # accrued, so a verb-derived nominal keeps its polarity (gelmeyen) yet
+                # never gains a fabricated person/mood (no finalize_verbal_features).
+                feats = {**mt.nominal_default_features(), **feats}
+            else:
                 mt.finalize_verbal_features(feats)
+            if deriv_names:
+                feats[tags.DERIVATION] = deriv_names
             out.append(
                 AnalysisResult(
                     surface=word,
                     lemma=root.lemma,
-                    stem=root.lemma,
-                    pos=root.pos,
+                    # Stem is the surface at the last derivation boundary (evli, yaşadık);
+                    # with no derivation it is the root lemma, as everywhere in v0.1.
+                    stem=stem_surface if deriv_names else root.lemma,
+                    pos=cur_pos,
                     morphemes=list(morphemes),
                     features=feats,
                     source=source,
                 )
             )
         for suffix, target in graph[state]:
+            if suffix.derivational:
+                if not allow_derivation:
+                    continue
+                if suffix.applies_to is not None and cur_pos not in suffix.applies_to:
+                    continue
             new_acc, morph = _apply(
                 suffix,
                 acc,
@@ -123,15 +148,24 @@ def _generate(word: str, root: Root, *, source: str = tags.SOURCE_LEXICON) -> li
             )
             if new_acc == acc or not _compatible(word, new_acc):
                 continue
+            if suffix.derivational:
+                next_deriv = deriv_names + (suffix.name,)
+                next_stem = new_acc
+                next_pos = suffix.to_pos if suffix.to_pos is not None else cur_pos
+            else:
+                next_deriv, next_stem, next_pos = deriv_names, stem_surface, cur_pos
             dfs(
                 target,
                 new_acc,
                 morphemes + ([morph] if morph else []),
                 {**features, **suffix.features},
                 suffix.voice_final,
+                next_deriv,
+                next_stem,
+                next_pos,
             )
 
-    dfs(start, root.free_form, [], base_features, False)
+    dfs(start, root.free_form, [], base_features, False, (), root.lemma, root.pos)
     return out
 
 
@@ -148,9 +182,13 @@ def _dedupe(results: list[AnalysisResult]) -> list[AnalysisResult]:
 
 def _sort_key(r: AnalysisResult):
     # Lexicon before guess; then prefer the longest root (whole-word entries over splits);
+    # then *fewer derivations* (a finite/inflectional reading outranks a derived one that
+    # shares the same root — geldik stays past-1pl, gelecek stays future, gelme stays the
+    # negative imperative, while the participle/verbal-noun reading survives as an alt);
     # then fewer morphemes; then a stable lexicographic tie-break.
     src_rank = {tags.SOURCE_LEXICON: 0, tags.SOURCE_RULE: 1, tags.SOURCE_GUESS: 2}
-    return (src_rank.get(r.source, 3), -len(r.lemma), len(r.morphemes), r.pos, r.lemma)
+    n_deriv = len(r.features.get(tags.DERIVATION, ()))
+    return (src_rank.get(r.source, 3), -len(r.lemma), n_deriv, len(r.morphemes), r.pos, r.lemma)
 
 
 # --- Guesser heuristics --------------------------------------------------------------
@@ -269,7 +307,10 @@ class Analyzer:
                 continue
             for pos in (tags.NOUN, tags.VERB):
                 synth = Root(root_guess, pos, frozenset(), root_guess, None)
-                for res in _generate(word, synth, source=tags.SOURCE_GUESS):
+                # Derivation stays off for guesses: an unknown root must not be split on a
+                # derivational suffix (e.g. malik -> *ma+lik), so guesser output is
+                # byte-identical to before this milestone.
+                for res in _generate(word, synth, source=tags.SOURCE_GUESS, allow_derivation=False):
                     if res.morphemes:  # only non-trivial suffix strips are informative
                         parses.append(res)
 

@@ -110,6 +110,49 @@ accepted analysis is therefore valid by construction, and its transition sequenc
 morpheme segmentation. Rules live in data (`ilmek/data/`, `morphotactics.py`) so the
 language model is auditable and extensible without touching the engine.
 
+### Derivational morphology
+
+A single **derivation slot** sits between the root and the inflectional suffixes, so a
+derived stem then inflects normally. The productive, high-frequency derivations are:
+
+| Suffix | Class change | Example | Derivation name |
+|---|---|---|---|
+| `-lI`  | noun → adj  | `evli` (ev)          | `li`  |
+| `-sIz` | noun → adj  | `evsiz` (ev)         | `siz` |
+| `-lIk` | noun/adj → noun | `kitaplık`, `güzellik` | `lik` |
+| `-CI`  | noun → noun | `yolcu`, `kitapçı`, `işçi` | `ci` |
+| `-mA`  | verb → noun | `gelme`              | `ma`  |
+| `-(y)Iş` | verb → noun | `geliş`, `yürüyüş`  | `is`  |
+| `-mAk` | verb → noun (infinitive) | `gelmek` | `mak` |
+| `-(y)An` | verb → adj (participle) | `gelen` | `an` |
+| `-DIk`   | verb → adj (participle) | `yaşadık`, `bildiği` | `dik` |
+| `-(y)AcAk` | verb → adj (participle) | `gelecek` | `acak` |
+
+The **derivation boundary is visible**: each derived analysis carries an ordered tuple of
+derivation names under `features["derivation"]` (e.g. `("dik",)`), the `stem` is the surface
+at the last derivation boundary while the `lemma` stays the base lexeme, and `pos` reflects
+the derived word class. So the derived stem inflects like any root:
+
+```python
+a = ilmek.analyze("yaşadıklarımızın")[0]
+a.lemma, a.stem, a.pos            # 'yaşa', 'yaşadık', 'ADJ'
+a.morphemes                       # ['dık', 'lar', 'ımız', 'ın']
+a.features["derivation"]          # ('dik',)
+```
+
+`-CI` hardens to `ç` after a voiceless consonant (`kitap+CI → kitapçı`, `iş+CI → işçi`) but
+stays `c` otherwise (`yol+CI → yolcu`) — one data fact in `alphabet.SUFFIX_ALTERNATIONS`.
+Because `-DIk`/`-(y)AcAk`/`-mA` collide with the finite past-1pl/future/negative-imperative,
+the analyzer **ranks fewer derivations first**: `geldik` stays finite past, `gelecek` stays
+finite future, `gelme` stays the negative imperative, and the participle/verbal-noun reading
+is preserved as a ranked alternative — genuine ambiguity is never erased. The guesser does
+**not** derive, so unknown-word behavior is unchanged.
+
+**Deferred (documented, `xfail`):** derivation *stacking* (`evlilik` = `-lI`+`-lIk`);
+inflection of the infinitive (`gelmekten`); `-lI` on numerals/proper nouns (`ikili`,
+`Ankaralı`) — `applies_to` deliberately restricts `-lI`/`-CI` to `{NOUN}`. These are
+coverage deferrals, not wrong rules.
+
 ## Coverage & known limitations (v0.1)
 
 **Handled:** Turkish casing/normalization; tokenization incl. apostrophe proper nouns;
@@ -126,10 +169,11 @@ when the ending is short and ambiguous (`teminatı`, so it never mis-strips `kal
 Every candidate is kept and ranked. Because it reuses the morphotactic FSM, it improves
 automatically as morphology grows.
 
-**Not yet (named milestones):** derivational morphology (so `yaşadıklarımızın` reaches
-`yaşa`); irregular pronouns/closed classes (`sen`, `var`); aorist, ability, and full
-mood/voice inventory; the irregular `de-→diyor` / `ye-→yiyor` glide raising; sentence-level
-disambiguation (candidates returned unranked, `confidence=None`); Stanza/Zemberek backends;
+**Not yet (named milestones):** derivational *stacking* and infinitive inflection (the
+productive single-slot derivations above already reach `yaşadıklarımızın → yaşa`); aorist,
+ability, and full mood/voice inventory; the irregular `de-→diyor` / `ye-→yiyor` glide
+raising; sentence-level disambiguation (candidates returned unranked, `confidence=None`);
+Stanza/Zemberek backends;
 CoNLL-U I/O. The seed lexicon is intentionally small — the single biggest lever for cutting
 `guess` rates on common words.
 

@@ -8,7 +8,17 @@ keeping paths whose running surface stays a prefix of the target word.
 v0.1 scope (correctness over coverage): nouns — plural, six persons of possessive, six
 cases, with pronominal buffering after a 3rd-person possessive; verbs — negation, the
 progressive/future/past/evidential tense-aspects, one copular (ek-fiil) layer, and both
-person paradigms. Aorist, ability, voice, derivation, and clitics are later milestones.
+person paradigms.
+
+Derivation (this milestone): a single, non-recursive derivation slot sits between root and
+inflection. Nominal derivations (-lI, -sIz, -lIk, -CI) leave ``N_ROOT`` for ``N_DERIV``;
+verbal derivations (-mA, -(y)Iş, -(y)An, -DIk, -(y)AcAk) leave ``V_ROOT``/``V_NEG`` for the
+*same* ``N_DERIV``, and the infinitive -mAk lands in a terminal ``V_INF``. ``N_DERIV``'s
+outgoing edges are exactly ``N_ROOT``'s inflectional ones, so a derived stem inflects
+normally (evli -> evlilerden) but cannot derive again (no stacking this milestone). Which
+derivation may fire is gated declaratively by :attr:`Suffix.applies_to` (POS of the current
+stem), never by a hardcoded ``if`` in the analyzer. Aorist, ability, voice, derivational
+stacking, and clitics remain later milestones.
 """
 
 from __future__ import annotations
@@ -24,6 +34,7 @@ N_PL = "N_PL"
 N_POSS = "N_POSS"  # non-3rd-person possessive
 N_POSS3 = "N_POSS3"  # 3rd-person possessive (triggers pronominal -n- before case)
 N_CASE = "N_CASE"
+N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, cannot re-derive)
 
 V_ROOT = "V_ROOT"
 V_NEG = "V_NEG"
@@ -32,6 +43,7 @@ V_T2 = "V_T2"  # after a tense/aspect that takes the type-2 person set
 V_COP1 = "V_COP1"  # after an evidential copula (ek-fiil) -> type-1 person
 V_COP2 = "V_COP2"  # after a past copula (ek-fiil) -> type-2 person
 V_PERS = "V_PERS"
+V_INF = "V_INF"  # infinitive -mAk (a noun); terminal this milestone (no case inflection yet)
 
 
 # --- Suffix model --------------------------------------------------------------------
@@ -46,6 +58,16 @@ class Suffix:
     drop_preceding: bool = False
     #: This morpheme's final stop softens before a following vowel (-(y)AcAk + Im -> ...eğim).
     voice_final: bool = False
+    #: A *derivational* suffix changes the stem's word class; it opens a new derivation
+    #: boundary rather than adding an inflectional feature. Its ``name`` is recorded (in
+    #: order) under ``features[tags.DERIVATION]`` so the boundary stays visible.
+    derivational: bool = False
+    #: The part of speech of the stem *after* this derivation (``None`` -> keep current pos).
+    to_pos: str | None = None
+    #: The stem POS values this derivation may attach to (``None`` -> unrestricted, e.g. the
+    #: verb-side derivations, which are already gated by their position in the graph). This
+    #: is the declarative guard against overgeneration: -CI is {NOUN} so *güzelci is blocked.
+    applies_to: frozenset[str] | None = None
 
 
 # --- Nominal suffixes ----------------------------------------------------------------
@@ -81,22 +103,55 @@ _POSSESSIVES_TO_NONE3 = [POSS_1SG, POSS_2SG, POSS_1PL, POSS_2PL]
 _POSSESSIVES_TO_3 = [POSS_3SG, POSS_3PL]
 
 
+# --- Nominal derivational suffixes (root/adj -> new nominal stem) ---------------------
+# Data-declared: each carries no inflectional feature dict — its record is the derivation
+# name appended to features[tags.DERIVATION]. ``applies_to`` is the overgeneration guard.
+
+D_LI = Suffix("li", "lI", derivational=True, to_pos=tags.ADJ, applies_to=frozenset({tags.NOUN}))
+D_SIZ = Suffix("siz", "sIz", derivational=True, to_pos=tags.ADJ, applies_to=frozenset({tags.NOUN}))
+D_LIK = Suffix(
+    "lik",
+    "lIk",
+    derivational=True,
+    to_pos=tags.NOUN,
+    applies_to=frozenset({tags.NOUN, tags.ADJ}),
+    voice_final=True,  # kitaplık -> kitaplığı (final k softens before a vowel)
+)
+D_CI = Suffix("ci", "CI", derivational=True, to_pos=tags.NOUN, applies_to=frozenset({tags.NOUN}))
+
+#: Nominal-side derivations, appended after the inflectional edges so inflection-only
+#: traversal order (and the guesser, which forbids derivation) is byte-identical to before.
+_NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI]
+
+
+def _nominal_inflection() -> list[tuple[Suffix, str]]:
+    poss = [(s, N_POSS) for s in _POSSESSIVES_TO_NONE3] + [(s, N_POSS3) for s in _POSSESSIVES_TO_3]
+    plain_case = [(s, N_CASE) for s in _PLAIN_CASES]
+    return [(PLURAL, N_PL), *poss, *plain_case]
+
+
 def _nominal_graph() -> dict[str, list[tuple[Suffix, str]]]:
+    inflection = _nominal_inflection()
     poss = [(s, N_POSS) for s in _POSSESSIVES_TO_NONE3] + [(s, N_POSS3) for s in _POSSESSIVES_TO_3]
     plain_case = [(s, N_CASE) for s in _PLAIN_CASES]
     pronom_case = [(s, N_CASE) for s in _PRONOMINAL_CASES]
+    deriv = [(s, N_DERIV) for s in _NOMINAL_DERIVATIONS]
     return {
-        N_ROOT: [(PLURAL, N_PL), *poss, *plain_case],
+        # Derivation edges appended last: with derivation disabled the prefix of this list
+        # is exactly the pre-milestone N_ROOT, so nothing about plain inflection changes.
+        N_ROOT: [*inflection, *deriv],
         N_PL: [*poss, *plain_case],
         N_POSS: plain_case,
         N_POSS3: pronom_case,
         N_CASE: [],
+        # A derived stem inflects exactly like a bare root, but may not derive again.
+        N_DERIV: inflection,
     }
 
 
 NOMINAL_GRAPH = _nominal_graph()
 NOMINAL_START = N_ROOT
-NOMINAL_FINALS = frozenset({N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE})
+NOMINAL_FINALS = frozenset({N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE, N_DERIV})
 
 
 # --- Verbal suffixes -----------------------------------------------------------------
@@ -135,6 +190,24 @@ _PERSON_T1 = [P1_1SG, P1_2SG, P1_1PL, P1_2PL, P1_3PL]
 _PERSON_T2 = [P2_1SG, P2_2SG, P2_1PL, P2_2PL, P2_3PL]
 
 
+# --- Verbal derivational suffixes (verb -> new nominal/adjectival stem) ---------------
+# Gated by graph position (only reachable from V_ROOT/V_NEG), so no applies_to is needed.
+# verb -> noun:
+VN_MA = Suffix("ma", "mA", derivational=True, to_pos=tags.NOUN)  # gelme (verbal noun / act)
+VN_IS = Suffix("is", "(y)Iş", derivational=True, to_pos=tags.NOUN)  # geliş, yürüyüş
+INF = Suffix("mak", "mAk", derivational=True, to_pos=tags.NOUN)  # gelmek (infinitive)
+# verb -> adjective (participles):
+PART_AN = Suffix("an", "(y)An", derivational=True, to_pos=tags.ADJ)  # gelen
+PART_DIK = Suffix("dik", "DIk", derivational=True, to_pos=tags.ADJ, voice_final=True)  # bildiği
+PART_ACAK = Suffix(
+    "acak", "(y)AcAk", derivational=True, to_pos=tags.ADJ, voice_final=True
+)  # gelecek
+
+#: Verb-side derivations that land in the shared N_DERIV nominal state (then inflect). The
+#: infinitive -mAk is handled separately: it lands in the terminal V_INF (no case yet).
+_VERBAL_DERIVATIONS_TO_NOMINAL = [VN_MA, VN_IS, PART_AN, PART_DIK, PART_ACAK]
+
+
 def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
     primary_from = lambda: [  # noqa: E731 - compact, local
         (PROG, V_T1),
@@ -142,24 +215,41 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         (EVID, V_T1),
         (PAST, V_T2),
     ]
+    # Derivation edges appended after the inflectional ones, same as the nominal side.
+    deriv = [(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL] + [(INF, V_INF)]
     copula = [(COP_EVID, V_COP1), (COP_PAST, V_COP2)]
     pers_t1 = [(s, V_PERS) for s in _PERSON_T1]
     pers_t2 = [(s, V_PERS) for s in _PERSON_T2]
     return {
-        V_ROOT: [(NEG, V_NEG), *primary_from()],
-        V_NEG: [*primary_from()],
+        V_ROOT: [(NEG, V_NEG), *primary_from(), *deriv],
+        V_NEG: [*primary_from(), *deriv],
         V_T1: [*copula, *pers_t1],
         V_T2: [*copula, *pers_t2],
         V_COP1: pers_t1,
         V_COP2: pers_t2,
         V_PERS: [],
+        V_INF: [],
     }
 
 
 VERBAL_GRAPH = _verbal_graph()
 VERBAL_START = V_ROOT
 # V_NEG is final too: a bare negated stem is a negative imperative (gelme! "don't come").
-VERBAL_FINALS = frozenset({V_ROOT, V_NEG, V_T1, V_T2, V_COP1, V_COP2, V_PERS})
+# V_INF (gelmek) is final: a bare infinitive is a complete word.
+VERBAL_FINALS = frozenset({V_ROOT, V_NEG, V_T1, V_T2, V_COP1, V_COP2, V_PERS, V_INF})
+
+
+# --- Unified graph -------------------------------------------------------------------
+# The nominal and verbal state names are disjoint, so the two transition maps merge into
+# one graph the analyzer walks from the POS-appropriate start state. Verbal derivations
+# cross into the nominal N_DERIV state, so a single traversal spans both sides.
+
+GRAPH: dict[str, list[tuple[Suffix, str]]] = {**NOMINAL_GRAPH, **VERBAL_GRAPH}
+FINALS = NOMINAL_FINALS | VERBAL_FINALS
+#: States whose accepting side is *nominal*: they take nominal feature defaults and never
+#: run verbal finalization. This includes the shared derived state and the infinitive, so a
+#: verb-derived noun (gelme, gelmek) gets no fabricated person/mood but keeps any polarity.
+NOMINAL_STATES = frozenset(NOMINAL_FINALS | {V_INF})
 
 
 # --- Feature closure at acceptance ---------------------------------------------------

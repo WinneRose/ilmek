@@ -5,6 +5,8 @@ A suffix is written once, abstractly, and realized in context. The template alph
 * ``A`` — low-vowel harmony archiphoneme, becomes ``a``/``e``.
 * ``I`` — high-vowel (4-way) harmony archiphoneme, becomes ``ı``/``i``/``u``/``ü``.
 * ``D`` — alternating stop, becomes ``d`` normally, ``t`` after a voiceless consonant.
+* ``C`` — alternating affricate (agentive ``-CI``), becomes ``c`` normally, ``ç`` after a
+  voiceless consonant (yol+CI -> yolcu, but kitap+CI -> kitapçı, iş+CI -> işçi).
 * ``(y)`` ``(s)`` ``(n)`` ``(ş)`` — **buffer consonant**: inserted only when the left
   context ends in a **vowel** (prevents vowel–vowel hiatus), e.g. ``kapı+(y)I -> kapıyı``.
 * ``(A)`` ``(I)`` — **linking vowel**: inserted only when the left context ends in a
@@ -21,6 +23,7 @@ about suffix shape.
 from __future__ import annotations
 
 from ..core.alphabet import (
+    SUFFIX_ALTERNATIONS,
     VOWELS,
     ends_with_voiceless,
     ends_with_vowel,
@@ -72,10 +75,11 @@ def realize(template: str, left_context: str) -> str:
             v = _harmony_vowel(ch, ctx)
             out.append(v)
             ctx += v
-        elif ch == "D":
-            d = "t" if ends_with_voiceless(ctx) else "d"
-            out.append(d)
-            ctx += d
+        elif ch in SUFFIX_ALTERNATIONS:
+            voiced, hardened = SUFFIX_ALTERNATIONS[ch]
+            letter = hardened if ends_with_voiceless(ctx) else voiced
+            out.append(letter)
+            ctx += letter
         else:
             out.append(ch)
             ctx += ch
