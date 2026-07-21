@@ -17,7 +17,7 @@ import pytest
     "word,root",
     [
         ("zonklardan", "zonk"),  # fake root + plural + ablative (2 morphemes)
-        ("teminatlardan", "teminat"),  # real OOV noun + plural + ablative
+        ("raporlardan", "rapor"),  # real OOV noun + plural + ablative
         ("problemlerimizde", "problem"),  # OOV + plural + poss + locative
     ],
 )
