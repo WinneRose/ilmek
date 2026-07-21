@@ -240,7 +240,12 @@ def _sort_key(r: AnalysisResult):
 
 #: How many alternative candidates to keep on a guess result.
 _MAX_GUESS_ALTS = 6
-#: A lone stripped suffix must be at least this many characters to be trusted on its own
+#: A confident strip must leave a root at least this long. A 1-2 char remnant is almost
+#: never a real Turkish root, so stripping down to one is over-stripping (senle -> *se via
+#: se+n+le; hazirana -> *hazira; geler -> *ge; zolar -> *zo). Distinct from the suffix
+#: bound below: same value today, different meaning, so they are not a shared constant.
+_MIN_GUESS_ROOT_LEN = 3
+#: The total stripped inflection must be at least this many characters to be trusted
 #: (blocks over-stripping a root-final vowel/consonant, e.g. kalem -> *kale, kapı -> *kap).
 _MIN_STRONG_SUFFIX_LEN = 3
 
@@ -250,10 +255,18 @@ def _stripped_len(r: AnalysisResult) -> int:
 
 
 def _is_confident_guess(r: AnalysisResult) -> bool:
-    """A guessed strip is trustworthy only with strong inflectional evidence."""
-    if len(r.lemma) < 2 or not _has_vowel(r.lemma):
-        return False
-    return len(r.morphemes) >= 2 or _stripped_len(r) >= _MIN_STRONG_SUFFIX_LEN
+    """A guessed strip is trustworthy only with strong inflectional evidence.
+
+    Conjunctive gate: the surviving root must be a plausible word (>= 3 chars containing a
+    vowel) AND at least 3 chars of inflection must have been removed. A short garbage root
+    (senle -> se) or a short strip (a single one-char ending) is rejected in favour of the
+    identity fallback — correct until the true root enters the lexicon.
+    """
+    return (
+        len(r.lemma) >= _MIN_GUESS_ROOT_LEN
+        and _has_vowel(r.lemma)
+        and _stripped_len(r) >= _MIN_STRONG_SUFFIX_LEN
+    )
 
 
 def _guess_sort_key(r: AnalysisResult):
@@ -342,11 +355,11 @@ class Analyzer:
 
         We treat every proper prefix as a hypothetical root and try to parse the rest as a
         valid inflectional chain (same FSM as the lexicon path, so this improves for free
-        as morphotactics grow). A parse is *confident* only when it removes real inflection
-        — a multi-suffix chain, or a single distinctive suffix of >= 3 chars — and leaves a
-        plausible root. Confident: the stripped root becomes the primary guess. Otherwise
-        we stay honest and return the surface as its own stem, keeping every stripped
-        candidate as a ranked alternative so nothing is lost. All results are `guess`.
+        as morphotactics grow). A parse is *confident* only when it leaves a plausible root
+        (>= 3 chars containing a vowel) AND removes >= 3 chars of inflection. Confident: the
+        stripped root becomes the primary guess. Otherwise we stay honest and return the
+        surface as its own stem, keeping every stripped candidate as a ranked alternative so
+        nothing is lost. All results are `guess`.
         """
         parses: list[AnalysisResult] = []
         for split in range(2, len(word)):
