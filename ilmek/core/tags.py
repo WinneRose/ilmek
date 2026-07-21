@@ -41,6 +41,7 @@ TENSE = "tense"  # present past future aorist
 ASPECT = "aspect"  # progressive
 EVIDENTIAL = "evidential"  # true (reported -mIş)
 COPULA = "copula"  # past | evidential (ek-fiil stacked on a finite verb)
+MOOD = "mood"  # imperative | conditional | optative
 PERSON = "person"  # 1sg 2sg 3sg 1pl 2pl 3pl
 PRON_TYPE = "pron_type"  # personal | demonstrative | interrogative (closed-class pronouns)
 EXISTENTIAL = "existential"  # true (existential particle var / yok)
@@ -78,6 +79,10 @@ CASES = frozenset(
 )
 POLARITIES = frozenset({"positive", "negative"})
 TENSES = frozenset({"present", "past", "future", "aorist"})
+#: Verbal moods. ``imperative`` is the bare-root/negated-root reading; ``conditional`` is the
+#: -sA suffix; ``optative`` is -(y)A. The copular conditional -(y)sA and the copular optative
+#: are later milestones (see the morphotactics module docstring).
+MOODS = frozenset({"imperative", "conditional", "optative"})
 
 # --- Analysis provenance -------------------------------------------------------------
 

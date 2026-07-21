@@ -158,7 +158,11 @@ coverage deferrals, not wrong rules.
 **Handled:** Turkish casing/normalization; tokenization incl. apostrophe proper nouns;
 noun plural, all six possessives, all six cases, pronominal `-n-` buffering; verb negation,
 progressive/future/past/evidential, negative imperative, both person paradigms, one copular
-(ek-fiil) layer with the `-y-` buffer (`geldiydi`); vowel harmony; consonant voicing
+(ek-fiil) layer with the `-y-` buffer (`geldiydi`); ability `-(y)Abil` (`gelebilir`,
+`okuyabilir`), conditional `-sA` (`gelse`, `gelseydi`) and optative `-(y)A` (`gele`,
+`gelelim`), the positive aorist with its lexical `-r`/`-Ar`/`-Ir` allomorph (a per-root
+lexicon fact — `okur`, `yapar`, `oturur`, marked `gelir`) and the negative aorist `-mAz`
+(`gelmez`) with its defective person paradigm; vowel harmony; consonant voicing
 (`kitap→kitabı`, `renk→rengi`) and its lexical exceptions (`top→topu`); vowel drop
 (`burun→burnu`); `-Iyor` stem narrowing.
 
@@ -170,10 +174,12 @@ Every candidate is kept and ranked. Because it reuses the morphotactic FSM, it i
 automatically as morphology grows.
 
 **Not yet (named milestones):** derivational *stacking* and infinitive inflection (the
-productive single-slot derivations above already reach `yaşadıklarımızın → yaşa`); aorist,
-ability, and full mood/voice inventory; the irregular `de-→diyor` / `ye-→yiyor` glide
-raising; sentence-level disambiguation (candidates returned unranked, `confidence=None`);
-Stanza/Zemberek backends;
+productive single-slot derivations above already reach `yaşadıklarımızın → yaşa`); the
+impossibilitive `-(y)AmA` (`gelemez`), the copular conditional `-(y)sA` (`gelirse`), and the
+negative-aorist 1sg/1pl (`gelmem`/`gelmeyiz`) — deferred (strict `xfail`) rather than
+overgenerated; voice and the remaining mood inventory; the irregular `de-→diyor` /
+`ye-→yiyor` glide raising; sentence-level disambiguation (candidates returned unranked,
+`confidence=None`); Stanza/Zemberek backends;
 CoNLL-U I/O. The seed lexicon is intentionally small — the single biggest lever for cutting
 `guess` rates on common words.
 

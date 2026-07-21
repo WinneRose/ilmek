@@ -10,6 +10,15 @@ cases, with pronominal buffering after a 3rd-person possessive; verbs — negati
 progressive/future/past/evidential tense-aspects, one copular (ek-fiil) layer, and both
 person paradigms.
 
+Verbal moods & aorist (this milestone): ability -(y)Abil (gelebilir, okuyabilir), the
+conditional -sA (gelse, gelseydi via the copula) and optative -(y)A (gele, gelelim), the
+negative aorist -mAz (gelmez) with its *defective* person paradigm, and the positive aorist
+— which is lexically irregular, so its allomorph (-r / -Ar / -Ir) is a lexicon fact on the
+root (:attr:`~ilmek.morphology.lexicon.Root.aorist`) selected declaratively by an edge's
+:attr:`Suffix.aorist_class`. Deferred (correctness over coverage): the impossibilitive
+-(y)AmA (gelemez), the copular conditional -(y)sA (gelirse), and the negative-aorist 1sg/1pl
+(gelmem/gelmeyiz) — all xfailed rather than overgenerated.
+
 Derivation (this milestone): a single, non-recursive derivation slot sits between root and
 inflection. Nominal derivations (-lI, -sIz, -lIk, -CI) leave ``N_ROOT`` for ``N_DERIV``;
 verbal derivations (-mA, -(y)Iş, -(y)An, -DIk, -(y)AcAk) leave ``V_ROOT``/``V_NEG`` for the
@@ -17,8 +26,8 @@ verbal derivations (-mA, -(y)Iş, -(y)An, -DIk, -(y)AcAk) leave ``V_ROOT``/``V_N
 outgoing edges are exactly ``N_ROOT``'s inflectional ones, so a derived stem inflects
 normally (evli -> evlilerden) but cannot derive again (no stacking this milestone). Which
 derivation may fire is gated declaratively by :attr:`Suffix.applies_to` (POS of the current
-stem), never by a hardcoded ``if`` in the analyzer. Aorist, ability, voice, derivational
-stacking, and clitics remain later milestones.
+stem), never by a hardcoded ``if`` in the analyzer. Voice, derivational stacking, and clitics
+remain later milestones.
 """
 
 from __future__ import annotations
@@ -38,10 +47,13 @@ N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, 
 
 V_ROOT = "V_ROOT"
 V_NEG = "V_NEG"
+V_ABIL = "V_ABIL"  # after ability -(y)Abil; not final (no bare *gelebil), takes further tense
 V_T1 = "V_T1"  # after a tense/aspect that takes the type-1 person set
 V_T2 = "V_T2"  # after a tense/aspect that takes the type-2 person set
 V_COP1 = "V_COP1"  # after an evidential copula (ek-fiil) -> type-1 person
 V_COP2 = "V_COP2"  # after a past copula (ek-fiil) -> type-2 person
+V_AOR_NEG = "V_AOR_NEG"  # after negative aorist -mAz; final, defective person paradigm
+V_OPT = "V_OPT"  # after optative -(y)A; final, its own person paradigm (1pl is -lIm)
 V_PERS = "V_PERS"
 V_INF = "V_INF"  # infinitive -mAk (a noun); terminal this milestone (no case inflection yet)
 
@@ -68,6 +80,12 @@ class Suffix:
     #: verb-side derivations, which are already gated by their position in the graph). This
     #: is the declarative guard against overgeneration: -CI is {NOUN} so *güzelci is blocked.
     applies_to: frozenset[str] | None = None
+    #: For the lexically-irregular aorist: the allomorph class (``"r"``/``"Ar"``/``"Ir"``)
+    #: this edge realizes. When set, the analyzer walks the edge only if it equals the root's
+    #: own :attr:`~ilmek.morphology.lexicon.Root.aorist` — so ``gel`` (marked ``"Ir"``) takes
+    #: only ``gelir`` and a synthetic/guessed root (``aorist=None``) takes none. ``None`` on
+    #: every non-aorist suffix (and on the post-ability aorist, which is always ``-Ir``).
+    aorist_class: str | None = None
 
 
 # --- Nominal suffixes ----------------------------------------------------------------
@@ -189,6 +207,42 @@ P2_3PL = Suffix("pers_3pl", "lAr", {tags.PERSON: "3pl"})
 _PERSON_T1 = [P1_1SG, P1_2SG, P1_1PL, P1_2PL, P1_3PL]
 _PERSON_T2 = [P2_1SG, P2_2SG, P2_1PL, P2_2PL, P2_3PL]
 
+# Optative persons are NOT plain type-1: the 1pl is -lIm (gelelim), never *(y)Iz (*geleyiz).
+OPT_1PL = Suffix("pers_1pl", "lIm", {tags.PERSON: "1pl"})
+_PERSON_OPT = [P1_1SG, P1_2SG, OPT_1PL, P1_2PL, P1_3PL]
+
+# The negative-aorist person paradigm is *defective*: the 1sg is gelmem and the 1pl is
+# gelmeyiz (distinct morphemes), never *gelmezim / *gelmeziz. So -mAz takes only the 2sg,
+# 2pl and 3pl personal endings here; the 1sg/1pl readings are deferred (see the tests).
+_PERSON_AOR_NEG = [P1_2SG, P1_2PL, P1_3PL]
+
+
+# --- Ability, aorist, and mood suffixes ----------------------------------------------
+
+# Ability / potential -(y)Abil (gelebilir "can come", okuyabilir): a fully productive slot
+# between the root/negation and the tense. After it the stem ends in "bil", so the aorist is
+# deterministically -Ir (AOR_ABIL) with no lexical guessing.
+ABIL = Suffix("abil", "(y)Abil", {tags.ABILITY: True})
+
+# Aorist (geniş zaman), lexically irregular. Each edge realizes one allomorph and carries the
+# matching ``aorist_class``; the analyzer walks it only when it equals the root's aorist
+# class, so an unmarked/synthetic root never takes the wrong (or any) aorist.
+AOR_R = Suffix("aor", "r", {tags.TENSE: "aorist"}, aorist_class="r")
+AOR_AR = Suffix("aor", "Ar", {tags.TENSE: "aorist"}, aorist_class="Ar")
+AOR_IR = Suffix("aor", "Ir", {tags.TENSE: "aorist"}, aorist_class="Ir")
+_AORISTS = [AOR_R, AOR_AR, AOR_IR]
+#: The post-ability aorist is always -Ir (gel-ebil-ir), independent of the root's class, so
+#: it carries no ``aorist_class`` guard.
+AOR_ABIL = Suffix("aor", "Ir", {tags.TENSE: "aorist"})
+
+# Negative aorist -mAz (gelmez, yapmaz): a dedicated negative morpheme (not NEG + aorist).
+NEG_AOR = Suffix("neg_aor", "mAz", {tags.POLARITY: "negative", tags.TENSE: "aorist"})
+
+# Conditional -sA (gelse) -> type-2 persons; the past/evidential copula (gelseydi/gelseymiş)
+# stacks for free. Optative -(y)A (gele) -> its own person set (V_OPT).
+COND = Suffix("cond", "sA", {tags.MOOD: "conditional"})
+OPT = Suffix("opt", "(y)A", {tags.MOOD: "optative"})
+
 
 # --- Verbal derivational suffixes (verb -> new nominal/adjectival stem) ---------------
 # Gated by graph position (only reachable from V_ROOT/V_NEG), so no applies_to is needed.
@@ -215,18 +269,39 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         (EVID, V_T1),
         (PAST, V_T2),
     ]
+    # Aorist / mood edges leaving the root and the negation, appended after the primary
+    # tenses so plain-inflection traversal order is unchanged. The three aorist edges are
+    # guarded by ``aorist_class``, so exactly one fires per verb (and none for a guess).
+    aorist_mood = lambda: [  # noqa: E731 - compact, local
+        (ABIL, V_ABIL),
+        *[(s, V_T1) for s in _AORISTS],
+        (NEG_AOR, V_AOR_NEG),
+        (COND, V_T2),
+        (OPT, V_OPT),
+    ]
     # Derivation edges appended after the inflectional ones, same as the nominal side.
     deriv = [(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL] + [(INF, V_INF)]
     copula = [(COP_EVID, V_COP1), (COP_PAST, V_COP2)]
     pers_t1 = [(s, V_PERS) for s in _PERSON_T1]
     pers_t2 = [(s, V_PERS) for s in _PERSON_T2]
     return {
-        V_ROOT: [(NEG, V_NEG), *primary_from(), *deriv],
-        V_NEG: [*primary_from(), *deriv],
+        V_ROOT: [(NEG, V_NEG), *primary_from(), *aorist_mood(), *deriv],
+        # After negation: the primary tenses, ability (gelmeyebilir), conditional (gelmese),
+        # optative (gelmeye). The aorist and negative-aorist edges are intentionally absent —
+        # the aorist's own negative is -mAz on the bare root, not NEG + aorist (*gelmemez).
+        V_NEG: [*primary_from(), (ABIL, V_ABIL), (COND, V_T2), (OPT, V_OPT), *deriv],
+        # Ability: primary tenses, the deterministic -Ir aorist, conditional, and the verbal
+        # derivations (gelebilmek, gelebilen). Not final -> no bare *gelebil.
+        V_ABIL: [*primary_from(), (AOR_ABIL, V_T1), (COND, V_T2), *deriv],
         V_T1: [*copula, *pers_t1],
         V_T2: [*copula, *pers_t2],
         V_COP1: pers_t1,
         V_COP2: pers_t2,
+        # Negative aorist: final (gelmez = 3sg), copular stacking (gelmezdi, gelmezmiş,
+        # gelmezdim), plus only the defective personal set (2sg/2pl/3pl).
+        V_AOR_NEG: [*copula, *[(s, V_PERS) for s in _PERSON_AOR_NEG]],
+        # Optative: final (gele = 3sg), with its own person set (1pl is -lIm). No copula yet.
+        V_OPT: [(s, V_PERS) for s in _PERSON_OPT],
         V_PERS: [],
         V_INF: [],
     }
@@ -235,8 +310,11 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
 VERBAL_GRAPH = _verbal_graph()
 VERBAL_START = V_ROOT
 # V_NEG is final too: a bare negated stem is a negative imperative (gelme! "don't come").
-# V_INF (gelmek) is final: a bare infinitive is a complete word.
-VERBAL_FINALS = frozenset({V_ROOT, V_NEG, V_T1, V_T2, V_COP1, V_COP2, V_PERS, V_INF})
+# V_INF (gelmek) is final: a bare infinitive is a complete word. V_AOR_NEG (gelmez) and
+# V_OPT (gele) are final: a bare negative-aorist / optative 3sg is a complete word.
+VERBAL_FINALS = frozenset(
+    {V_ROOT, V_NEG, V_T1, V_T2, V_COP1, V_COP2, V_AOR_NEG, V_OPT, V_PERS, V_INF}
+)
 
 
 # --- Unified graph -------------------------------------------------------------------
@@ -262,10 +340,12 @@ def nominal_default_features() -> dict:
 def finalize_verbal_features(features: dict) -> dict:
     """Fill implicit verbal features at an accepting state."""
     features.setdefault(tags.POLARITY, "positive")
-    finite = any(k in features for k in (tags.TENSE, tags.ASPECT, tags.EVIDENTIAL))
+    # A mood (conditional/optative) counts as finite too, so gelse/gele are not mislabelled
+    # imperative: without this, their personless 3sg path would be stamped mood=imperative.
+    finite = any(k in features for k in (tags.TENSE, tags.ASPECT, tags.EVIDENTIAL, tags.MOOD))
     if not finite and tags.PERSON not in features:
         # A bare verb root standing alone is a 2nd-person-singular imperative.
-        features["mood"] = "imperative"
+        features[tags.MOOD] = "imperative"
         features[tags.PERSON] = "2sg"
     else:
         features.setdefault(tags.PERSON, "3sg")

@@ -139,6 +139,11 @@ def _generate(
                     continue
                 if suffix.applies_to is not None and cur_pos not in suffix.applies_to:
                     continue
+            # Lexically-irregular aorist: an allomorph edge fires only for a root whose
+            # lexical aorist class matches. Synthetic roots have aorist=None, so no
+            # class-guarded aorist is ever emitted for a guess.
+            if suffix.aorist_class is not None and suffix.aorist_class != root.aorist:
+                continue
             new_acc, morph = _apply(
                 suffix,
                 acc,
