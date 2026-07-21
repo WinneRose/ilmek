@@ -28,6 +28,23 @@ normally (evli -> evlilerden) but cannot derive again (no stacking this mileston
 derivation may fire is gated declaratively by :attr:`Suffix.applies_to` (POS of the current
 stem), never by a hardcoded ``if`` in the analyzer. Voice, derivational stacking, and clitics
 remain later milestones.
+
+Nominal ek-fiil (this milestone): NOUN/ADJ/PRON/NUM predicates take the copula ("to be")
+*directly* as a suffix (no separate verb). From every nominal final state — the bare root, or
+after plural/possessive/a non-accusative case/a derivation — the shared :data:`_NOMINAL_COPULA`
+edge set adds the past -(y)DI (güzeldi, hastaydı, evdeydim), evidential -(y)mIş (güzelmiş,
+arabaymış), conditional -(y)sA (güzelse, evse), assertive -DIr (güzeldir, evdedir, kitaptır),
+and the zero-copula present persons -(y)Im/-sIn/∅/-(y)Iz/-sInIz/-lAr (güzelim, güzelsin,
+güzeliz, güzelsiniz). It REUSES the verbal copula states rather than duplicating suffixes:
+-(y)DI/-(y)sA feed the type-2 person state (güzeldim, güzelsen), -(y)mIş the type-1 state
+(güzelmişim), and the present persons land in ``V_PERS``. The copular ``copula``/``mood``/
+``evidential``/``person`` keys are distinct from number/possessive/case, so a case is never
+overwritten (evlerimizdeydi keeps plural+1pl+locative+copula-past). The accusative is split
+off to the terminal ``N_ACC`` because ``*eviydi`` read as accusative+copula is ungrammatical.
+Deferred (correctness over coverage, xfailed rather than overgenerated): -DIr person/plural
+stacking (güzeldirim, güzelmiştir), suppletive personal-pronoun predicates (oydu, bendim —
+they are enumerated IrregularForm surfaces, not FSM roots), and the verbal copular
+conditional -(y)sA (gelirse).
 """
 
 from __future__ import annotations
@@ -42,8 +59,10 @@ N_ROOT = "N_ROOT"
 N_PL = "N_PL"
 N_POSS = "N_POSS"  # non-3rd-person possessive
 N_POSS3 = "N_POSS3"  # 3rd-person possessive (triggers pronominal -n- before case)
-N_CASE = "N_CASE"
+N_CASE = "N_CASE"  # a non-accusative case (grammatical ek-fiil predicate host: evdeydi)
+N_ACC = "N_ACC"  # the accusative, split off as terminal: the copula never follows it (*eviydi)
 N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, cannot re-derive)
+N_COP_DIR = "N_COP_DIR"  # after the assertive/generalizing ek-fiil -DIr; terminal this milestone
 
 V_ROOT = "V_ROOT"
 V_NEG = "V_NEG"
@@ -142,34 +161,53 @@ D_CI = Suffix("ci", "CI", derivational=True, to_pos=tags.NOUN, applies_to=frozen
 _NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI]
 
 
+def _case_edges(cases: list[Suffix]) -> list[tuple[Suffix, str]]:
+    """Case edges, with the accusative retargeted to the terminal ``N_ACC``.
+
+    Every case but the accusative is a grammatical ek-fiil predicate host (evdeydi,
+    evdendi, benimleydi-style) and lands in ``N_CASE``, which carries the copula edges. The
+    accusative is *not* — ``*eviydi`` read as accusative+copula is ungrammatical — so it goes
+    to ``N_ACC`` (terminal, no copula). Split declaratively by the suffix's own case feature,
+    not by a hardcoded ``if`` in the analyzer.
+    """
+    return [(s, N_ACC if s.features.get(tags.CASE) == "accusative" else N_CASE) for s in cases]
+
+
 def _nominal_inflection() -> list[tuple[Suffix, str]]:
     poss = [(s, N_POSS) for s in _POSSESSIVES_TO_NONE3] + [(s, N_POSS3) for s in _POSSESSIVES_TO_3]
-    plain_case = [(s, N_CASE) for s in _PLAIN_CASES]
-    return [(PLURAL, N_PL), *poss, *plain_case]
+    return [(PLURAL, N_PL), *poss, *_case_edges(_PLAIN_CASES)]
 
 
-def _nominal_graph() -> dict[str, list[tuple[Suffix, str]]]:
+def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suffix, str]]]:
     inflection = _nominal_inflection()
     poss = [(s, N_POSS) for s in _POSSESSIVES_TO_NONE3] + [(s, N_POSS3) for s in _POSSESSIVES_TO_3]
-    plain_case = [(s, N_CASE) for s in _PLAIN_CASES]
-    pronom_case = [(s, N_CASE) for s in _PRONOMINAL_CASES]
+    plain_case = _case_edges(_PLAIN_CASES)
+    pronom_case = _case_edges(_PRONOMINAL_CASES)
     deriv = [(s, N_DERIV) for s in _NOMINAL_DERIVATIONS]
     return {
-        # Derivation edges appended last: with derivation disabled the prefix of this list
-        # is exactly the pre-milestone N_ROOT, so nothing about plain inflection changes.
-        N_ROOT: [*inflection, *deriv],
-        N_PL: [*poss, *plain_case],
-        N_POSS: plain_case,
-        N_POSS3: pronom_case,
-        N_CASE: [],
-        # A derived stem inflects exactly like a bare root, but may not derive again.
-        N_DERIV: inflection,
+        # Derivation edges appended after inflection, then the ek-fiil (copula) edges last:
+        # with derivation *and* copula disabled the prefix of each list is exactly the
+        # pre-milestone graph, so plain inflection and the guesser stay byte-identical.
+        N_ROOT: [*inflection, *deriv, *copula],
+        N_PL: [*poss, *plain_case, *copula],
+        N_POSS: [*plain_case, *copula],
+        N_POSS3: [*pronom_case, *copula],
+        # A non-accusative case is a complete word AND a copular predicate host (evdeydi).
+        N_CASE: [*copula],
+        # The accusative is terminal: the copula never attaches after it (*eviydi as acc+cop).
+        N_ACC: [],
+        # A derived stem inflects exactly like a bare root (and hosts the copula: yürüyüştü),
+        # but may not derive again.
+        N_DERIV: [*inflection, *copula],
+        # After the assertive -DIr: terminal (person/plural -DIrlAr stacking deferred).
+        N_COP_DIR: [],
     }
 
 
-NOMINAL_GRAPH = _nominal_graph()
 NOMINAL_START = N_ROOT
-NOMINAL_FINALS = frozenset({N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE, N_DERIV})
+#: Accepting nominal states. ``N_ACC`` (the split-off accusative) is a complete word, so it
+#: is final; ``N_COP_DIR`` is *not* here — its closure is the copular-predicate one, below.
+NOMINAL_FINALS = frozenset({N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE, N_ACC, N_DERIV})
 
 
 # --- Verbal suffixes -----------------------------------------------------------------
@@ -189,6 +227,13 @@ PAST = Suffix("past", "DI", {tags.TENSE: "past"})
 # primary tense (gelecekti = future + past-copula).
 COP_EVID = Suffix("cop_evid", "(y)mIş", {tags.EVIDENTIAL: True})
 COP_PAST = Suffix("cop_past", "(y)DI", {tags.COPULA: "past"})
+# Copular conditional -(y)sA (güzelse, evse) and the generalizing/assertive -DIr (güzeldir,
+# evdedir, kitaptır). These are the *nominal* ek-fiil forms; the copular conditional takes
+# the type-2 person set (güzelsen), so it lands in V_COP2 like the past copula. -DIr is
+# terminal this milestone (person/plural stacking -DIrlAr is deferred), so it lands in its
+# own N_COP_DIR. The VERBAL copular conditional (gelirse) stays deferred and untouched.
+COP_COND = Suffix("cop_cond", "(y)sA", {tags.MOOD: "conditional"})
+DIR = Suffix("cop_dir", "DIr", {tags.COPULA: "assertive"})
 
 # Person set type-1 (present/future/evidential/aorist; 3sg is zero).
 P1_1SG = Suffix("pers_1sg", "(y)Im", {tags.PERSON: "1sg"})
@@ -206,6 +251,21 @@ P2_3PL = Suffix("pers_3pl", "lAr", {tags.PERSON: "3pl"})
 
 _PERSON_T1 = [P1_1SG, P1_2SG, P1_1PL, P1_2PL, P1_3PL]
 _PERSON_T2 = [P2_1SG, P2_2SG, P2_1PL, P2_2PL, P2_3PL]
+
+#: The nominal ek-fiil layer, shared by every nominal final state (N_ROOT..N_DERIV). It
+#: REUSES the verbal copula machinery rather than duplicating it: -(y)DI and -(y)sA feed the
+#: type-2 person state V_COP2 (güzeldim, güzelsen), -(y)mIş feeds the type-1 state V_COP1
+#: (güzelmişim), and the zero-copula present persons are the very same _PERSON_T1 objects
+#: into V_PERS (güzelim, güzelsin, güzeliz, güzelsiniz, and -lAr for güzeller). -DIr is the
+#: only edge into a nominal-side terminal (N_COP_DIR). Appended LAST to each nominal final so
+#: pre-milestone traversal order (and the derivation-free guesser) is unchanged.
+_NOMINAL_COPULA: list[tuple[Suffix, str]] = [
+    (COP_PAST, V_COP2),
+    (COP_EVID, V_COP1),
+    (COP_COND, V_COP2),
+    (DIR, N_COP_DIR),
+    *[(s, V_PERS) for s in _PERSON_T1],
+]
 
 # Optative persons are NOT plain type-1: the 1pl is -lIm (gelelim), never *(y)Iz (*geleyiz).
 OPT_1PL = Suffix("pers_1pl", "lIm", {tags.PERSON: "1pl"})
@@ -320,13 +380,22 @@ VERBAL_FINALS = frozenset(
 # --- Unified graph -------------------------------------------------------------------
 # The nominal and verbal state names are disjoint, so the two transition maps merge into
 # one graph the analyzer walks from the POS-appropriate start state. Verbal derivations
-# cross into the nominal N_DERIV state, so a single traversal spans both sides.
+# cross into the nominal N_DERIV state, so a single traversal spans both sides. The nominal
+# graph is assembled here (rather than at its definition) because the ek-fiil edges it
+# appends reference the verbal person sets and copula suffixes defined above.
 
+NOMINAL_GRAPH = _nominal_graph(_NOMINAL_COPULA)
 GRAPH: dict[str, list[tuple[Suffix, str]]] = {**NOMINAL_GRAPH, **VERBAL_GRAPH}
-FINALS = NOMINAL_FINALS | VERBAL_FINALS
+#: The copular (ek-fiil) landing states: the type-1/type-2 person states shared with the
+#: verbal copula, the present-person state, and the assertive -DIr terminal. A NOMINAL
+#: predicate accepted here takes nominal-predicate finalization; a verbal path reaching the
+#: same person/copula states (cur_pos == VERB) still takes verbal finalization.
+COPULA_STATES = frozenset({V_COP1, V_COP2, V_PERS, N_COP_DIR})
+FINALS = NOMINAL_FINALS | VERBAL_FINALS | {N_COP_DIR}
 #: States whose accepting side is *nominal*: they take nominal feature defaults and never
 #: run verbal finalization. This includes the shared derived state and the infinitive, so a
 #: verb-derived noun (gelme, gelmek) gets no fabricated person/mood but keeps any polarity.
+#: (N_COP_DIR is deliberately excluded: its closure is the copular-predicate one.)
 NOMINAL_STATES = frozenset(NOMINAL_FINALS | {V_INF})
 
 
@@ -350,3 +419,18 @@ def finalize_verbal_features(features: dict) -> dict:
     else:
         features.setdefault(tags.PERSON, "3sg")
     return features
+
+
+def finalize_nominal_predicate_features(features: dict) -> dict:
+    """Fill implicit features at an ek-fiil (copular) acceptance on a NOMINAL predicate.
+
+    The nominal number/possessive/case fill in *under* whatever the chain accrued, so a
+    copular reading never loses its case/number (evlerimizdeydi keeps plural+1pl+locative);
+    person defaults to the zero third person. Crucially we do NOT fabricate a verbal
+    polarity/tense/mood — the zero copula is represented by ``person`` plus whatever explicit
+    ``copula``/``evidential``/``mood`` key the ek-fiil suffix already added (negation of a
+    nominal predicate is the separate word ``değil``, out of scope this milestone).
+    """
+    merged = {**nominal_default_features(), **features}
+    merged.setdefault(tags.PERSON, "3sg")
+    return merged

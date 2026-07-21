@@ -88,6 +88,7 @@ def _generate(
     *,
     source: str = tags.SOURCE_LEXICON,
     allow_derivation: bool = True,
+    allow_nominal_copula: bool = True,
 ) -> list[AnalysisResult]:
     """All full-word analyses reachable from ``root`` via the morphotactic graph.
 
@@ -95,6 +96,9 @@ def _generate(
     cross from a verb root into the nominal states (gelmek, gelen). ``allow_derivation``
     is set ``False`` on the guesser path so unknown-word stripping is unchanged: with it
     off, only inflectional edges are walked, exactly as before this milestone.
+    ``allow_nominal_copula`` gates the ek-fiil edges the same way — ``False`` on the guesser
+    so an unknown word is never stripped of a copular ending, keeping guesser output
+    byte-identical.
     """
     if root.is_nominal:
         start = mt.NOMINAL_START
@@ -116,6 +120,14 @@ def _generate(
                 # accrued, so a verb-derived nominal keeps its polarity (gelmeyen) yet
                 # never gains a fabricated person/mood (no finalize_verbal_features).
                 feats = {**mt.nominal_default_features(), **feats}
+            elif state in mt.COPULA_STATES and cur_pos != tags.VERB:
+                # Ek-fiil acceptance on a NOMINAL/ADJ/PRON/NUM predicate (güzeldi, evdeydim,
+                # güzelim): keep the nominal number/possessive/case, default person to the
+                # zero 3sg, and fabricate no verbal polarity/mood. A verbal path reaches these
+                # same person/copula states with cur_pos == VERB (every verb->nominal
+                # derivation sets to_pos, so no verbal spine arrives here with a non-VERB pos)
+                # and falls through to verbal finalization below, byte-identical to before.
+                feats = mt.finalize_nominal_predicate_features(feats)
             else:
                 mt.finalize_verbal_features(feats)
             if deriv_names:
@@ -139,6 +151,15 @@ def _generate(
                     continue
                 if suffix.applies_to is not None and cur_pos not in suffix.applies_to:
                     continue
+            # Ek-fiil edges leave a nominal final for a copular state; gate them off for the
+            # guesser (mirrors allow_derivation) so an unknown word is never stripped of a
+            # copular ending and OOV output stays byte-identical.
+            if (
+                not allow_nominal_copula
+                and state in mt.NOMINAL_FINALS
+                and target in mt.COPULA_STATES
+            ):
+                continue
             # Lexically-irregular aorist: an allomorph edge fires only for a root whose
             # lexical aorist class matches. Synthetic roots have aorist=None, so no
             # class-guarded aorist is ever emitted for a guess.
@@ -190,10 +211,29 @@ def _sort_key(r: AnalysisResult):
     # then *fewer derivations* (a finite/inflectional reading outranks a derived one that
     # shares the same root — geldik stays past-1pl, gelecek stays future, gelme stays the
     # negative imperative, while the participle/verbal-noun reading survives as an alt);
-    # then fewer morphemes; then a stable lexicographic tie-break.
+    # then a *nominal-predicate* rank so a homograph's finite-verb reading stays primary over
+    # its noun+copula reading (yüzdü stays yüz-VERB-past, not yüz-NOUN-copula; öğretmenim
+    # stays possessive over "I am a teacher"); then fewer morphemes; then a stable tie-break.
+    # n_pred is 0 for every pre-existing result (no prior nominal analysis carried a
+    # person/copula/evidential/mood key, and verbal results are pos == VERB), so it never
+    # reorders anything that existed before the ek-fiil milestone.
     src_rank = {tags.SOURCE_LEXICON: 0, tags.SOURCE_RULE: 1, tags.SOURCE_GUESS: 2}
     n_deriv = len(r.features.get(tags.DERIVATION, ()))
-    return (src_rank.get(r.source, 3), -len(r.lemma), n_deriv, len(r.morphemes), r.pos, r.lemma)
+    n_pred = (
+        1
+        if r.pos != tags.VERB
+        and any(k in r.features for k in (tags.PERSON, tags.COPULA, tags.EVIDENTIAL, tags.MOOD))
+        else 0
+    )
+    return (
+        src_rank.get(r.source, 3),
+        -len(r.lemma),
+        n_deriv,
+        n_pred,
+        len(r.morphemes),
+        r.pos,
+        r.lemma,
+    )
 
 
 # --- Guesser heuristics --------------------------------------------------------------
@@ -312,10 +352,16 @@ class Analyzer:
                 continue
             for pos in (tags.NOUN, tags.VERB):
                 synth = Root(root_guess, pos, frozenset(), root_guess, None)
-                # Derivation stays off for guesses: an unknown root must not be split on a
-                # derivational suffix (e.g. malik -> *ma+lik), so guesser output is
-                # byte-identical to before this milestone.
-                for res in _generate(word, synth, source=tags.SOURCE_GUESS, allow_derivation=False):
+                # Derivation and the ek-fiil stay off for guesses: an unknown root must not
+                # be split on a derivational suffix (malik -> *ma+lik) nor on a copular ending
+                # (*güzeldi from an OOV güzel), so guesser output is byte-identical to before.
+                for res in _generate(
+                    word,
+                    synth,
+                    source=tags.SOURCE_GUESS,
+                    allow_derivation=False,
+                    allow_nominal_copula=False,
+                ):
                     if res.morphemes:  # only non-trivial suffix strips are informative
                         parses.append(res)
 

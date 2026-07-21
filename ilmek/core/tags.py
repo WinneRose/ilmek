@@ -40,7 +40,8 @@ ABILITY = "ability"  # true (potential -yAbil)
 TENSE = "tense"  # present past future aorist
 ASPECT = "aspect"  # progressive
 EVIDENTIAL = "evidential"  # true (reported -mIş)
-COPULA = "copula"  # past | evidential (ek-fiil stacked on a finite verb)
+COPULA = "copula"  # past | assertive (ek-fiil; on a nominal predicate, person marks the
+# zero-copula present — güzelim "I am beautiful" — with no separate copula key)
 MOOD = "mood"  # imperative | conditional | optative
 PERSON = "person"  # 1sg 2sg 3sg 1pl 2pl 3pl
 PRON_TYPE = "pron_type"  # personal | demonstrative | interrogative (closed-class pronouns)
@@ -79,9 +80,15 @@ CASES = frozenset(
 )
 POLARITIES = frozenset({"positive", "negative"})
 TENSES = frozenset({"present", "past", "future", "aorist"})
-#: Verbal moods. ``imperative`` is the bare-root/negated-root reading; ``conditional`` is the
-#: -sA suffix; ``optative`` is -(y)A. The copular conditional -(y)sA and the copular optative
-#: are later milestones (see the morphotactics module docstring).
+#: Copula (ek-fiil) values. ``past`` is -(y)DI (güzeldi, gelecekti); ``assertive`` is the
+#: generalizing -DIr (güzeldir). The evidential ek-fiil -(y)mIş is recorded under
+#: :data:`EVIDENTIAL`, and the zero-copula present is marked by :data:`PERSON` alone, so
+#: neither adds a COPULA value here.
+COPULAS = frozenset({"past", "assertive"})
+#: Verbal & copular moods. ``imperative`` is the bare-root/negated-root reading; ``conditional``
+#: is the verbal -sA suffix AND the nominal copular -(y)sA (güzelse); ``optative`` is -(y)A.
+#: The VERBAL copular conditional -(y)sA (gelirse) and the copular optative are later
+#: milestones (see the morphotactics module docstring).
 MOODS = frozenset({"imperative", "conditional", "optative"})
 
 # --- Analysis provenance -------------------------------------------------------------
