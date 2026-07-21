@@ -199,6 +199,26 @@ class Analyzer:
             # and analyze normally (falling through to the lexicon / guesser).
             folded = folded.replace("'", "")
 
+        # Closed-class irregulars (personal/demonstrative pronouns, existentials) are
+        # enumerated whole and matched first. They are dictionary-verified, hence
+        # source=lexicon. We *prepend* them in data order rather than folding them into the
+        # sort below: _sort_key's -len(lemma) tie-break would otherwise rank the regular
+        # ``on`` (NUM, "ten") above the pronoun ``o`` for onu/onda/ondan. The regular
+        # analyses are still computed and kept as ranked alternatives — a closed-class
+        # reading outranks an open-class parse, but never erases genuine ambiguity.
+        irregulars = [
+            AnalysisResult(
+                surface=original,
+                lemma=f.lemma,
+                stem=f.lemma,  # inflection-only: stem == lemma, as everywhere in v0.1
+                pos=f.pos,
+                morphemes=list(f.morphemes),
+                features=dict(f.features),
+                source=tags.SOURCE_LEXICON,
+            )
+            for f in self.lexicon.irregular_forms(folded)
+        ]
+
         results: list[AnalysisResult] = []
         for root in self.lexicon.candidates(folded):
             results.extend(_generate(folded, root))
@@ -206,12 +226,12 @@ class Analyzer:
         results = _dedupe(results)
         results.sort(key=_sort_key)
 
-        if not results:
+        if not irregulars and not results:
             return self._guess(folded)
 
         for r in results:
             r.surface = original
-        return results
+        return irregulars + results
 
     def _analyze_apostrophe(self, original: str, folded: str) -> list[AnalysisResult]:
         """Proper noun written with an apostrophe suffix: ``Ankara'da`` -> lemma ``Ankara``."""

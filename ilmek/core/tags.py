@@ -42,11 +42,18 @@ ASPECT = "aspect"  # progressive
 EVIDENTIAL = "evidential"  # true (reported -mIş)
 COPULA = "copula"  # past | evidential (ek-fiil stacked on a finite verb)
 PERSON = "person"  # 1sg 2sg 3sg 1pl 2pl 3pl
+PRON_TYPE = "pron_type"  # personal | demonstrative | interrogative (closed-class pronouns)
+EXISTENTIAL = "existential"  # true (existential particle var / yok)
 
 # --- Feature value vocabulary (for validation / documentation) -----------------------
 
 NUMBERS = frozenset({"singular", "plural"})
 PERSONS = frozenset({"1sg", "2sg", "3sg", "1pl", "2pl", "3pl"})
+#: Sub-types recorded on closed-class pronouns. We label ``personal`` (ben/sen/biz/siz)
+#: and ``demonstrative`` (bu/şu) and ``interrogative`` (kim); the ``o``/``onlar`` paradigm
+#: carries *no* pron_type because its surface is genuinely ambiguous between the personal
+#: and demonstrative reading — we do not fabricate a distinction the form does not show.
+PRON_TYPES = frozenset({"personal", "demonstrative", "interrogative"})
 CASES = frozenset(
     {
         "nominative",

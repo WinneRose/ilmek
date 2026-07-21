@@ -1,0 +1,100 @@
+{
+  "_comment": [
+    "Closed classes: personal pronouns, demonstratives, existentials, and (regular)",
+    "interrogatives. The `irregular` rows are fully-enumerated surface forms consulted by",
+    "the analyzer BEFORE the FSM (source=lexicon, dictionary-verified).",
+    "",
+    "Design decisions:",
+    "- Personal pronouns decline suppletively (bana/sana datives, pronominal -n- of onu/onda,",
+    "  genitive-based instrumentals benimle/seninle/onunla/bununla). They are NOT added as",
+    "  regular Roots: a Root ben would license *bene/*benler and misparse benim as poss_1sg.",
+    "- onlar lemmatizes to 'o' (UD convention: onlar = o + lar), number=plural, person=3pl.",
+    "- The o / onlar paradigm carries NO pron_type: its surface is genuinely ambiguous",
+    "  between the personal and the demonstrative reading, so we do not fabricate one.",
+    "- bu / şu carry pron_type=demonstrative.",
+    "- Standard forms only. Colloquial benle/senle/bunla/onlan are intentionally excluded",
+    "  (correctness over coverage); a future variants pass may add them separately.",
+    "- var / yok are exact bare forms only (pos=ADJ, existential=true), never Roots, so the",
+    "  FSM can never inflect them into junk like *varda/*varlar. Copular vardı/yoktu/varmış",
+    "  belong to the later nominal-copula milestone.",
+    "- Interrogatives kim / nere decline regularly and so live under `entries` (kime, kimde,",
+    "  nerede, nereye all fall out of the FSM); only the genitive-based instrumental kiminle",
+    "  is irregular and enumerated here."
+  ],
+
+  "entries": [
+    {"lemma": "kim", "pos": "PRON"},
+    {"lemma": "nere", "pos": "PRON"}
+  ],
+
+  "irregular": [
+    {"surface": "ben", "lemma": "ben", "pos": "PRON", "morphemes": [], "features": {"pron_type": "personal", "person": "1sg", "number": "singular", "case": "nominative"}},
+    {"surface": "benim", "lemma": "ben", "pos": "PRON", "morphemes": ["im"], "features": {"pron_type": "personal", "person": "1sg", "number": "singular", "case": "genitive"}},
+    {"surface": "bana", "lemma": "ben", "pos": "PRON", "morphemes": ["a"], "features": {"pron_type": "personal", "person": "1sg", "number": "singular", "case": "dative"}},
+    {"surface": "beni", "lemma": "ben", "pos": "PRON", "morphemes": ["i"], "features": {"pron_type": "personal", "person": "1sg", "number": "singular", "case": "accusative"}},
+    {"surface": "bende", "lemma": "ben", "pos": "PRON", "morphemes": ["de"], "features": {"pron_type": "personal", "person": "1sg", "number": "singular", "case": "locative"}},
+    {"surface": "benden", "lemma": "ben", "pos": "PRON", "morphemes": ["den"], "features": {"pron_type": "personal", "person": "1sg", "number": "singular", "case": "ablative"}},
+    {"surface": "benimle", "lemma": "ben", "pos": "PRON", "morphemes": ["im", "le"], "features": {"pron_type": "personal", "person": "1sg", "number": "singular", "case": "instrumental"}},
+
+    {"surface": "sen", "lemma": "sen", "pos": "PRON", "morphemes": [], "features": {"pron_type": "personal", "person": "2sg", "number": "singular", "case": "nominative"}},
+    {"surface": "senin", "lemma": "sen", "pos": "PRON", "morphemes": ["in"], "features": {"pron_type": "personal", "person": "2sg", "number": "singular", "case": "genitive"}},
+    {"surface": "sana", "lemma": "sen", "pos": "PRON", "morphemes": ["a"], "features": {"pron_type": "personal", "person": "2sg", "number": "singular", "case": "dative"}},
+    {"surface": "seni", "lemma": "sen", "pos": "PRON", "morphemes": ["i"], "features": {"pron_type": "personal", "person": "2sg", "number": "singular", "case": "accusative"}},
+    {"surface": "sende", "lemma": "sen", "pos": "PRON", "morphemes": ["de"], "features": {"pron_type": "personal", "person": "2sg", "number": "singular", "case": "locative"}},
+    {"surface": "senden", "lemma": "sen", "pos": "PRON", "morphemes": ["den"], "features": {"pron_type": "personal", "person": "2sg", "number": "singular", "case": "ablative"}},
+    {"surface": "seninle", "lemma": "sen", "pos": "PRON", "morphemes": ["in", "le"], "features": {"pron_type": "personal", "person": "2sg", "number": "singular", "case": "instrumental"}},
+
+    {"surface": "o", "lemma": "o", "pos": "PRON", "morphemes": [], "features": {"person": "3sg", "number": "singular", "case": "nominative"}},
+    {"surface": "onun", "lemma": "o", "pos": "PRON", "morphemes": ["nun"], "features": {"person": "3sg", "number": "singular", "case": "genitive"}},
+    {"surface": "ona", "lemma": "o", "pos": "PRON", "morphemes": ["na"], "features": {"person": "3sg", "number": "singular", "case": "dative"}},
+    {"surface": "onu", "lemma": "o", "pos": "PRON", "morphemes": ["nu"], "features": {"person": "3sg", "number": "singular", "case": "accusative"}},
+    {"surface": "onda", "lemma": "o", "pos": "PRON", "morphemes": ["nda"], "features": {"person": "3sg", "number": "singular", "case": "locative"}},
+    {"surface": "ondan", "lemma": "o", "pos": "PRON", "morphemes": ["ndan"], "features": {"person": "3sg", "number": "singular", "case": "ablative"}},
+    {"surface": "onunla", "lemma": "o", "pos": "PRON", "morphemes": ["nun", "la"], "features": {"person": "3sg", "number": "singular", "case": "instrumental"}},
+
+    {"surface": "biz", "lemma": "biz", "pos": "PRON", "morphemes": [], "features": {"pron_type": "personal", "person": "1pl", "number": "plural", "case": "nominative"}},
+    {"surface": "bizim", "lemma": "biz", "pos": "PRON", "morphemes": ["im"], "features": {"pron_type": "personal", "person": "1pl", "number": "plural", "case": "genitive"}},
+    {"surface": "bize", "lemma": "biz", "pos": "PRON", "morphemes": ["e"], "features": {"pron_type": "personal", "person": "1pl", "number": "plural", "case": "dative"}},
+    {"surface": "bizi", "lemma": "biz", "pos": "PRON", "morphemes": ["i"], "features": {"pron_type": "personal", "person": "1pl", "number": "plural", "case": "accusative"}},
+    {"surface": "bizde", "lemma": "biz", "pos": "PRON", "morphemes": ["de"], "features": {"pron_type": "personal", "person": "1pl", "number": "plural", "case": "locative"}},
+    {"surface": "bizden", "lemma": "biz", "pos": "PRON", "morphemes": ["den"], "features": {"pron_type": "personal", "person": "1pl", "number": "plural", "case": "ablative"}},
+    {"surface": "bizimle", "lemma": "biz", "pos": "PRON", "morphemes": ["im", "le"], "features": {"pron_type": "personal", "person": "1pl", "number": "plural", "case": "instrumental"}},
+
+    {"surface": "siz", "lemma": "siz", "pos": "PRON", "morphemes": [], "features": {"pron_type": "personal", "person": "2pl", "number": "plural", "case": "nominative"}},
+    {"surface": "sizin", "lemma": "siz", "pos": "PRON", "morphemes": ["in"], "features": {"pron_type": "personal", "person": "2pl", "number": "plural", "case": "genitive"}},
+    {"surface": "size", "lemma": "siz", "pos": "PRON", "morphemes": ["e"], "features": {"pron_type": "personal", "person": "2pl", "number": "plural", "case": "dative"}},
+    {"surface": "sizi", "lemma": "siz", "pos": "PRON", "morphemes": ["i"], "features": {"pron_type": "personal", "person": "2pl", "number": "plural", "case": "accusative"}},
+    {"surface": "sizde", "lemma": "siz", "pos": "PRON", "morphemes": ["de"], "features": {"pron_type": "personal", "person": "2pl", "number": "plural", "case": "locative"}},
+    {"surface": "sizden", "lemma": "siz", "pos": "PRON", "morphemes": ["den"], "features": {"pron_type": "personal", "person": "2pl", "number": "plural", "case": "ablative"}},
+    {"surface": "sizinle", "lemma": "siz", "pos": "PRON", "morphemes": ["in", "le"], "features": {"pron_type": "personal", "person": "2pl", "number": "plural", "case": "instrumental"}},
+
+    {"surface": "onlar", "lemma": "o", "pos": "PRON", "morphemes": ["lar"], "features": {"person": "3pl", "number": "plural", "case": "nominative"}},
+    {"surface": "onların", "lemma": "o", "pos": "PRON", "morphemes": ["lar", "ın"], "features": {"person": "3pl", "number": "plural", "case": "genitive"}},
+    {"surface": "onlara", "lemma": "o", "pos": "PRON", "morphemes": ["lar", "a"], "features": {"person": "3pl", "number": "plural", "case": "dative"}},
+    {"surface": "onları", "lemma": "o", "pos": "PRON", "morphemes": ["lar", "ı"], "features": {"person": "3pl", "number": "plural", "case": "accusative"}},
+    {"surface": "onlarda", "lemma": "o", "pos": "PRON", "morphemes": ["lar", "da"], "features": {"person": "3pl", "number": "plural", "case": "locative"}},
+    {"surface": "onlardan", "lemma": "o", "pos": "PRON", "morphemes": ["lar", "dan"], "features": {"person": "3pl", "number": "plural", "case": "ablative"}},
+    {"surface": "onlarla", "lemma": "o", "pos": "PRON", "morphemes": ["lar", "la"], "features": {"person": "3pl", "number": "plural", "case": "instrumental"}},
+
+    {"surface": "bu", "lemma": "bu", "pos": "PRON", "morphemes": [], "features": {"pron_type": "demonstrative", "number": "singular", "case": "nominative"}},
+    {"surface": "bunun", "lemma": "bu", "pos": "PRON", "morphemes": ["nun"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "genitive"}},
+    {"surface": "buna", "lemma": "bu", "pos": "PRON", "morphemes": ["na"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "dative"}},
+    {"surface": "bunu", "lemma": "bu", "pos": "PRON", "morphemes": ["nu"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "accusative"}},
+    {"surface": "bunda", "lemma": "bu", "pos": "PRON", "morphemes": ["nda"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "locative"}},
+    {"surface": "bundan", "lemma": "bu", "pos": "PRON", "morphemes": ["ndan"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "ablative"}},
+    {"surface": "bununla", "lemma": "bu", "pos": "PRON", "morphemes": ["nun", "la"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "instrumental"}},
+
+    {"surface": "şu", "lemma": "şu", "pos": "PRON", "morphemes": [], "features": {"pron_type": "demonstrative", "number": "singular", "case": "nominative"}},
+    {"surface": "şunun", "lemma": "şu", "pos": "PRON", "morphemes": ["nun"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "genitive"}},
+    {"surface": "şuna", "lemma": "şu", "pos": "PRON", "morphemes": ["na"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "dative"}},
+    {"surface": "şunu", "lemma": "şu", "pos": "PRON", "morphemes": ["nu"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "accusative"}},
+    {"surface": "şunda", "lemma": "şu", "pos": "PRON", "morphemes": ["nda"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "locative"}},
+    {"surface": "şundan", "lemma": "şu", "pos": "PRON", "morphemes": ["ndan"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "ablative"}},
+    {"surface": "şununla", "lemma": "şu", "pos": "PRON", "morphemes": ["nun", "la"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "instrumental"}},
+
+    {"surface": "kiminle", "lemma": "kim", "pos": "PRON", "morphemes": ["in", "le"], "features": {"pron_type": "interrogative", "case": "instrumental"}},
+
+    {"surface": "var", "lemma": "var", "pos": "ADJ", "morphemes": [], "features": {"existential": true}},
+    {"surface": "yok", "lemma": "yok", "pos": "ADJ", "morphemes": [], "features": {"existential": true}}
+  ]
+}
