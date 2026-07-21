@@ -157,6 +157,13 @@ class IrregularForm:
     root that inflects — it carries its own lemma, pos, features, and morpheme
     segmentation and is looked up by its folded surface. ``morphemes`` is kept as a tuple
     so the record stays hashable/immutable; the analyzer copies it into a fresh list.
+
+    ``stem`` is the surface at the last derivation boundary (the project's stem contract).
+    A purely inflected/suppletive irregular (a pronoun like ``bana``) has ``stem == lemma``;
+    a *derived* irregular — an intensive diminutive (``sıcacık`` -> lemma ``sıcak``) — has
+    ``stem`` equal to its whole surface, matching the regular derivation convention
+    (``kitapçık``'s stem is ``kitapçık``). Derived-vs-inflected is read off the presence of a
+    ``derivation`` feature; an explicit ``stem`` in the entry always wins.
     """
 
     surface: str  # folded surface used as the lookup key
@@ -164,15 +171,31 @@ class IrregularForm:
     pos: str
     features: dict
     morphemes: tuple[str, ...]
+    stem: str
 
     @classmethod
     def from_entry(cls, entry: dict) -> IrregularForm:
+        features = dict(entry.get("features", {}))
+        # Features arrive from JSON, so a ``derivation`` history is a list; coerce it to the
+        # tuple the FSM emits so equality/dedup against generated analyses stays consistent.
+        deriv = features.get(tags.DERIVATION)
+        if isinstance(deriv, list):
+            features[tags.DERIVATION] = tuple(deriv)
+        surface = fold_for_lookup(entry["surface"])
+        lemma = entry["lemma"]
+        if "stem" in entry:
+            stem = fold_for_lookup(entry["stem"])
+        elif tags.DERIVATION in features:
+            stem = surface  # a derived irregular: stem is the whole derived surface
+        else:
+            stem = lemma  # inflection-only / suppletive: stem == lemma
         return cls(
-            surface=fold_for_lookup(entry["surface"]),
-            lemma=entry["lemma"],
+            surface=surface,
+            lemma=lemma,
             pos=entry.get("pos", tags.PRON).upper(),
-            features=dict(entry.get("features", {})),
+            features=features,
             morphemes=tuple(entry.get("morphemes", ())),
+            stem=stem,
         )
 
 

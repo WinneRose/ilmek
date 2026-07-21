@@ -1,0 +1,20 @@
+{
+  "entries": [
+    {"lemma": "ufak", "pos": "ADJ", "attributes": ["voicing"]},
+    {"lemma": "minik", "pos": "ADJ", "attributes": ["voicing"]},
+    {"lemma": "çabuk", "pos": "ADJ", "attributes": ["voicing"]},
+    {"lemma": "biraz", "pos": "ADV"}
+  ],
+  "irregular": [
+    {"surface": "sıcacık", "lemma": "sıcak", "pos": "ADJ", "morphemes": ["cık"], "features": {"derivation": ["cik"]}},
+    {"surface": "küçücük", "lemma": "küçük", "pos": "ADJ", "morphemes": ["cük"], "features": {"derivation": ["cik"]}},
+    {"surface": "ufacık", "lemma": "ufak", "pos": "ADJ", "morphemes": ["cık"], "features": {"derivation": ["cik"]}},
+    {"surface": "çabucak", "lemma": "çabuk", "pos": "ADV", "morphemes": ["cak"], "features": {"derivation": ["cik"]}},
+    {"surface": "minicik", "lemma": "minik", "pos": "ADJ", "morphemes": ["cik"], "features": {"derivation": ["cik"]}},
+    {"surface": "yumuşacık", "lemma": "yumuşak", "pos": "ADJ", "morphemes": ["cık"], "features": {"derivation": ["cik"]}},
+    {"surface": "kısacık", "lemma": "kısa", "pos": "ADJ", "morphemes": ["cık"], "features": {"derivation": ["cik"]}},
+    {"surface": "incecik", "lemma": "ince", "pos": "ADJ", "morphemes": ["cik"], "features": {"derivation": ["cik"]}},
+    {"surface": "azıcık", "lemma": "az", "pos": "ADV", "morphemes": ["ıcık"], "features": {"derivation": ["cik"]}},
+    {"surface": "birazcık", "lemma": "biraz", "pos": "ADV", "morphemes": ["cık"], "features": {"derivation": ["cik"]}}
+  ]
+}

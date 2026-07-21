@@ -293,7 +293,10 @@ class Analyzer:
             AnalysisResult(
                 surface=original,
                 lemma=f.lemma,
-                stem=f.lemma,  # inflection-only: stem == lemma, as everywhere in v0.1
+                # Suppletive/inflected irregulars have stem == lemma (pronouns); a derived
+                # irregular (an intensive diminutive) carries stem == its whole surface, per
+                # the stem contract. The IrregularForm resolves which; we just read it.
+                stem=f.stem,
                 pos=f.pos,
                 morphemes=list(f.morphemes),
                 features=dict(f.features),

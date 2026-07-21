@@ -53,10 +53,11 @@ EXISTENTIAL = "existential"  # true (existential particle var / yok)
 DERIVATION = "derivation"
 
 #: The closed vocabulary of derivational-suffix names recorded under :data:`DERIVATION`.
-#: Noun/adj-forming: li (-lI), siz (-sIz), lik (-lIk), ci (-CI); verb->noun: ma (-mA),
-#: is (-(y)Iş), mak (infinitive -mAk); verb->adj participles: an (-(y)An), dik (-DIk),
-#: acak (-(y)AcAk).
-DERIVATIONS = frozenset({"li", "siz", "lik", "ci", "ma", "is", "mak", "an", "dik", "acak"})
+#: Noun/adj-forming: li (-lI), siz (-sIz), lik (-lIk), ci (-CI), cik (diminutive -CIk);
+#: verb->noun: ma (-mA), is (-(y)Iş), mak (infinitive -mAk); verb->adj participles: an
+#: (-(y)An), dik (-DIk), acak (-(y)AcAk). The intensive-adjective diminutives (sıcacık,
+#: küçücük) are enumerated IrregularForm surfaces but record the same ``cik`` name.
+DERIVATIONS = frozenset({"li", "siz", "lik", "ci", "cik", "ma", "is", "mak", "an", "dik", "acak"})
 
 # --- Feature value vocabulary (for validation / documentation) -----------------------
 
