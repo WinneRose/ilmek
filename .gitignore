@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+build/
+dist/
+.eggs/
+wheels/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.tox/
+.nox/
+
+# Tooling caches
+.ruff_cache/
+.mypy_cache/
+
+# Model / dataset cache (downloaded backends, never committed)
+.ilmek/
+models/cache/
+*.model
+*.stanza
+
+# Editors / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Claude Code personal (local) settings — shared config would be .claude/settings.json
+.claude/settings.local.json

@@ -1,0 +1,41 @@
+[
+  {"lemma": "güzel", "pos": "ADJ"},
+  {"lemma": "büyük", "pos": "ADJ", "attributes": ["voicing"]},
+  {"lemma": "küçük", "pos": "ADJ", "attributes": ["voicing"]},
+  {"lemma": "açık", "pos": "ADJ", "attributes": ["voicing"]},
+  {"lemma": "sıcak", "pos": "ADJ", "attributes": ["voicing"]},
+  {"lemma": "soğuk", "pos": "ADJ", "attributes": ["voicing"]},
+  {"lemma": "iyi", "pos": "ADJ"},
+  {"lemma": "kötü", "pos": "ADJ"},
+  {"lemma": "yeni", "pos": "ADJ"},
+  {"lemma": "eski", "pos": "ADJ"},
+  {"lemma": "uzun", "pos": "ADJ"},
+  {"lemma": "kısa", "pos": "ADJ"},
+  {"lemma": "hızlı", "pos": "ADJ"},
+  {"lemma": "temiz", "pos": "ADJ"},
+  {"lemma": "zor", "pos": "ADJ"},
+  {"lemma": "kolay", "pos": "ADJ"},
+
+  {"lemma": "bir", "pos": "NUM"},
+  {"lemma": "iki", "pos": "NUM"},
+  {"lemma": "üç", "pos": "NUM"},
+  {"lemma": "dört", "pos": "NUM"},
+  {"lemma": "beş", "pos": "NUM"},
+  {"lemma": "altı", "pos": "NUM"},
+  {"lemma": "yedi", "pos": "NUM"},
+  {"lemma": "sekiz", "pos": "NUM"},
+  {"lemma": "dokuz", "pos": "NUM"},
+  {"lemma": "on", "pos": "NUM"},
+  {"lemma": "bin", "pos": "NUM"},
+
+  {"lemma": "yüz", "pos": "NUM"},
+  {"lemma": "yüz", "pos": "NOUN"},
+  {"lemma": "yüz", "pos": "VERB"},
+
+  {"lemma": "kişi", "pos": "NOUN"},
+
+  {"lemma": "çok", "pos": "ADV"},
+  {"lemma": "az", "pos": "ADV"},
+  {"lemma": "şimdi", "pos": "ADV"},
+  {"lemma": "bugün", "pos": "ADV"}
+]

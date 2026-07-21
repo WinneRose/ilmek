@@ -1,0 +1,811 @@
+[
+  {
+    "lemma": "şey",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "söz",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "ses",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "iş",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "baş",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "diş",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "taş",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "dil",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "kol",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "kan",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "para",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "oda",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "hava",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "dünya",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "gece",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "köy",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "sabah",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "akşam",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "yağmur",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "kar",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "ateş",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "çay",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "kahve",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "şeker",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "tuz",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "meyve",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "elma",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "soğan",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "aslan",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "yılan",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "anahtar",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "ülke",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "köprü",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "orman",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "dağ",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "göl",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "yıldız",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "güneş",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "aile",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "halk",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "komşu",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "asker",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "doktor",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "polis",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "hayat",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "zaman",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "haber",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "ders",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "sınav",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "sınıf",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "otobüs",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "bilet",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "hafta",
+    "pos": "NOUN"
+  },
+  {
+    "lemma": "kulak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "bacak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "dudak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "parmak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "yürek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "yanak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kemik",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "bilek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "topuk",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "göbek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kirpik",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "tırnak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "uçak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "bıçak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kaşık",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "koltuk",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "yastık",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "gözlük",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "sözlük",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kelebek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "böcek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "sinek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "ördek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "eşek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "tavuk",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "ırmak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "tekerlek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "gömlek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "etek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kazak",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "meslek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "yemek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kabuk",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "erkek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "dilek",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "ilaç",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kılıç",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "borç",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "sevinç",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "havuç",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "pirinç",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "avuç",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "uç",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "çorap",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kalıp",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "mektup",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "sahip",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "cep",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kap",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "dip",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "grup",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kurt",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "kilit",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "senet",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "yoğurt",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "öğüt",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "ümit",
+    "pos": "NOUN",
+    "attributes": [
+      "voicing"
+    ]
+  },
+  {
+    "lemma": "göğüs",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "göğüs",
+      "göğs"
+    ]
+  },
+  {
+    "lemma": "nehir",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "nehir",
+      "nehr"
+    ]
+  },
+  {
+    "lemma": "omuz",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "omuz",
+      "omz"
+    ]
+  },
+  {
+    "lemma": "sabır",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "sabır",
+      "sabr"
+    ]
+  },
+  {
+    "lemma": "ömür",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "ömür",
+      "ömr"
+    ]
+  },
+  {
+    "lemma": "şükür",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "şükür",
+      "şükr"
+    ]
+  },
+  {
+    "lemma": "hüküm",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "hüküm",
+      "hükm"
+    ]
+  },
+  {
+    "lemma": "hüzün",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "hüzün",
+      "hüzn"
+    ]
+  },
+  {
+    "lemma": "nesil",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "nesil",
+      "nesl"
+    ]
+  },
+  {
+    "lemma": "şekil",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "şekil",
+      "şekl"
+    ]
+  },
+  {
+    "lemma": "asıl",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "asıl",
+      "asl"
+    ]
+  },
+  {
+    "lemma": "zehir",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "zehir",
+      "zehr"
+    ]
+  },
+  {
+    "lemma": "emir",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "emir",
+      "emr"
+    ]
+  },
+  {
+    "lemma": "devir",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "devir",
+      "devr"
+    ]
+  },
+  {
+    "lemma": "kısım",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "kısım",
+      "kısm"
+    ]
+  },
+  {
+    "lemma": "cisim",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "cisim",
+      "cism"
+    ]
+  },
+  {
+    "lemma": "keyif",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "keyif",
+      "keyf"
+    ]
+  },
+  {
+    "lemma": "kutup",
+    "pos": "NOUN",
+    "attributes": [
+      "vowel_drop"
+    ],
+    "forms": [
+      "kutup",
+      "kutb"
+    ]
+  }
+]

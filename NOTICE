@@ -1,0 +1,16 @@
+ilmek
+Copyright 2026 ilmek contributors
+
+This product includes software developed as an open, explainable Turkish
+morphology engine (stemmer, lemmatizer, and morphological analyzer).
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at http://www.apache.org/licenses/LICENSE-2.0.
+
+Optional backends are NOT bundled and carry their own licenses:
+  - Stanza (Stanford NLP) and its Turkish models — downloaded on demand.
+  - Zemberek-NLP — requires a Java runtime; integrated as an optional adapter.
+
+Each downloadable model records its own name, version, source URL, checksum,
+size, and license via the model registry before download.
