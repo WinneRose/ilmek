@@ -38,5 +38,11 @@
   {"lemma": "çok", "pos": "ADV"},
   {"lemma": "az", "pos": "ADV"},
   {"lemma": "şimdi", "pos": "ADV"},
-  {"lemma": "bugün", "pos": "ADV"}
+  {"lemma": "bugün", "pos": "ADV"},
+
+  {"lemma": "dün", "pos": "ADV"},
+  {"lemma": "yarın", "pos": "ADV"},
+  {"lemma": "sonra", "pos": "ADV"},
+  {"lemma": "önce", "pos": "ADV"},
+  {"lemma": "erken", "pos": "ADV"}
 ]

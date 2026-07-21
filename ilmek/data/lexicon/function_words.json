@@ -85,6 +85,12 @@
     {"surface": "yine", "lemma": "yine", "pos": "ADV", "morphemes": [], "features": {}},
     {"surface": "hemen", "lemma": "hemen", "pos": "ADV", "morphemes": [], "features": {}},
     {"surface": "birden", "lemma": "birden", "pos": "ADV", "morphemes": [], "features": {}},
-    {"surface": "tekrar", "lemma": "tekrar", "pos": "ADV", "morphemes": [], "features": {}}
+    {"surface": "tekrar", "lemma": "tekrar", "pos": "ADV", "morphemes": [], "features": {}},
+
+    {"surface": "bazen", "lemma": "bazen", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "nadiren", "lemma": "nadiren", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "yalnızca", "lemma": "yalnızca", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "özellikle", "lemma": "özellikle", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "birlikte", "lemma": "birlikte", "pos": "ADV", "morphemes": [], "features": {}}
   ]
 }
