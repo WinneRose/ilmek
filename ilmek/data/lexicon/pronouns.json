@@ -21,7 +21,10 @@
     "  demonstrative/o colloquial reading is left to a later pass rather than fabricated here.",
     "- var / yok are exact bare forms only (pos=ADJ, existential=true), never Roots, so the",
     "  FSM can never inflect them into junk like *varda/*varlar. Copular vardı/yoktu/varmış",
-    "  belong to the later nominal-copula milestone.",
+    "  belong to the later nominal-copula milestone. Their temporal converbs varken / yokken",
+    "  (pos=ADV, verbform=converb, existential preserved) ARE enumerated below: because var/yok",
+    "  are not Roots the FSM cannot build them, so the -(y)ken form is listed as an exact surface",
+    "  the same way — no Root, so *varkende / *yokkenler stay junk.",
     "- Interrogatives kim / nere decline regularly and so live under `entries` (kime, kimde,",
     "  nerede, nereye all fall out of the FSM); only the genitive-based instrumental kiminle",
     "  is irregular and enumerated here.",
@@ -127,6 +130,8 @@
     {"surface": "sizce", "lemma": "siz", "pos": "ADV", "morphemes": ["ce"], "features": {"derivation": ["ca"]}},
 
     {"surface": "var", "lemma": "var", "pos": "ADJ", "morphemes": [], "features": {"existential": true}},
-    {"surface": "yok", "lemma": "yok", "pos": "ADJ", "morphemes": [], "features": {"existential": true}}
+    {"surface": "yok", "lemma": "yok", "pos": "ADJ", "morphemes": [], "features": {"existential": true}},
+    {"surface": "varken", "lemma": "var", "pos": "ADV", "morphemes": ["ken"], "features": {"existential": true, "verbform": "converb", "derivation": ["ken"]}},
+    {"surface": "yokken", "lemma": "yok", "pos": "ADV", "morphemes": ["ken"], "features": {"existential": true, "verbform": "converb", "derivation": ["ken"]}}
   ]
 }

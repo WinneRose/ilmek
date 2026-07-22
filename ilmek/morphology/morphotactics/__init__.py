@@ -58,7 +58,8 @@ again. Which derivation fires is gated by :attr:`~.suffix.Suffix.applies_to`, ne
 
 Nominal ek-fiil: NOUN/ADJ/PRON/NUM predicates take the copula ("to be") *directly* as a suffix.
 From every nominal final state the shared ``_NOMINAL_COPULA`` edge set adds the past -(y)DI,
-evidential -(y)mIş, conditional -(y)sA, assertive -DIr, and the zero-copula present persons —
+evidential -(y)mIş, conditional -(y)sA, assertive -DIr, the zero-copula present persons, and the
+temporal converb -(y)ken (çocukken, evdeyken "while (being) X", landing terminal in ADV_CVB) —
 REUSING the verbal copula states. The copular keys are distinct from number/possessive/case, so
 a case is never overwritten (evlerimizdeydi keeps plural+1pl+locative+copula-past). The
 accusative is split off to the terminal N_ACC because ``*eviydi`` as accusative+copula is

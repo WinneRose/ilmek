@@ -334,6 +334,107 @@ def test_converb_views_agree(analyzer):
         )
 
 
+# --- The nominal / adjectival temporal -(y)ken (ek-fiil converb) ----------------------
+# "while (being) X": the SAME -ken converb, but on a NOUN/ADJ predicate instead of a finite
+# verb. It rides the shared _NOMINAL_COPULA layer (exactly like -(y)DI), takes the (y) buffer
+# after a vowel, and lands terminal in ADV_CVB (pos=ADV, verbform=converb, lemma = the base).
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,lemma,morphemes",
+    [
+        ("çocukken", "çocuk", ["ken"]),  # consonant-final NOUN, no buffer
+        ("güzelken", "güzel", ["ken"]),  # ADJ base
+        ("küçükken", "küçük", ["ken"]),  # voicing-attribute word: no softening (k stays k)
+        ("hastayken", "hasta", ["yken"]),  # (y) buffer after a vowel
+        ("evdeyken", "ev", ["de", "yken"]),  # locative + buffer + ken
+        ("okuldayken", "okul", ["da", "yken"]),  # back-vowel word: ken never harmonizes (not -kan)
+    ],
+)
+def test_nominal_ken_converb(analyzer, word, lemma, morphemes):
+    a = _find(analyzer, word, lemma=lemma, pos="ADV", derivation=("ken",))
+    assert a is not None, f"no {lemma}+ken nominal converb for {word}"
+    assert a.morphemes == morphemes
+    assert a.features.get("verbform") == "converb"
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize("word,lemma", [("varken", "var"), ("yokken", "yok")])
+def test_existential_ken_converb(analyzer, word, lemma):
+    # var / yok are enumerated bare irregulars (never Roots, guarding *varda/*varlar), so their
+    # -(y)ken forms are enumerated irregular surfaces too — existential=true is preserved.
+    a = _find(analyzer, word, lemma=lemma, pos="ADV", derivation=("ken",))
+    assert a is not None
+    assert a.source == "lexicon"
+    assert a.morphemes == ["ken"]
+    assert a.features.get("verbform") == "converb"
+    assert a.features.get("existential") is True
+
+
+@pytest.mark.positive
+def test_degil_ken_converb(analyzer):
+    # değilken "while not (being)" falls out of the FULL negative-copula layer (_NEG_COP_COPULA);
+    # the inherent polarity=negative survives onto the converb.
+    a = _find(analyzer, "değilken", lemma="değil", pos="ADV", derivation=("ken",))
+    assert a is not None
+    assert a.features.get("verbform") == "converb"
+    assert a.features.get("polarity") == "negative"
+
+
+@pytest.mark.consistency
+def test_nominal_ken_lemmatizes_to_the_base(analyzer):
+    assert ilmek.lemmatize("çocukken") == "çocuk"
+    assert ilmek.lemmatize("evdeyken") == "ev"
+    assert ilmek.lemmatize("güzelken") == "güzel"
+    assert ilmek.lemmatize("varken") == "var"
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize("word", ["hastaken", "evdeken"])
+def test_nominal_ken_buffer_is_obligatory_after_a_vowel(analyzer, word):
+    # After a vowel the (y) buffer is required: *hastaken / *evdeken are not words.
+    assert not any(r.features.get("verbform") == "converb" for r in analyzer.analyze(word))
+    assert analyzer.analyze(word)[0].source == "guess"
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize("word", ["güzelyken", "çocukyken"])
+def test_nominal_ken_no_buffer_after_a_consonant(analyzer, word):
+    # After a consonant there is NO buffer: *güzelyken / *çocukyken are not words.
+    assert not any(r.features.get("verbform") == "converb" for r in analyzer.analyze(word))
+    assert analyzer.analyze(word)[0].source == "guess"
+
+
+@pytest.mark.negative
+def test_nominal_ken_no_wrongly_voiced_stem(analyzer):
+    # -ken is consonant-initial, so the stem-final k never softens: *küçüğken is not a word
+    # (the correct form is küçükken, pinned positively above). A wrong voicing flag is worse
+    # than omitting the word, so this guards against a spurious softening.
+    assert not has_analysis(analyzer, "küçüğken", lemma="küçük")
+    assert analyzer.analyze("küçüğken")[0].source == "guess"
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize("word", ["miyken", "mıyken"])
+def test_question_particle_takes_no_ken(analyzer, word):
+    # The interrogative particle mi filters the converb out of _Q_COPULA by its verbform feature:
+    # *miyken / *mıyken must not be licensed (no question+converb reading).
+    for r in analyzer.analyze(word):
+        assert r.features.get("verbform") != "converb"
+        assert not (r.source == "lexicon" and r.lemma == "mi")
+
+
+@pytest.mark.negative
+def test_erken_stays_a_whole_word_adverb(analyzer):
+    # "erken" is a whole-word ADV in the lexicon; "er" is not a lemma, so no er+ken parse exists
+    # and the whole-word reading stays primary (if "er" is ever added, er+ken gains a reading).
+    best = analyzer.analyze("erken")[0]
+    assert best.lemma == "erken"
+    assert best.pos == "ADV"
+    assert "derivation" not in best.features
+
+
 # --- Documented deferrals (strict xfail): honest known limitations -------------------
 
 
@@ -357,10 +458,7 @@ def test_ince_converb_takes_dative_in_kadar_construction(analyzer):
     assert has_analysis(analyzer, "gelinceye", lemma="gel")
 
 
-@pytest.mark.xfail(
-    reason="The nominal ek-fiil -(y)ken (evdeyken, güzelken) is out of scope this milestone: "
-    "-ken is wired onto the verbal finite stems only, not the nominal copula layer.",
-    strict=True,
-)
 def test_nominal_ekfiil_ken_is_out_of_scope(analyzer):
+    # Formerly xfail: the nominal ek-fiil -(y)ken is now wired onto the shared copula layer, so
+    # evdeyken analyzes as ev + locative + -(y)ken (see test_nominal_ken_converb).
     assert has_analysis(analyzer, "evdeyken", lemma="ev")

@@ -300,13 +300,17 @@ CVB_MAKSIZIN = Suffix(
     derivational=True,
     to_pos=tags.ADV,
 )
-# -ken (gelirken, geliyorken, gelecekken, gelmezken): the temporal converb "while". UNLIKE the
-# others it attaches to a FINITE stem (the aorist/progressive/future/evidential/necessitative,
-# and the negative aorist), so it is wired onto V_T1 / V_AOR_NEG, not the root — see
-# transitions. It does NOT harmonize (invariant "ken": gelirken, yaparken, koşarken), so the
-# literal "ken" is lowercase; the (y) buffer only covers a vowel-final stem (gelmeliyken). No
-# glide_raise (it never sits on a bare de-/ye- root). The nominal ek-fiil -(y)ken (evdeyken,
-# güzelken) is OUT of scope this milestone and deliberately NOT wired into the copula layer.
+# -ken (gelirken, geliyorken, gelecekken, gelmezken): the temporal converb "while". On the
+# VERBAL side it attaches to a FINITE stem (the aorist/progressive/future/evidential/
+# necessitative, and the negative aorist), so it is wired onto V_T1 / V_AOR_NEG, not the root.
+# The SAME object is ALSO reused on the NOMINAL/adjectival predicate as the ek-fiil converb
+# (çocukken, güzelken, hastayken, evdeyken, okuldayken "while (being) X"): it is appended to
+# the shared _NOMINAL_COPULA layer, so it lands on every nominal final exactly like -(y)DI —
+# see transitions. It does NOT harmonize (invariant "ken": gelirken, yaparken, çocukken,
+# okuldayken — never *okuldakan), so the literal "ken" is lowercase; the (y) buffer only covers
+# a vowel-final stem (gelmeliyken, hastayken, evdeyken). No glide_raise (it never sits on a bare
+# de-/ye- root). -ken is consonant-initial, so a preceding stem's voicing never fires (çocukken,
+# küçükken keep their k). The standalone substantive verb i- takes the bufferless twin below.
 CVB_KEN = Suffix("ken", "(y)ken", dict(_CONVERB), derivational=True, to_pos=tags.ADV)
 # BUFFERLESS -ken for the STANDALONE substantive verb i- (iken, NOT *iyken): i- is vowel-final
 # but takes no (y) buffer, so the shared CVB_KEN's "(y)ken" cannot be reused (it would realize

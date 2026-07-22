@@ -134,14 +134,20 @@ from .verb_suffixes import (
 #: type-2 person state V_COP2 (güzeldim, güzelsen), -(y)mIş feeds the type-1 state V_COP1
 #: (güzelmişim), and the zero-copula present persons are the very same _PERSON_T1 objects
 #: into V_PERS (güzelim, güzelsin, güzeliz, güzelsiniz, and -lAr for güzeller). -DIr is the
-#: only edge into a nominal-side terminal (N_COP_DIR). Appended LAST to each nominal final so
-#: pre-milestone traversal order (and the derivation-free guesser) is unchanged.
+#: only edge into a nominal-side terminal (N_COP_DIR). The temporal converb -(y)ken
+#: (çocukken, güzelken, evdeyken, hastayken, okuldayken "while (being) X") is the SAME shared
+#: verbal CVB_KEN object reused on the nominal predicate: it takes the (y) buffer after a
+#: vowel and lands in the terminal ADV_CVB (verbform=converb, lemma = the base), exactly like
+#: gelirken but on a NOUN/ADJ host. Appended LAST to each nominal final so pre-milestone
+#: traversal order (and the derivation-free guesser, which never walks the derivational -ken)
+#: is unchanged.
 _NOMINAL_COPULA: list[tuple[Suffix, str]] = [
     (COP_PAST, V_COP2),
     (COP_EVID, V_COP1),
     (COP_COND, V_COP2),
     (DIR, N_COP_DIR),
     *[(s, V_PERS) for s in _PERSON_T1],
+    (CVB_KEN, ADV_CVB),
 ]
 
 
@@ -151,19 +157,23 @@ _NOMINAL_COPULA: list[tuple[Suffix, str]] = [
 #: ek-fiil layer (:data:`_NOMINAL_COPULA`) rather than duplicating it, so every inflected
 #: question form (midir, misin, miyim, miydi, miymiş, and their harmonic variants) falls out
 #: for free — the copula/persons harmonize to the particle's own vowel via the phonology.
-#: Two edges of the nominal copula are declaratively filtered out (not by a hardcoded surface
+#: Three edges of the nominal copula are declaratively filtered out (not by a hardcoded surface
 #: list, by the suffix's own feature):
 #:   * the PRESENT 3pl person -lAr: it would surface *miler, exactly the bare plural the
 #:     particle must not take. (3pl AFTER a copula — mıydılar, mıymışlar — stays licensed,
 #:     because it is emitted by V_COP1/V_COP2's own untouched person sets, not this edge.)
 #:   * the copular conditional -(y)sA: *miyse/mıysa is at best marginal, so under "correctness
 #:     over coverage" it is excluded (a negative test pins the choice).
+#:   * the temporal converb -(y)ken: *miyken/*mıyken is not a word — the question particle takes
+#:     no converb — so it is dropped by its own verbform=converb feature (a negative test pins it).
 #: What remains: the past copula -(y)DI, the evidential -(y)mIş, the assertive -DIr, and the
 #: present persons 1sg/2sg/1pl/2pl.
 _Q_COPULA: list[tuple[Suffix, str]] = [
     (s, t)
     for s, t in _NOMINAL_COPULA
-    if s.features.get(tags.PERSON) != "3pl" and s.features.get(tags.MOOD) != "conditional"
+    if s.features.get(tags.PERSON) != "3pl"
+    and s.features.get(tags.MOOD) != "conditional"
+    and s.features.get(tags.VERBFORM) != "converb"
 ]
 
 
@@ -172,9 +182,11 @@ _Q_COPULA: list[tuple[Suffix, str]] = [
 #: The only edges leaving the negative-copula root NEG_COP_ROOT. It REUSES the shared nominal
 #: ek-fiil layer (:data:`_NOMINAL_COPULA`) rather than duplicating it, so every inflected form
 #: (değildi, değildim, değilim, değilsin, değildir, değilse, değilmiş, değiliz, değilsiniz,
-#: değiller) falls out for free, harmonizing off değil's front vowel. UNLIKE :data:`_Q_COPULA`
-#: it is the FULL, unfiltered layer: değilse (conditional) IS valid, so COP_COND stays, and
-#: değiller (present 3pl) IS valid, so the -lAr person edge stays. The negation is inherent to
+#: değiller, and the temporal converb değilken "while not (being)") falls out for free,
+#: harmonizing off değil's front vowel. UNLIKE :data:`_Q_COPULA` it is the FULL, unfiltered
+#: layer: değilse (conditional) IS valid, so COP_COND stays; değiller (present 3pl) IS valid, so
+#: the -lAr person edge stays; and değilken IS valid, so the -(y)ken converb stays (a positive
+#: test pins it). The negation is inherent to
 #: değil (seeded as a base feature, :func:`negative_copula_default_features`); no copula/person
 #: suffix here carries a polarity key, so polarity=negative is never overwritten.
 _NEG_COP_COPULA: list[tuple[Suffix, str]] = list(_NOMINAL_COPULA)
