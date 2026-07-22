@@ -112,8 +112,13 @@ pytest -m negative
 ruff check .
 ruff format .
 
-# Benchmark  (evaluation suite arrives in v0.4)
-ilmek benchmark
+# Benchmark: run the evaluation harness over the hand-labeled gold set
+# (lemma/stem accuracy, coverage, disambiguation accuracy, unknown-word rate, speed).
+# The roadmap's "Aşama 1 evaluation" item landed ahead of its v0.4 label; the version
+# string is a plan marker, not a gate. Use PYTHONUTF8=1 for the Turkish surfaces.
+ilmek benchmark              # readable per-category + overall report
+ilmek benchmark --json       # same numbers as JSON, for regression comparison
+ilmek benchmark --category voice
 ```
 
 ## Definition of done

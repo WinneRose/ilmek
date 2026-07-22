@@ -1,0 +1,1970 @@
+{
+  "description": "ilmek hand-labeled morphology gold set (Aşama 1 benchmark).",
+  "entries": [
+    {
+      "surface": "ev",
+      "category": "simple_noun",
+      "lemma": "ev",
+      "stem": "ev",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "kitap",
+      "category": "simple_noun",
+      "lemma": "kitap",
+      "stem": "kitap",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "araba",
+      "category": "simple_noun",
+      "lemma": "araba",
+      "stem": "araba",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "masa",
+      "category": "simple_noun",
+      "lemma": "masa",
+      "stem": "masa",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "kalem",
+      "category": "simple_noun",
+      "lemma": "kalem",
+      "stem": "kalem",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "okul",
+      "category": "simple_noun",
+      "lemma": "okul",
+      "stem": "okul",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "deniz",
+      "category": "simple_noun",
+      "lemma": "deniz",
+      "stem": "deniz",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "göz",
+      "category": "simple_noun",
+      "lemma": "göz",
+      "stem": "göz",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "el",
+      "category": "simple_noun",
+      "lemma": "el",
+      "stem": "el",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "yol",
+      "category": "simple_noun",
+      "lemma": "yol",
+      "stem": "yol",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "gün",
+      "category": "simple_noun",
+      "lemma": "gün",
+      "stem": "gün",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "çiçek",
+      "category": "simple_noun",
+      "lemma": "çiçek",
+      "stem": "çiçek",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "kedi",
+      "category": "simple_noun",
+      "lemma": "kedi",
+      "stem": "kedi",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "kuş",
+      "category": "simple_noun",
+      "lemma": "kuş",
+      "stem": "kuş",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "anne",
+      "category": "simple_noun",
+      "lemma": "anne",
+      "stem": "anne",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "baba",
+      "category": "simple_noun",
+      "lemma": "baba",
+      "stem": "baba",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "kadın",
+      "category": "simple_noun",
+      "lemma": "kadın",
+      "stem": "kadın",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "adam",
+      "category": "simple_noun",
+      "lemma": "adam",
+      "stem": "adam",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "ağaç",
+      "category": "simple_noun",
+      "lemma": "ağaç",
+      "stem": "ağaç",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "taş",
+      "category": "simple_noun",
+      "lemma": "taş",
+      "stem": "taş",
+      "pos": "NOUN",
+      "feats": {
+        "number": "singular",
+        "case": "nominative"
+      }
+    },
+    {
+      "surface": "geldi",
+      "category": "simple_verb",
+      "lemma": "gel",
+      "stem": "gel",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "gitti",
+      "category": "simple_verb",
+      "lemma": "git",
+      "stem": "git",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      },
+      "note": "t stays before -DI (no voicing)"
+    },
+    {
+      "surface": "gördü",
+      "category": "simple_verb",
+      "lemma": "gör",
+      "stem": "gör",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "baktı",
+      "category": "simple_verb",
+      "lemma": "bak",
+      "stem": "bak",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "verdi",
+      "category": "simple_verb",
+      "lemma": "ver",
+      "stem": "ver",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "buldu",
+      "category": "simple_verb",
+      "lemma": "bul",
+      "stem": "bul",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "yazdı",
+      "category": "simple_verb",
+      "lemma": "yaz",
+      "stem": "yaz",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "koştu",
+      "category": "simple_verb",
+      "lemma": "koş",
+      "stem": "koş",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "sevdi",
+      "category": "simple_verb",
+      "lemma": "sev",
+      "stem": "sev",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "güldü",
+      "category": "simple_verb",
+      "lemma": "gül",
+      "stem": "gül",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "bildi",
+      "category": "simple_verb",
+      "lemma": "bil",
+      "stem": "bil",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "uyudu",
+      "category": "simple_verb",
+      "lemma": "uyu",
+      "stem": "uyu",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "düştü",
+      "category": "simple_verb",
+      "lemma": "düş",
+      "stem": "düş",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "aldım",
+      "category": "simple_verb",
+      "lemma": "al",
+      "stem": "al",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "person": "1sg"
+      }
+    },
+    {
+      "surface": "geliyor",
+      "category": "simple_verb",
+      "lemma": "gel",
+      "stem": "gel",
+      "pos": "VERB",
+      "feats": {
+        "aspect": "progressive",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "gidecek",
+      "category": "simple_verb",
+      "lemma": "git",
+      "stem": "git",
+      "pos": "VERB",
+      "feats": {
+        "tense": "future",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "okur",
+      "category": "simple_verb",
+      "lemma": "oku",
+      "stem": "oku",
+      "pos": "VERB",
+      "feats": {
+        "tense": "aorist",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "bakar",
+      "category": "simple_verb",
+      "lemma": "bak",
+      "stem": "bak",
+      "pos": "VERB",
+      "feats": {
+        "tense": "aorist",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "sever",
+      "category": "simple_verb",
+      "lemma": "sev",
+      "stem": "sev",
+      "pos": "VERB",
+      "feats": {
+        "tense": "aorist",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "gelmiş",
+      "category": "simple_verb",
+      "lemma": "gel",
+      "stem": "gel",
+      "pos": "VERB",
+      "feats": {
+        "evidential": true,
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "kitaplarımızdan",
+      "category": "affix_chain",
+      "lemma": "kitap",
+      "stem": "kitap",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "ablative"
+      }
+    },
+    {
+      "surface": "evlerimizden",
+      "category": "affix_chain",
+      "lemma": "ev",
+      "stem": "ev",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "ablative"
+      }
+    },
+    {
+      "surface": "arkadaşlarımızla",
+      "category": "affix_chain",
+      "lemma": "arkadaş",
+      "stem": "arkadaş",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "instrumental"
+      }
+    },
+    {
+      "surface": "öğrencilerimizin",
+      "category": "affix_chain",
+      "lemma": "öğrenci",
+      "stem": "öğrenci",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "genitive"
+      }
+    },
+    {
+      "surface": "gözlerimizde",
+      "category": "affix_chain",
+      "lemma": "göz",
+      "stem": "göz",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "locative"
+      }
+    },
+    {
+      "surface": "defterlerimizden",
+      "category": "affix_chain",
+      "lemma": "defter",
+      "stem": "defter",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "ablative"
+      }
+    },
+    {
+      "surface": "çiçeklerimizi",
+      "category": "affix_chain",
+      "lemma": "çiçek",
+      "stem": "çiçek",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "accusative"
+      }
+    },
+    {
+      "surface": "okullarımızda",
+      "category": "affix_chain",
+      "lemma": "okul",
+      "stem": "okul",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "locative"
+      }
+    },
+    {
+      "surface": "yollarımızdan",
+      "category": "affix_chain",
+      "lemma": "yol",
+      "stem": "yol",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "ablative"
+      }
+    },
+    {
+      "surface": "evlerimize",
+      "category": "affix_chain",
+      "lemma": "ev",
+      "stem": "ev",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "dative"
+      }
+    },
+    {
+      "surface": "annelerimizin",
+      "category": "affix_chain",
+      "lemma": "anne",
+      "stem": "anne",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "genitive"
+      }
+    },
+    {
+      "surface": "kuşlarımızdan",
+      "category": "affix_chain",
+      "lemma": "kuş",
+      "stem": "kuş",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "ablative"
+      }
+    },
+    {
+      "surface": "kedilerimizi",
+      "category": "affix_chain",
+      "lemma": "kedi",
+      "stem": "kedi",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "accusative"
+      }
+    },
+    {
+      "surface": "kızlarımıza",
+      "category": "affix_chain",
+      "lemma": "kız",
+      "stem": "kız",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "dative"
+      }
+    },
+    {
+      "surface": "sokaklarımızda",
+      "category": "affix_chain",
+      "lemma": "sokak",
+      "stem": "sokak",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "locative"
+      }
+    },
+    {
+      "surface": "kapılarımızın",
+      "category": "affix_chain",
+      "lemma": "kapı",
+      "stem": "kapı",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "genitive"
+      }
+    },
+    {
+      "surface": "kitaplarımı",
+      "category": "affix_chain",
+      "lemma": "kitap",
+      "stem": "kitap",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1sg",
+        "case": "accusative"
+      }
+    },
+    {
+      "surface": "arabalarımızdan",
+      "category": "affix_chain",
+      "lemma": "araba",
+      "stem": "araba",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "ablative"
+      }
+    },
+    {
+      "surface": "gelmeyecekmişsiniz",
+      "category": "affix_chain",
+      "lemma": "gel",
+      "stem": "gel",
+      "pos": "VERB",
+      "feats": {
+        "polarity": "negative",
+        "tense": "future",
+        "evidential": true,
+        "person": "2pl"
+      },
+      "note": "neg+future+evid+2pl"
+    },
+    {
+      "surface": "gelemeyecekmişsiniz",
+      "category": "affix_chain",
+      "lemma": "gel",
+      "stem": "gel",
+      "pos": "VERB",
+      "feats": {
+        "polarity": "negative",
+        "ability": true,
+        "tense": "future",
+        "evidential": true,
+        "person": "2pl"
+      },
+      "note": "neg+ability+future+evid+2pl"
+    },
+    {
+      "surface": "çiçeği",
+      "category": "voicing",
+      "lemma": "çiçek",
+      "stem": "çiçek",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "k->ğ before vowel; acc reading, also poss3sg"
+    },
+    {
+      "surface": "ağacı",
+      "category": "voicing",
+      "lemma": "ağaç",
+      "stem": "ağaç",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "ç->c before vowel"
+    },
+    {
+      "surface": "kanadı",
+      "category": "voicing",
+      "lemma": "kanat",
+      "stem": "kanat",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "t->d before vowel"
+    },
+    {
+      "surface": "ayağı",
+      "category": "voicing",
+      "lemma": "ayak",
+      "stem": "ayak",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "k->ğ before vowel"
+    },
+    {
+      "surface": "rengi",
+      "category": "voicing",
+      "lemma": "renk",
+      "stem": "renk",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "nk->ng before vowel"
+    },
+    {
+      "surface": "çocuğu",
+      "category": "voicing",
+      "lemma": "çocuk",
+      "stem": "çocuk",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "k->ğ before vowel"
+    },
+    {
+      "surface": "bardağı",
+      "category": "voicing",
+      "lemma": "bardak",
+      "stem": "bardak",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "k->ğ before vowel"
+    },
+    {
+      "surface": "kitabı",
+      "category": "voicing",
+      "lemma": "kitap",
+      "stem": "kitap",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "p->b before vowel"
+    },
+    {
+      "surface": "şehri",
+      "category": "vowel_drop",
+      "lemma": "şehir",
+      "stem": "şehir",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "medial i drops (şehir->şehr) before vowel; stem stays lemma root"
+    },
+    {
+      "surface": "burnu",
+      "category": "vowel_drop",
+      "lemma": "burun",
+      "stem": "burun",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "burun->burn before vowel"
+    },
+    {
+      "surface": "aklı",
+      "category": "vowel_drop",
+      "lemma": "akıl",
+      "stem": "akıl",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "akıl->akl before vowel"
+    },
+    {
+      "surface": "resmi",
+      "category": "vowel_drop",
+      "lemma": "resim",
+      "stem": "resim",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "resim->resm before vowel"
+    },
+    {
+      "surface": "ağzı",
+      "category": "vowel_drop",
+      "lemma": "ağız",
+      "stem": "ağız",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "also_valid": [
+        {
+          "feats": {
+            "possessive": "3sg"
+          }
+        }
+      ],
+      "note": "ağız->ağz before vowel"
+    },
+    {
+      "surface": "şehre",
+      "category": "vowel_drop",
+      "lemma": "şehir",
+      "stem": "şehir",
+      "pos": "NOUN",
+      "feats": {
+        "case": "dative"
+      },
+      "note": "şehir->şehr + dative -e"
+    },
+    {
+      "surface": "burna",
+      "category": "vowel_drop",
+      "lemma": "burun",
+      "stem": "burun",
+      "pos": "NOUN",
+      "feats": {
+        "case": "dative"
+      },
+      "note": "burun->burn + dative -a"
+    },
+    {
+      "surface": "güzeldi",
+      "category": "ek_fiil",
+      "lemma": "güzel",
+      "stem": "güzel",
+      "pos": "ADJ",
+      "feats": {
+        "copula": "past",
+        "person": "3sg"
+      },
+      "note": "past ek-fiil on ADJ"
+    },
+    {
+      "surface": "güzeldim",
+      "category": "ek_fiil",
+      "lemma": "güzel",
+      "stem": "güzel",
+      "pos": "ADJ",
+      "feats": {
+        "copula": "past",
+        "person": "1sg"
+      }
+    },
+    {
+      "surface": "güzelmiş",
+      "category": "ek_fiil",
+      "lemma": "güzel",
+      "stem": "güzel",
+      "pos": "ADJ",
+      "feats": {
+        "evidential": true,
+        "person": "3sg"
+      },
+      "note": "evidential ek-fiil"
+    },
+    {
+      "surface": "güzelsin",
+      "category": "ek_fiil",
+      "lemma": "güzel",
+      "stem": "güzel",
+      "pos": "ADJ",
+      "feats": {
+        "person": "2sg"
+      },
+      "note": "zero-copula present 2sg"
+    },
+    {
+      "surface": "güzelse",
+      "category": "ek_fiil",
+      "lemma": "güzel",
+      "stem": "güzel",
+      "pos": "ADJ",
+      "feats": {
+        "mood": "conditional",
+        "person": "3sg"
+      },
+      "note": "conditional -(y)sA"
+    },
+    {
+      "surface": "güzeldir",
+      "category": "ek_fiil",
+      "lemma": "güzel",
+      "stem": "güzel",
+      "pos": "ADJ",
+      "feats": {
+        "copula": "assertive",
+        "person": "3sg"
+      },
+      "note": "assertive -DIr"
+    },
+    {
+      "surface": "hastaydı",
+      "category": "ek_fiil",
+      "lemma": "hasta",
+      "stem": "hasta",
+      "pos": "ADJ",
+      "feats": {
+        "copula": "past",
+        "person": "3sg"
+      },
+      "note": "(y) buffer after vowel"
+    },
+    {
+      "surface": "evdeydim",
+      "category": "ek_fiil",
+      "lemma": "ev",
+      "stem": "ev",
+      "pos": "NOUN",
+      "feats": {
+        "case": "locative",
+        "copula": "past",
+        "person": "1sg"
+      },
+      "note": "case kept under copula"
+    },
+    {
+      "surface": "evdedir",
+      "category": "ek_fiil",
+      "lemma": "ev",
+      "stem": "ev",
+      "pos": "NOUN",
+      "feats": {
+        "case": "locative",
+        "copula": "assertive"
+      },
+      "note": "assertive keeps case"
+    },
+    {
+      "surface": "kimdi",
+      "category": "ek_fiil",
+      "lemma": "kim",
+      "stem": "kim",
+      "pos": "PRON",
+      "feats": {
+        "copula": "past"
+      },
+      "note": "interrogative pronoun predicate"
+    },
+    {
+      "surface": "öğrenciydi",
+      "category": "ek_fiil",
+      "lemma": "öğrenci",
+      "stem": "öğrenci",
+      "pos": "NOUN",
+      "feats": {
+        "copula": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "yorgundum",
+      "category": "ek_fiil",
+      "lemma": "yorgun",
+      "stem": "yorgun",
+      "pos": "ADJ",
+      "feats": {
+        "copula": "past",
+        "person": "1sg"
+      }
+    },
+    {
+      "surface": "zenginmiş",
+      "category": "ek_fiil",
+      "lemma": "zengin",
+      "stem": "zengin",
+      "pos": "ADJ",
+      "feats": {
+        "evidential": true,
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "kırmızıydı",
+      "category": "ek_fiil",
+      "lemma": "kırmızı",
+      "stem": "kırmızı",
+      "pos": "ADJ",
+      "feats": {
+        "copula": "past",
+        "person": "3sg"
+      }
+    },
+    {
+      "surface": "kitaptı",
+      "category": "ek_fiil",
+      "lemma": "kitap",
+      "stem": "kitap",
+      "pos": "NOUN",
+      "feats": {
+        "copula": "past"
+      },
+      "note": "D->t after voiceless p (kitaptı)"
+    },
+    {
+      "surface": "bendim",
+      "category": "ek_fiil",
+      "lemma": "ben",
+      "stem": "ben",
+      "pos": "PRON",
+      "feats": {
+        "copula": "past",
+        "person": "1sg"
+      },
+      "known_gap": true,
+      "note": "suppletive personal-pronoun predicate; engine gives an OOV guess (xfail-tracked)"
+    },
+    {
+      "surface": "yaptırdı",
+      "category": "voice",
+      "lemma": "yap",
+      "stem": "yap",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "causative"
+        ]
+      },
+      "note": "-DIr causative"
+    },
+    {
+      "surface": "güldürdü",
+      "category": "voice",
+      "lemma": "gül",
+      "stem": "gül",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "causative"
+        ]
+      },
+      "note": "-DIr, D stays d after l"
+    },
+    {
+      "surface": "okuttu",
+      "category": "voice",
+      "lemma": "oku",
+      "stem": "oku",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "causative"
+        ]
+      },
+      "note": "-t after vowel"
+    },
+    {
+      "surface": "içirdi",
+      "category": "voice",
+      "lemma": "iç",
+      "stem": "iç",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "causative"
+        ]
+      },
+      "note": "lexical -Ir causative"
+    },
+    {
+      "surface": "yaptırttı",
+      "category": "voice",
+      "lemma": "yap",
+      "stem": "yap",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "causative",
+          "causative"
+        ]
+      },
+      "note": "stacked causative"
+    },
+    {
+      "surface": "yazıldı",
+      "category": "voice",
+      "lemma": "yaz",
+      "stem": "yaz",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "passive"
+        ]
+      },
+      "note": "-Il passive"
+    },
+    {
+      "surface": "okundu",
+      "category": "voice",
+      "lemma": "oku",
+      "stem": "oku",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "passive"
+        ]
+      },
+      "note": "-n passive after vowel"
+    },
+    {
+      "surface": "görüldü",
+      "category": "voice",
+      "lemma": "gör",
+      "stem": "gör",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "passive"
+        ]
+      },
+      "note": "-Il passive"
+    },
+    {
+      "surface": "yıkandı",
+      "category": "voice",
+      "lemma": "yıka",
+      "stem": "yıka",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "reflexive"
+        ]
+      },
+      "note": "reflexive (also passive alt)"
+    },
+    {
+      "surface": "görüştü",
+      "category": "voice",
+      "lemma": "gör",
+      "stem": "gör",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "reciprocal"
+        ]
+      },
+      "note": "reciprocal -Iş"
+    },
+    {
+      "surface": "görüştüler",
+      "category": "voice",
+      "lemma": "gör",
+      "stem": "gör",
+      "pos": "VERB",
+      "feats": {
+        "person": "3pl",
+        "voice": [
+          "reciprocal"
+        ]
+      }
+    },
+    {
+      "surface": "anlaştık",
+      "category": "voice",
+      "lemma": "anla",
+      "stem": "anla",
+      "pos": "VERB",
+      "feats": {
+        "person": "1pl",
+        "voice": [
+          "reciprocal"
+        ]
+      },
+      "note": "vowel-final reciprocal -ş"
+    },
+    {
+      "surface": "yazdırıldı",
+      "category": "voice",
+      "lemma": "yaz",
+      "stem": "yaz",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "causative",
+          "passive"
+        ]
+      },
+      "note": "caus+pass"
+    },
+    {
+      "surface": "yazdırılmıştı",
+      "category": "voice",
+      "lemma": "yaz",
+      "stem": "yaz",
+      "pos": "VERB",
+      "feats": {
+        "evidential": true,
+        "copula": "past",
+        "voice": [
+          "causative",
+          "passive"
+        ]
+      },
+      "note": "caus+pass+evid+past-copula chain"
+    },
+    {
+      "surface": "görüştürüldü",
+      "category": "voice",
+      "lemma": "gör",
+      "stem": "gör",
+      "pos": "VERB",
+      "feats": {
+        "voice": [
+          "reciprocal",
+          "causative",
+          "passive"
+        ]
+      },
+      "note": "triple voice"
+    },
+    {
+      "surface": "denildi",
+      "category": "voice",
+      "lemma": "de",
+      "stem": "de",
+      "pos": "VERB",
+      "feats": {
+        "tense": "past",
+        "voice": [
+          "passive",
+          "passive"
+        ]
+      },
+      "known_gap": true,
+      "note": "double/lexicalized passive (de-n-il); V_PASS takes no 2nd passive (xfail)"
+    },
+    {
+      "surface": "evli",
+      "category": "derivation",
+      "lemma": "ev",
+      "stem": "evli",
+      "pos": "ADJ",
+      "feats": {
+        "derivation": [
+          "li"
+        ]
+      },
+      "note": "-lI having"
+    },
+    {
+      "surface": "evsiz",
+      "category": "derivation",
+      "lemma": "ev",
+      "stem": "evsiz",
+      "pos": "ADJ",
+      "feats": {
+        "derivation": [
+          "siz"
+        ]
+      },
+      "note": "-sIz without"
+    },
+    {
+      "surface": "kitaplık",
+      "category": "derivation",
+      "lemma": "kitap",
+      "stem": "kitaplık",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "lik"
+        ]
+      },
+      "note": "-lIk"
+    },
+    {
+      "surface": "güzellik",
+      "category": "derivation",
+      "lemma": "güzel",
+      "stem": "güzellik",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "lik"
+        ]
+      },
+      "note": "-lIk on ADJ base"
+    },
+    {
+      "surface": "yolcu",
+      "category": "derivation",
+      "lemma": "yol",
+      "stem": "yolcu",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "ci"
+        ]
+      },
+      "note": "-CI"
+    },
+    {
+      "surface": "kitapçı",
+      "category": "derivation",
+      "lemma": "kitap",
+      "stem": "kitapçı",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "ci"
+        ]
+      },
+      "note": "-CI hardened to ç after p"
+    },
+    {
+      "surface": "işçi",
+      "category": "derivation",
+      "lemma": "iş",
+      "stem": "işçi",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "ci"
+        ]
+      },
+      "note": "-CI hardened after ş"
+    },
+    {
+      "surface": "gelmesi",
+      "category": "derivation",
+      "lemma": "gel",
+      "stem": "gelme",
+      "pos": "NOUN",
+      "feats": {
+        "possessive": "3sg",
+        "derivation": [
+          "ma"
+        ]
+      },
+      "note": "-mA verbal noun"
+    },
+    {
+      "surface": "geliş",
+      "category": "derivation",
+      "lemma": "gel",
+      "stem": "geliş",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "is"
+        ]
+      },
+      "note": "-(y)Iş verbal noun"
+    },
+    {
+      "surface": "gelmek",
+      "category": "derivation",
+      "lemma": "gel",
+      "stem": "gelmek",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "mak"
+        ]
+      },
+      "note": "-mAk infinitive"
+    },
+    {
+      "surface": "gelen",
+      "category": "derivation",
+      "lemma": "gel",
+      "stem": "gelen",
+      "pos": "ADJ",
+      "feats": {
+        "derivation": [
+          "an"
+        ]
+      },
+      "note": "-(y)An participle"
+    },
+    {
+      "surface": "gelmeyen",
+      "category": "derivation",
+      "lemma": "gel",
+      "stem": "gelmeyen",
+      "pos": "ADJ",
+      "feats": {
+        "polarity": "negative",
+        "derivation": [
+          "an"
+        ]
+      },
+      "note": "NEG feeds participle"
+    },
+    {
+      "surface": "bildiği",
+      "category": "derivation",
+      "lemma": "bil",
+      "stem": "bildik",
+      "pos": "ADJ",
+      "feats": {
+        "possessive": "3sg",
+        "derivation": [
+          "dik"
+        ]
+      },
+      "note": "-DIk softens k->ğ before vowel"
+    },
+    {
+      "surface": "geleceği",
+      "category": "derivation",
+      "lemma": "gel",
+      "stem": "gelecek",
+      "pos": "ADJ",
+      "feats": {
+        "possessive": "3sg",
+        "derivation": [
+          "acak"
+        ]
+      },
+      "note": "-(y)AcAk participle inflected"
+    },
+    {
+      "surface": "geldiğim",
+      "category": "derivation",
+      "lemma": "gel",
+      "stem": "geldik",
+      "pos": "ADJ",
+      "feats": {
+        "possessive": "1sg",
+        "derivation": [
+          "dik"
+        ]
+      }
+    },
+    {
+      "surface": "evlilerden",
+      "category": "derivation",
+      "lemma": "ev",
+      "stem": "evli",
+      "pos": "ADJ",
+      "feats": {
+        "number": "plural",
+        "case": "ablative",
+        "derivation": [
+          "li"
+        ]
+      },
+      "note": "derived stem inflects"
+    },
+    {
+      "surface": "yolcular",
+      "category": "derivation",
+      "lemma": "yol",
+      "stem": "yolcu",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "derivation": [
+          "ci"
+        ]
+      }
+    },
+    {
+      "surface": "kitaplığı",
+      "category": "derivation",
+      "lemma": "kitap",
+      "stem": "kitaplık",
+      "pos": "NOUN",
+      "feats": {
+        "possessive": "3sg",
+        "derivation": [
+          "lik"
+        ]
+      }
+    },
+    {
+      "surface": "kitapçık",
+      "category": "derivation",
+      "lemma": "kitap",
+      "stem": "kitapçık",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "cik"
+        ]
+      },
+      "note": "-CIk diminutive"
+    },
+    {
+      "surface": "yaşadıklarımızın",
+      "category": "derivation",
+      "lemma": "yaşa",
+      "stem": "yaşadık",
+      "pos": "ADJ",
+      "feats": {
+        "number": "plural",
+        "possessive": "1pl",
+        "case": "genitive",
+        "derivation": [
+          "dik"
+        ]
+      },
+      "note": "long -DIk chain"
+    },
+    {
+      "surface": "gelmekten",
+      "category": "derivation",
+      "lemma": "gel",
+      "stem": "gelmek",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "mak"
+        ],
+        "case": "ablative"
+      },
+      "known_gap": true,
+      "note": "infinitive case inflection deferred (xfail)"
+    },
+    {
+      "surface": "evlilik",
+      "category": "derivation",
+      "lemma": "ev",
+      "stem": "evlilik",
+      "pos": "NOUN",
+      "feats": {
+        "derivation": [
+          "li",
+          "lik"
+        ]
+      },
+      "known_gap": true,
+      "note": "derivation stacking -lI+-lIk deferred (xfail)"
+    },
+    {
+      "surface": "evi",
+      "category": "ambiguity",
+      "lemma": "ev",
+      "stem": "ev",
+      "pos": "NOUN",
+      "feats": {
+        "possessive": "3sg"
+      },
+      "context": "Onun evi güzeldi.",
+      "token_index": 1,
+      "note": "R1 gen->poss: after genitive Onun -> possessive"
+    },
+    {
+      "surface": "yüz",
+      "category": "ambiguity",
+      "lemma": "yüz",
+      "stem": "yüz",
+      "pos": "NUM",
+      "feats": {},
+      "context": "Yüz kişi geldi.",
+      "token_index": 0,
+      "note": "R3 num+noun: numeral before noun"
+    },
+    {
+      "surface": "evi",
+      "category": "ambiguity",
+      "lemma": "ev",
+      "stem": "ev",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "context": "Evi gördüm.",
+      "token_index": 0,
+      "note": "R2 acc-before-verb: direct object"
+    },
+    {
+      "surface": "hasta",
+      "category": "ambiguity",
+      "lemma": "hasta",
+      "stem": "hasta",
+      "pos": "ADJ",
+      "feats": {},
+      "context": "Hasta çocuk uyudu.",
+      "token_index": 0,
+      "note": "R5 adj-before-noun"
+    },
+    {
+      "surface": "kapısı",
+      "category": "ambiguity",
+      "lemma": "kapı",
+      "stem": "kapı",
+      "pos": "NOUN",
+      "feats": {
+        "possessive": "3sg"
+      },
+      "context": "Kitabın kapısı eski.",
+      "token_index": 1,
+      "note": "possessive after genitive Kitabın"
+    },
+    {
+      "surface": "kitabı",
+      "category": "ambiguity",
+      "lemma": "kitap",
+      "stem": "kitap",
+      "pos": "NOUN",
+      "feats": {
+        "possessive": "3sg"
+      },
+      "context": "Onun kitabı masada.",
+      "token_index": 1,
+      "note": "R1 gen->poss"
+    },
+    {
+      "surface": "kitabı",
+      "category": "ambiguity",
+      "lemma": "kitap",
+      "stem": "kitap",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "context": "Ali kitabı okudu.",
+      "token_index": 1,
+      "note": "R2 acc-before-verb (subject not genitive)"
+    },
+    {
+      "surface": "kızı",
+      "category": "ambiguity",
+      "lemma": "kız",
+      "stem": "kız",
+      "pos": "NOUN",
+      "feats": {
+        "case": "accusative"
+      },
+      "context": "Kızı gördüm.",
+      "token_index": 0,
+      "note": "R2 accusative object"
+    },
+    {
+      "surface": "kızı",
+      "category": "ambiguity",
+      "lemma": "kız",
+      "stem": "kız",
+      "pos": "NOUN",
+      "feats": {
+        "possessive": "3sg"
+      },
+      "context": "Onun kızı geldi.",
+      "token_index": 1,
+      "note": "R1 gen->poss"
+    },
+    {
+      "surface": "yüzüyor",
+      "category": "ambiguity",
+      "lemma": "yüz",
+      "stem": "yüz",
+      "pos": "VERB",
+      "feats": {
+        "aspect": "progressive"
+      },
+      "context": "Yüz kişi denizde yüzüyor.",
+      "token_index": 3,
+      "note": "R4 final finite verb; yüz- swim"
+    },
+    {
+      "surface": "genç",
+      "category": "ambiguity",
+      "lemma": "genç",
+      "stem": "genç",
+      "pos": "ADJ",
+      "feats": {},
+      "context": "Genç adam geldi.",
+      "token_index": 0,
+      "note": "R5 adj-before-noun"
+    },
+    {
+      "surface": "beş",
+      "category": "ambiguity",
+      "lemma": "beş",
+      "stem": "beş",
+      "pos": "NUM",
+      "feats": {},
+      "context": "Beş elma aldım.",
+      "token_index": 0,
+      "note": "numeral"
+    },
+    {
+      "surface": "yüz",
+      "category": "ambiguity",
+      "lemma": "yüz",
+      "stem": "yüz",
+      "pos": "NOUN",
+      "feats": {},
+      "context": "Denizde yüz.",
+      "token_index": 1,
+      "note": "R4 does NOT force a verb on a sentence-final noun homograph"
+    },
+    {
+      "surface": "güzel",
+      "category": "ambiguity",
+      "lemma": "güzel",
+      "stem": "güzel",
+      "pos": "ADJ",
+      "feats": {},
+      "context": "Bu güzel bir gün.",
+      "token_index": 1,
+      "note": "adjective"
+    },
+    {
+      "surface": "hızlı",
+      "category": "ambiguity",
+      "lemma": "hızlı",
+      "stem": "hızlı",
+      "pos": "ADJ",
+      "feats": {},
+      "context": "Çocuk hızlı koştu.",
+      "token_index": 1,
+      "note": "manner word tagged ADJ"
+    },
+    {
+      "surface": "tömbeklerden",
+      "category": "unknown",
+      "lemma": "tömbek",
+      "stem": "tömbek",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "case": "ablative"
+      },
+      "source": "guess",
+      "note": "OOV + -lAr-dAn"
+    },
+    {
+      "surface": "gubaçlardan",
+      "category": "unknown",
+      "lemma": "gubaç",
+      "stem": "gubaç",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "case": "ablative"
+      },
+      "source": "guess",
+      "note": "OOV + -lAr-dAn"
+    },
+    {
+      "surface": "şalfınlardan",
+      "category": "unknown",
+      "lemma": "şalfın",
+      "stem": "şalfın",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "case": "ablative"
+      },
+      "source": "guess",
+      "note": "OOV + -lAr-dAn"
+    },
+    {
+      "surface": "somurgalardan",
+      "category": "unknown",
+      "lemma": "somurga",
+      "stem": "somurga",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "case": "ablative"
+      },
+      "source": "guess",
+      "note": "OOV + -lAr-dAn"
+    },
+    {
+      "surface": "pırtıklardan",
+      "category": "unknown",
+      "lemma": "pırtık",
+      "stem": "pırtık",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "case": "ablative"
+      },
+      "source": "guess",
+      "note": "OOV + -lAr-dAn"
+    },
+    {
+      "surface": "döngüçlerden",
+      "category": "unknown",
+      "lemma": "döngüç",
+      "stem": "döngüç",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "case": "ablative"
+      },
+      "source": "guess",
+      "note": "OOV + -lEr-dEn"
+    },
+    {
+      "surface": "vırlaklardan",
+      "category": "unknown",
+      "lemma": "vırlak",
+      "stem": "vırlak",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "case": "ablative"
+      },
+      "source": "guess",
+      "note": "OOV + -lAr-dAn"
+    },
+    {
+      "surface": "zurbatları",
+      "category": "unknown",
+      "lemma": "zurbat",
+      "stem": "zurbat",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "possessive": "3sg"
+      },
+      "source": "guess",
+      "note": "OOV + -lAr-I"
+    },
+    {
+      "surface": "çaltuklardan",
+      "category": "unknown",
+      "lemma": "çaltuk",
+      "stem": "çaltuk",
+      "pos": "NOUN",
+      "feats": {
+        "number": "plural",
+        "case": "ablative"
+      },
+      "source": "guess",
+      "note": "OOV + -lAr-dAn"
+    },
+    {
+      "surface": "floskurat",
+      "category": "unknown",
+      "lemma": "floskurat",
+      "stem": "floskurat",
+      "pos": "X",
+      "feats": {},
+      "source": "guess",
+      "note": "un-strippable OOV -> honest identity guess"
+    }
+  ]
+}

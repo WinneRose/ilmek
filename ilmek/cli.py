@@ -1,8 +1,9 @@
 """Command-line interface: ``ilmek <command> ...``.
 
-Implemented in v0.1: ``analyze``, ``lemmatize``, ``stem``. Reserved subcommands
-(``models``, ``benchmark``, ``serve``) print an honest "arrives in vX" message rather than
-pretending to work — no silent no-ops.
+Implemented: ``analyze``, ``lemmatize``, ``stem``, and ``benchmark`` (the evaluation harness
+landed ahead of its v0.4 label — the roadmap item ships now, the version string is just a
+plan marker). The remaining reserved subcommands (``models``, ``serve``) print an honest
+"arrives in vX" message rather than pretending to work — no silent no-ops.
 """
 
 from __future__ import annotations
@@ -58,9 +59,22 @@ def _cmd_models(args: argparse.Namespace) -> int:
     return 1
 
 
-def _cmd_benchmark(_args: argparse.Namespace) -> int:
-    print("The evaluation/benchmark suite arrives in v0.4.", file=sys.stderr)
-    return 1
+def _cmd_benchmark(args: argparse.Namespace) -> int:
+    # Lazy import (mirrors the disambiguator pattern): keeps `ilmek analyze` startup cost
+    # unchanged, since the evaluation layer pulls in the pipeline + gold dataset.
+    from .evaluation.benchmark import GoldError, run_benchmark
+
+    try:
+        report = run_benchmark(path=args.gold, category=args.category)
+    except GoldError as exc:
+        print(f"benchmark error: {exc}", file=sys.stderr)
+        return 2
+    if args.json:
+        json.dump(report.to_dict(), sys.stdout, ensure_ascii=False, indent=2)
+        sys.stdout.write("\n")
+    else:
+        print(report.format_report())
+    return 0
 
 
 def _cmd_serve(_args: argparse.Namespace) -> int:
@@ -97,7 +111,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_models.add_argument("name", nargs="?", help="Model name (for download).")
     p_models.set_defaults(func=_cmd_models)
 
-    p_bench = sub.add_parser("benchmark", help="Run the evaluation suite (v0.4).")
+    p_bench = sub.add_parser(
+        "benchmark",
+        help="Run the evaluation suite over the gold set (PYTHONUTF8=1 for Turkish output).",
+    )
+    p_bench.add_argument("--json", action="store_true", help="Emit the report as JSON.")
+    p_bench.add_argument(
+        "--category", help="Restrict the run to one gold category (e.g. voice, ambiguity)."
+    )
+    p_bench.add_argument("--gold", help="Path to an alternative gold JSON file.")
     p_bench.set_defaults(func=_cmd_benchmark)
 
     p_serve = sub.add_parser("serve", help="Run the local HTTP API (v0.5).")
