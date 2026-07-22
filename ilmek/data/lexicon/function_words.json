@@ -1,10 +1,16 @@
 {
   "_comment": [
     "High-frequency closed-class function words: conjunctions (CONJ), postpositions (ADP),",
-    "particles (PART), and adverbs (ADV). Most are INDECLINABLE — they do not inflect — so",
-    "each is enumerated as a whole `irregular` surface (lemma == surface, empty morphemes),",
-    "consulted by the analyzer BEFORE the FSM. They are dictionary-verified: source=lexicon,",
-    "never a guess.",
+    "particles (PART), adverbs (ADV), and determiners (DET). Most are INDECLINABLE — they do",
+    "not inflect — so each is enumerated as a whole `irregular` surface (lemma == surface,",
+    "empty morphemes), consulted by the analyzer BEFORE the FSM. They are dictionary-verified:",
+    "source=lexicon, never a guess.",
+    "",
+    "DET (her, bazı, hiçbir) belongs here for the same reason CONJ/ADP/PART do: DET is not in",
+    "NOMINAL_POS, so a regular `entries` row would be dead data. Freezing them also keeps a",
+    "run-on like *herler / *bazıya an honest guess rather than a false lexicon locative. The",
+    "possessive pronoun forms (bazısı/bazıları, hiçbiri) are a DIFFERENT, inflected usage and",
+    "deliberately fall to the guesser — deferring is correct per the contract, not a wrong rule.",
     "",
     "Why `irregular`, not regular `entries` (for the indeclinables):",
     "- The analyzer's _generate() only walks the nominal/verbal graphs (NOMINAL_POS/VERBAL_POS);",
@@ -42,6 +48,8 @@
     "          (the verb 'de' stays in verbs.json; do NOT remove it).",
     "- 'göre' -> ADP (primary), gör-+optative survives; 'bile' -> PART, bil-+optative survives;",
     "- 'birden' -> ADV (primary), bir(NUM)+ablative survives;",
+    "- 'asla' -> ADV 'never' (primary), the asıl(NOUN, vowel-drop)+dative reading survives as an",
+    "          alt (asla was previously mis-analyzed asıl+dative as its ONLY reading);",
     "- 'müdür' -> NOUN (director) stays primary, mü+DIr (assertive, lemma 'mi') survives as an alt.",
     "Making the particle/postposition the primary for these bare surfaces is a context-free",
     "frequency choice (the function-word reading is far more common in running text).",
@@ -104,6 +112,8 @@
     {"surface": "sadece", "lemma": "sadece", "pos": "PART", "morphemes": [], "features": {}},
     {"surface": "ise", "lemma": "ise", "pos": "PART", "morphemes": [], "features": {}},
     {"surface": "hatta", "lemma": "hatta", "pos": "PART", "morphemes": [], "features": {}},
+    {"surface": "falan", "lemma": "falan", "pos": "PART", "morphemes": [], "features": {}},
+    {"surface": "filan", "lemma": "filan", "pos": "PART", "morphemes": [], "features": {}},
 
     {"surface": "henüz", "lemma": "henüz", "pos": "ADV", "morphemes": [], "features": {}},
     {"surface": "hala", "lemma": "hala", "pos": "ADV", "morphemes": [], "features": {}},
@@ -116,10 +126,18 @@
     {"surface": "birden", "lemma": "birden", "pos": "ADV", "morphemes": [], "features": {}},
     {"surface": "tekrar", "lemma": "tekrar", "pos": "ADV", "morphemes": [], "features": {}},
 
+    {"surface": "hiç", "lemma": "hiç", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "hep", "lemma": "hep", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "asla", "lemma": "asla", "pos": "ADV", "morphemes": [], "features": {}},
+
     {"surface": "bazen", "lemma": "bazen", "pos": "ADV", "morphemes": [], "features": {}},
     {"surface": "nadiren", "lemma": "nadiren", "pos": "ADV", "morphemes": [], "features": {}},
     {"surface": "yalnızca", "lemma": "yalnızca", "pos": "ADV", "morphemes": [], "features": {}},
     {"surface": "özellikle", "lemma": "özellikle", "pos": "ADV", "morphemes": [], "features": {}},
-    {"surface": "birlikte", "lemma": "birlikte", "pos": "ADV", "morphemes": [], "features": {}}
+    {"surface": "birlikte", "lemma": "birlikte", "pos": "ADV", "morphemes": [], "features": {}},
+
+    {"surface": "her", "lemma": "her", "pos": "DET", "morphemes": [], "features": {}},
+    {"surface": "bazı", "lemma": "bazı", "pos": "DET", "morphemes": [], "features": {}},
+    {"surface": "hiçbir", "lemma": "hiçbir", "pos": "DET", "morphemes": [], "features": {}}
   ]
 }

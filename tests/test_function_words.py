@@ -62,6 +62,13 @@ FUNCTION_WORDS = [
     ("sadece", "sadece", "PART"),
     ("ise", "ise", "PART"),
     ("hatta", "hatta", "PART"),
+    ("falan", "falan", "PART"),
+    ("filan", "filan", "PART"),
+    # DET (determiners; indeclinable, frozen like the CONJ/ADP/PART above — DET is not in
+    # NOMINAL_POS, so a regular entry would be dead data; freezing keeps *herler a guess)
+    ("her", "her", "DET"),
+    ("bazı", "bazı", "DET"),
+    ("hiçbir", "hiçbir", "DET"),
     # ADV
     ("henüz", "henüz", "ADV"),
     ("hala", "hala", "ADV"),
@@ -73,6 +80,9 @@ FUNCTION_WORDS = [
     ("hemen", "hemen", "ADV"),
     ("birden", "birden", "ADV"),
     ("tekrar", "tekrar", "ADV"),
+    ("hiç", "hiç", "ADV"),
+    ("hep", "hep", "ADV"),
+    ("asla", "asla", "ADV"),
 ]
 
 
@@ -209,6 +219,19 @@ def test_birden_keeps_numeral_ablative_alternative(analyzer):
 
 
 @pytest.mark.exception
+def test_asla_is_adverb_not_asil_dative(analyzer):
+    # Milestone fix: "asla" used to resolve ONLY to asıl(NOUN, vowel-drop)+dative. It is now
+    # the ADV "never" as PRIMARY; the grammatically-real asıl+dative reading survives as a
+    # non-primary alternative (never erased), so the wrong reading no longer outranks it.
+    results = analyzer.analyze("asla")
+    assert results[0].lemma == "asla"
+    assert results[0].pos == "ADV"
+    assert results[0].source == "lexicon"
+    assert results[0].lemma != "asıl"  # the headline: the wrong reading is not primary
+    assert any(a.lemma == "asıl" and a.features.get("case") == "dative" for a in results)
+
+
+@pytest.mark.exception
 @pytest.mark.parametrize("word", ["dedi", "der", "demiş"])
 def test_verb_de_paradigm_not_shadowed_by_particle(analyzer, word):
     # The exact-surface particle row cannot shadow the inflected verb paradigm: dedi/der/demiş
@@ -236,6 +259,18 @@ def test_runon_misspellings_stay_guesses(analyzer, word):
 def test_forced_inflection_on_indeclinables_not_lexicon(analyzer, word, lemma):
     # Indeclinables do not inflect: *amalar/*gibiye/*fakattan get no lexicon analysis with the
     # base lemma. (A guesser strip may coincidentally reach "fakat", but only as source=guess.)
+    assert not any(a.source == "lexicon" and a.lemma == lemma for a in analyzer.analyze(word))
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize(
+    "word,lemma",
+    [("hiçe", "hiç"), ("heple", "hep"), ("aslalar", "asla"), ("herler", "her"), ("bazıya", "bazı")],
+)
+def test_forced_inflection_on_new_indeclinables_not_lexicon(analyzer, word, lemma):
+    # The new ADV/DET indeclinables are frozen: *hiçe/*heple/*herler/*bazıya never inflect into a
+    # lexicon-verified form of their base lemma. (Lemma-scoped like the test above: "aslalar" is
+    # still lexicon via the UNRELATED real root asıl (asıl+a+lar), but NOT via lemma "asla".)
     assert not any(a.source == "lexicon" and a.lemma == lemma for a in analyzer.analyze(word))
 
 

@@ -290,3 +290,109 @@ def test_kiminle_irregular_instrumental(analyzer):
     assert best.features["case"] == "instrumental"
     assert best.features.get("pron_type") == "interrogative"
     assert best.source == "lexicon"
+
+
+# --- ne / kendi / herkes: high-frequency PRON decliners (regular `entries`) ------------
+
+
+@pytest.mark.positive
+def test_ne_bare_is_lexicon_pronoun(analyzer):
+    # Milestone headline: "ne" (interrogative/relative "what") stops hitting the guesser.
+    best = _primary(analyzer, "ne")
+    assert best.lemma == "ne"
+    assert best.pos == "PRON"
+    assert best.source == "lexicon"
+    assert best.morphemes == []
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,case,number",
+    [
+        ("neyi", "accusative", "singular"),  # vowel stem, y-buffer
+        ("neye", "dative", "singular"),
+        ("nede", "locative", "singular"),
+        ("neler", "nominative", "plural"),
+    ],
+)
+def test_ne_declines_via_regular_path(analyzer, word, case, number):
+    assert has_analysis(
+        analyzer, word, lemma="ne", pos="PRON", features={"case": case, "number": number}
+    )
+    assert _primary(analyzer, word).source == "lexicon"
+
+
+@pytest.mark.exception
+def test_neden_stays_noun_primary_but_ne_ablative_survives(analyzer):
+    # "neden" (NOUN "reason/why") is a whole-word entry, so it stays PRIMARY over the new
+    # ne+ablative ("from what") reading (the -len(lemma) tie-break); the ne+ablative parse
+    # coexists as a linguistically-real alternative, never erased.
+    results = analyzer.analyze("neden")
+    assert results[0].lemma == "neden" and results[0].pos == "NOUN"
+    assert any(
+        a.lemma == "ne" and a.pos == "PRON" and a.features.get("case") == "ablative"
+        for a in results
+    )
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,poss,case",
+    [
+        ("kendim", "1sg", "nominative"),
+        ("kendisi", "3sg", "nominative"),
+        ("kendine", "2sg", "dative"),
+        ("kendini", "2sg", "accusative"),
+    ],
+)
+def test_kendi_declines_via_regular_path(analyzer, word, poss, case):
+    assert has_analysis(
+        analyzer, word, lemma="kendi", pos="PRON", features={"possessive": poss, "case": case}
+    )
+    assert _primary(analyzer, word).source == "lexicon"
+
+
+@pytest.mark.positive
+def test_kendi_bare_is_lexicon_pronoun(analyzer):
+    best = _primary(analyzer, "kendi")
+    assert best.lemma == "kendi"
+    assert best.pos == "PRON"
+    assert best.source == "lexicon"
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,case", [("herkese", "dative"), ("herkesi", "accusative"), ("herkeste", "locative")]
+)
+def test_herkes_declines_via_regular_path(analyzer, word, case):
+    assert has_analysis(analyzer, word, lemma="herkes", pos="PRON", features={"case": case})
+    assert _primary(analyzer, word).source == "lexicon"
+
+
+@pytest.mark.positive
+def test_herkes_bare_is_lexicon_pronoun(analyzer):
+    best = _primary(analyzer, "herkes")
+    assert best.lemma == "herkes"
+    assert best.pos == "PRON"
+    assert best.source == "lexicon"
+
+
+# --- tüm / bütün: high-frequency quantifier adjectives (regular ADJ, so they inflect) ---
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize("word", ["tüm", "bütün"])
+def test_tum_butun_bare_is_lexicon_adjective(analyzer, word):
+    # "bütün" used to mis-guess as büt+ün (genitive); it is now the ADJ "whole/all".
+    best = _primary(analyzer, word)
+    assert best.lemma == word
+    assert best.pos == "ADJ"
+    assert best.source == "lexicon"
+    assert best.morphemes == []
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize("word,lemma", [("tümü", "tüm"), ("bütünü", "bütün")])
+def test_tum_butun_possessive_forms_inflect(analyzer, word, lemma):
+    # The very frequent tümü/bütünü ("all of it") parse because tüm/bütün are ADJ (nominal).
+    assert has_analysis(analyzer, word, lemma=lemma, pos="ADJ", features={"possessive": "3sg"})

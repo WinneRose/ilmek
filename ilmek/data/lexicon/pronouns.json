@@ -24,12 +24,25 @@
     "  belong to the later nominal-copula milestone.",
     "- Interrogatives kim / nere decline regularly and so live under `entries` (kime, kimde,",
     "  nerede, nereye all fall out of the FSM); only the genitive-based instrumental kiminle",
-    "  is irregular and enumerated here."
+    "  is irregular and enumerated here.",
+    "- ne (interrogative/relative 'what'), kendi (reflexive 'self'), and herkes ('everyone')",
+    "  likewise decline regularly and so are plain `entries`: neyi/neye/neler, kendim/kendisi/",
+    "  kendine, herkese/herkesi all fall out of the FSM (source=lexicon). ne is only 2 chars, so",
+    "  it also licenses a real ne+case reading for some n-words (neden = ne+ablative 'from what/",
+    "  why'); the whole-word noun 'neden' stays primary via the -len(lemma) tie-break, with the",
+    "  ne+ablative parse kept as a linguistically-real alternative.",
+    "- The ne...ne CORRELATIVE conjunction ('neither...nor') is NOT added here: as a CONJ it is",
+    "  context-dependent, and an irregular row would (irregulars prepend) wrongly make CONJ the",
+    "  primary for bare 'ne', displacing the dominant interrogative reading. It is left to",
+    "  sentence-level disambiguation."
   ],
 
   "entries": [
     {"lemma": "kim", "pos": "PRON"},
     {"lemma": "nere", "pos": "PRON"},
+    {"lemma": "ne", "pos": "PRON"},
+    {"lemma": "kendi", "pos": "PRON"},
+    {"lemma": "herkes", "pos": "PRON"},
 
     {"lemma": "ben", "pos": "PRON", "forms": ["benim"], "attributes": ["ki_host"]},
     {"lemma": "sen", "pos": "PRON", "forms": ["senin"], "attributes": ["ki_host"]},

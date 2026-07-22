@@ -94,5 +94,8 @@
   {"lemma": "ölü", "pos": "ADJ"},
   {"lemma": "özgür", "pos": "ADJ"},
   {"lemma": "gerekli", "pos": "ADJ"},
-  {"lemma": "memnun", "pos": "ADJ"}
+  {"lemma": "memnun", "pos": "ADJ"},
+
+  {"lemma": "tüm", "pos": "ADJ"},
+  {"lemma": "bütün", "pos": "ADJ"}
 ]

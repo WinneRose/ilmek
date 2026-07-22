@@ -401,5 +401,15 @@
 
   {"lemma": "türkçe", "pos": "NOUN"},
   {"lemma": "karınca", "pos": "NOUN"},
-  {"lemma": "kumsal", "pos": "NOUN"}
+  {"lemma": "kumsal", "pos": "NOUN"},
+
+  {"lemma": "sayman", "pos": "NOUN"},
+  {"lemma": "danışman", "pos": "NOUN"},
+  {"lemma": "uzman", "pos": "NOUN"},
+  {"lemma": "eleman", "pos": "NOUN"},
+  {"lemma": "yönetmen", "pos": "NOUN"},
+  {"lemma": "çevirmen", "pos": "NOUN"},
+  {"lemma": "eğitmen", "pos": "NOUN"},
+  {"lemma": "seçmen", "pos": "NOUN"},
+  {"lemma": "göçmen", "pos": "NOUN"}
 ]
