@@ -95,19 +95,68 @@ def test_bare_verb_root_is_imperative(analyzer):
 
 
 @pytest.mark.exception
-@pytest.mark.xfail(
-    reason="Irregular de-/ye- glide raising (diyor/yiyor) is a v0.3 target.", strict=True
-)
 @pytest.mark.parametrize("word,lemma", [("diyor", "de"), ("yiyor", "ye")])
-def test_irregular_de_ye_progressive_known_limitation(analyzer, word, lemma):
+def test_irregular_de_ye_progressive(analyzer, word, lemma):
+    # de-/ye- raise their /e/ to /i/ before the vowel-initial -Iyor (de -> diyor, ye -> yiyor).
+    # The drop of the CV root's only vowel would otherwise misharmonize to *dıyor; the engine
+    # realizes -Iyor against the pre-drop stem so the high vowel raises correctly.
     assert has_analysis(analyzer, word, lemma=lemma, features={"aspect": "progressive"})
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize("word,lemma", [("dıyor", "de"), ("yıyor", "ye")])
+def test_de_ye_progressive_without_raising_is_rejected(analyzer, word, lemma):
+    # The un-raised back-harmony surface (*dıyor / *yıyor) must NOT be a lexicon analysis: the
+    # glide raising is obligatory, so only diyor/yiyor parse (this was silently accepted before).
+    assert not has_analysis(analyzer, word, lemma=lemma)
+    assert analyzer.analyze(word)[0].source == "guess"
 
 
 @pytest.mark.exception
 def test_regular_de_ye_forms_work(analyzer):
-    # The regular (non-glide) forms are handled: dedi, demiş.
+    # The raising is confined to vowel-initial suffixes; the regular (non-glide) forms are
+    # unchanged: dedi, demiş (consonant-initial suffix, no raising).
     assert has_analysis(analyzer, "dedi", lemma="de", features={"tense": "past"})
     assert has_analysis(analyzer, "demiş", lemma="de", features={"evidential": True})
+
+
+@pytest.mark.exception
+@pytest.mark.parametrize(
+    "word,lemma,morphemes,features",
+    [
+        ("diyecek", "de", ["yecek"], {"tense": "future"}),  # -(y)AcAk raises de -> di
+        ("yiyecek", "ye", ["yecek"], {"tense": "future"}),
+        ("diye", "de", ["ye"], {"mood": "optative"}),  # -(y)A raises de -> di
+        ("yiye", "ye", ["ye"], {"mood": "optative"}),
+        ("diyebilir", "de", ["yebil", "ir"], {"ability": True}),  # -(y)Abil raises too
+    ],
+)
+def test_irregular_de_ye_raising_before_vowel_suffixes(analyzer, word, lemma, morphemes, features):
+    assert has_analysis(analyzer, word, lemma=lemma, morphemes=morphemes, features=features)
+
+
+@pytest.mark.exception
+def test_de_ye_raising_softens_future_k(analyzer):
+    # diyeceğim = de -> di + (y)AcAk + (y)Im: raising AND the -AcAk final k softening compose.
+    assert has_analysis(
+        analyzer, "diyeceğim", lemma="de", features={"tense": "future", "person": "1sg"}
+    )
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize("word,lemma", [("deyecek", "de"), ("yeyecek", "ye")])
+def test_de_ye_future_without_raising_is_rejected(analyzer, word, lemma):
+    # Once the raised base replaces the free base, the un-raised *deyecek/*yeyecek no longer
+    # parse (they were accepted before the raising rule landed).
+    assert not has_analysis(analyzer, word, lemma=lemma)
+
+
+@pytest.mark.exception
+def test_de_ye_verbal_noun_stays_regular(analyzer):
+    # The -(y)Iş verbal noun is deliberately NOT a raising context: deyiş (a real lexicalized
+    # word "manner of saying"), never *diyiş. This is the exception that guards over-raising.
+    assert has_analysis(analyzer, "deyiş", lemma="de", features={"derivation": ("is",)})
+    assert not has_analysis(analyzer, "diyiş", lemma="de")
 
 
 # --- Negative imperative -------------------------------------------------------------

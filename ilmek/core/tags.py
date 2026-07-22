@@ -42,7 +42,7 @@ ASPECT = "aspect"  # progressive
 EVIDENTIAL = "evidential"  # true (reported -mIş)
 COPULA = "copula"  # past | assertive (ek-fiil; on a nominal predicate, person marks the
 # zero-copula present — güzelim "I am beautiful" — with no separate copula key)
-MOOD = "mood"  # imperative | conditional | optative
+MOOD = "mood"  # imperative | conditional | optative | necessitative
 #: Verbal voice / valency (çatı): an ordered ``tuple`` of voice names in surface order, so
 #: stacked voices are preserved (yaptırt -> ("causative", "causative"); yazdırıl ->
 #: ("causative", "passive")). A tuple (not a scalar) because a dict-merge of suffix features
@@ -99,10 +99,11 @@ TENSES = frozenset({"present", "past", "future", "aorist"})
 #: neither adds a COPULA value here.
 COPULAS = frozenset({"past", "assertive"})
 #: Verbal & copular moods. ``imperative`` is the bare-root/negated-root reading; ``conditional``
-#: is the verbal -sA suffix AND the nominal copular -(y)sA (güzelse); ``optative`` is -(y)A.
-#: The VERBAL copular conditional -(y)sA (gelirse) and the copular optative are later
-#: milestones (see the morphotactics module docstring).
-MOODS = frozenset({"imperative", "conditional", "optative"})
+#: is the verbal -sA suffix, the nominal copular -(y)sA (güzelse), AND the verbal copular
+#: conditional -(y)sA stacking on a finished tense (gelirse, geldiyse); ``optative`` is -(y)A
+#: (gele); ``necessitative`` is -mAlI (gelmeli "must come"). The copular optative remains a
+#: later milestone (see the morphotactics module docstring).
+MOODS = frozenset({"imperative", "conditional", "optative", "necessitative"})
 #: Verbal voice values recorded (in order) under :data:`VOICE`. ``causative`` is -DIr/-t/-Ir/
 #: -Ar (yaptır, okut, içir, çıkar; stacked as yaptırt); ``passive`` is -Il/-In/-n (yapıl,
 #: alın, okun); ``reflexive`` is -In (yıkan, giyin); ``reciprocal`` is -Iş (görüş, dövüş). The

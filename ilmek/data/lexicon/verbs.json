@@ -42,8 +42,8 @@
   {"lemma": "düşün", "pos": "VERB"},
   {"lemma": "yaşa", "pos": "VERB"},
   {"lemma": "bırak", "pos": "VERB"},
-  {"lemma": "de", "pos": "VERB", "causative": "DIr"},
-  {"lemma": "ye", "pos": "VERB", "causative": "DIr"},
+  {"lemma": "de", "pos": "VERB", "causative": "DIr", "raised": "di"},
+  {"lemma": "ye", "pos": "VERB", "causative": "DIr", "raised": "yi"},
 
   {"lemma": "gez", "pos": "VERB"},
   {"lemma": "düş", "pos": "VERB", "causative": "Ir"},

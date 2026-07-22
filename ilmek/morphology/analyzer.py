@@ -83,13 +83,24 @@ def _apply(
 ) -> tuple[str, str]:
     """Attach ``suffix`` to accumulated surface ``acc``. Returns ``(new_surface, morph)``."""
     if is_first:
-        base = root.free_form
+        # Irregular glide raising (de->di, ye->yi) before a vowel-initial glide-raising suffix:
+        # realize against the raised allomorph so diyecek/diye/diyen come out right, while the
+        # unflagged suffixes (dedi, deyiş) keep the free form. Only de/ye carry a raised_form.
+        base = root.raised_form if (suffix.glide_raise and root.raised_form) else root.free_form
         # Buffer decisions depend only on vowel/consonant ending, identical for the free
         # and bound allomorphs, so peeking with the free form is safe.
         peek = realize(suffix.template, base)
         stem = root.bound_form if (starts_with_vowel(peek) and root.bound_form) else base
         if suffix.drop_preceding and _ends_with_vowel(stem):
-            stem = stem[:-1]
+            dropped = stem[:-1]
+            # -Iyor deletes the stem's final vowel. When that leaves NO vowel (the CV verbs de,
+            # ye), harmony would fall back to the default vowel and misrealize (de -> *dıyor);
+            # realize the suffix against the pre-drop stem so the high vowel raises correctly
+            # (de -> diyor, ye -> yiyor), then drop. Polysyllabic stems keep a vowel after the
+            # drop, so this is a no-op for them (söyle -> söylüyor, başla -> başlıyor).
+            ctx = dropped if _has_vowel(dropped) else stem
+            morph = realize(suffix.template, ctx)
+            return dropped + morph, morph
         morph = realize(suffix.template, stem)
         return stem + morph, morph
 

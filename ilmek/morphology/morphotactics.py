@@ -10,14 +10,24 @@ cases, with pronominal buffering after a 3rd-person possessive; verbs — negati
 progressive/future/past/evidential tense-aspects, one copular (ek-fiil) layer, and both
 person paradigms.
 
-Verbal moods & aorist (this milestone): ability -(y)Abil (gelebilir, okuyabilir), the
-conditional -sA (gelse, gelseydi via the copula) and optative -(y)A (gele, gelelim), the
-negative aorist -mAz (gelmez) with its *defective* person paradigm, and the positive aorist
-— which is lexically irregular, so its allomorph (-r / -Ar / -Ir) is a lexicon fact on the
-root (:attr:`~ilmek.morphology.lexicon.Root.aorist`) selected declaratively by an edge's
-:attr:`Suffix.aorist_class`. Deferred (correctness over coverage): the impossibilitive
--(y)AmA (gelemez), the copular conditional -(y)sA (gelirse), and the negative-aorist 1sg/1pl
-(gelmem/gelmeyiz) — all xfailed rather than overgenerated.
+Verbal moods & aorist: ability -(y)Abil (gelebilir, okuyabilir), the conditional -sA (gelse,
+gelseydi via the copula) and optative -(y)A (gele, gelelim), the necessitative -mAlI (gelmeli,
+yapmalıyım, gitmeliydik), the negative aorist -mAz (gelmez) with its *defective* person
+paradigm, and the positive aorist — which is lexically irregular, so its allomorph
+(-r / -Ar / -Ir) is a lexicon fact on the root (:attr:`~ilmek.morphology.lexicon.Root.aorist`)
+selected declaratively by an edge's :attr:`Suffix.aorist_class`.
+
+This milestone completes the mood inventory and the remaining inflectional gaps: the
+impossibilitive -(y)AmA (gelemez = gel+eme+z, a *distinct* morpheme = the ability-negative,
+carrying polarity=negative + ability, NOT NEG+aorist) with its own V_IMPOSS state feeding the
+defective -z aorist; the copular conditional -(y)sA stacking on a finished tense (gelirse,
+geldiyse, gelecekse, geliyorsa, gelmezse), landing the bare conditional in its own V_COND
+state so a restack (*gelseyse) is blocked; the irregular negative-aorist 1sg/1pl (gelmem,
+gelmeyiz, and gelemem/gelemeyiz), which attach to the -mA stem, not to -mAz; and the irregular
+de-/ye- glide raising (diyor, yiyor, diyecek, diye) via :attr:`Root.raised_form` plus the
+:attr:`Suffix.glide_raise` flag, with dedi/demiş/deyiş staying regular. Deferred (correctness
+over coverage, xfailed rather than overgenerated): the copular optative and further copular
+restacking.
 
 Verb voice / çatı (this milestone): a bounded voice layer sits between the root and the
 negation/tense chain, encoding the canonical order reflexive/reciprocal < causative(<=2) <
@@ -59,9 +69,9 @@ güzeliz, güzelsiniz). It REUSES the verbal copula states rather than duplicati
 overwritten (evlerimizdeydi keeps plural+1pl+locative+copula-past). The accusative is split
 off to the terminal ``N_ACC`` because ``*eviydi`` read as accusative+copula is ungrammatical.
 Deferred (correctness over coverage, xfailed rather than overgenerated): -DIr person/plural
-stacking (güzeldirim, güzelmiştir), suppletive personal-pronoun predicates (oydu, bendim —
-they are enumerated IrregularForm surfaces, not FSM roots), and the verbal copular
-conditional -(y)sA (gelirse).
+stacking (güzeldirim, güzelmiştir) and suppletive personal-pronoun predicates (oydu, bendim —
+they are enumerated IrregularForm surfaces, not FSM roots). The verbal copular conditional
+-(y)sA (gelirse) is now implemented (see the Verbal moods & aorist note above).
 """
 
 from __future__ import annotations
@@ -93,8 +103,10 @@ V_CAUS2 = "V_CAUS2"  # after a second (stacked) causative (yap-tır-t); bounded 
 V_PASS = "V_PASS"  # after the passive -Il/-In/-n; takes only the negation/tense continuation
 V_NEG = "V_NEG"
 V_ABIL = "V_ABIL"  # after ability -(y)Abil; not final (no bare *gelebil), takes further tense
+V_IMPOSS = "V_IMPOSS"  # after impossibilitive -(y)AmA (gelemez); non-final, mirrors V_NEG
 V_T1 = "V_T1"  # after a tense/aspect that takes the type-1 person set
 V_T2 = "V_T2"  # after a tense/aspect that takes the type-2 person set
+V_COND = "V_COND"  # after the verbal conditional -sA (gelse); final, no copular -(y)sA restack
 V_COP1 = "V_COP1"  # after an evidential copula (ek-fiil) -> type-1 person
 V_COP2 = "V_COP2"  # after a past copula (ek-fiil) -> type-2 person
 V_AOR_NEG = "V_AOR_NEG"  # after negative aorist -mAz; final, defective person paradigm
@@ -152,6 +164,13 @@ class Suffix:
     #: fire only on a curated verb list, so this is the overgeneration guard for them. ``None``
     #: -> unrestricted (the fully-productive passive and every non-voice suffix).
     requires_attribute: str | None = None
+    #: When this suffix is *root-adjacent* (first in the chain), realize it against the root's
+    #: :attr:`~ilmek.morphology.lexicon.Root.raised_form` (de->di, ye->yi) instead of its free
+    #: form. Models the irregular glide raising of de-/ye- before a vowel-initial suffix
+    #: (diyecek, diye, diyen), so it is set only on the vowel-initial edges that trigger it
+    #: (FUT, PART_ACAK, OPT, ABIL, PART_AN, IMPOSS). Roots without a raised form are unaffected;
+    #: the -(y)Iş verbal noun is deliberately *unflagged* so ``deyiş`` stays regular.
+    glide_raise: bool = False
 
 
 # --- Nominal suffixes ----------------------------------------------------------------
@@ -279,7 +298,7 @@ NEG = Suffix("neg", "mA", {tags.POLARITY: "negative"})
 PROG = Suffix(
     "prog", "Iyor", {tags.TENSE: "present", tags.ASPECT: "progressive"}, drop_preceding=True
 )
-FUT = Suffix("fut", "(y)AcAk", {tags.TENSE: "future"}, voice_final=True)
+FUT = Suffix("fut", "(y)AcAk", {tags.TENSE: "future"}, voice_final=True, glide_raise=True)
 EVID = Suffix("evid", "mIş", {tags.EVIDENTIAL: True})
 PAST = Suffix("past", "DI", {tags.TENSE: "past"})
 
@@ -334,9 +353,18 @@ OPT_1PL = Suffix("pers_1pl", "lIm", {tags.PERSON: "1pl"})
 _PERSON_OPT = [P1_1SG, P1_2SG, OPT_1PL, P1_2PL, P1_3PL]
 
 # The negative-aorist person paradigm is *defective*: the 1sg is gelmem and the 1pl is
-# gelmeyiz (distinct morphemes), never *gelmezim / *gelmeziz. So -mAz takes only the 2sg,
-# 2pl and 3pl personal endings here; the 1sg/1pl readings are deferred (see the tests).
+# gelmeyiz (distinct morphemes), never *gelmezim / *gelmeziz. So -mAz (V_AOR_NEG) takes only
+# the 2sg, 2pl and 3pl personal endings; the irregular 1sg/1pl attach to the *bare* negation
+# stem instead (gel+me+m, gel+me+yiz), so they are edges from V_NEG (and V_IMPOSS) below.
 _PERSON_AOR_NEG = [P1_2SG, P1_2PL, P1_3PL]
+
+# The irregular negative-aorist 1sg/1pl: they attach directly to the -mA negation (gelmem =
+# gel+me+m, gelmeyiz = gel+me+yiz) rather than to -mAz, so they are their own suffixes into
+# V_PERS. Polarity comes from the preceding NEG; each adds tense=aorist and its person. They
+# also serve the impossibilitive (gelemem, gelemeyiz) from V_IMPOSS, whose stem likewise ends
+# in the -mA shape (-(y)AmA), so the same two edges apply there.
+NEG_AOR_1SG = Suffix("neg_aor_1sg", "m", {tags.TENSE: "aorist", tags.PERSON: "1sg"})
+NEG_AOR_1PL = Suffix("neg_aor_1pl", "(y)Iz", {tags.TENSE: "aorist", tags.PERSON: "1pl"})
 
 
 # --- Ability, aorist, and mood suffixes ----------------------------------------------
@@ -344,7 +372,7 @@ _PERSON_AOR_NEG = [P1_2SG, P1_2PL, P1_3PL]
 # Ability / potential -(y)Abil (gelebilir "can come", okuyabilir): a fully productive slot
 # between the root/negation and the tense. After it the stem ends in "bil", so the aorist is
 # deterministically -Ir (AOR_ABIL) with no lexical guessing.
-ABIL = Suffix("abil", "(y)Abil", {tags.ABILITY: True})
+ABIL = Suffix("abil", "(y)Abil", {tags.ABILITY: True}, glide_raise=True)
 
 # Aorist (geniş zaman), lexically irregular. Each edge realizes one allomorph and carries the
 # matching ``aorist_class``; the analyzer walks it only when it equals the root's aorist
@@ -369,7 +397,22 @@ NEG_AOR = Suffix("neg_aor", "mAz", {tags.POLARITY: "negative", tags.TENSE: "aori
 # Conditional -sA (gelse) -> type-2 persons; the past/evidential copula (gelseydi/gelseymiş)
 # stacks for free. Optative -(y)A (gele) -> its own person set (V_OPT).
 COND = Suffix("cond", "sA", {tags.MOOD: "conditional"})
-OPT = Suffix("opt", "(y)A", {tags.MOOD: "optative"})
+OPT = Suffix("opt", "(y)A", {tags.MOOD: "optative"}, glide_raise=True)
+
+# Necessitative -mAlI (gelmeli "must come", yapmalıyım): a fully productive mood. It lands in
+# V_T1 so it inherits exactly the right continuations — the type-1 persons (gelmeliyim,
+# gelmelisin, gelmeliler) and the (y)-buffered copulas (gelmeliydi, gitmeliydik, gelmeliymiş).
+NECESS = Suffix("necess", "mAlI", {tags.MOOD: "necessitative"})
+
+# Impossibilitive -(y)AmA (gelemez "cannot come", yapamadı, okuyamam): a distinct morpheme —
+# the negative of the ability -(y)Abil, NOT NEG + aorist. It carries polarity=negative AND
+# ability=True (so gelemez reads as "cannot come", the ability-negative), and lands in its own
+# V_IMPOSS state, whose impossibilitive aorist -z (IMPOSS_AOR) reuses V_AOR_NEG for the
+# defective persons (gelemezsin) exactly as the negative aorist does.
+IMPOSS = Suffix(
+    "imposs", "(y)AmA", {tags.POLARITY: "negative", tags.ABILITY: True}, glide_raise=True
+)
+IMPOSS_AOR = Suffix("imposs_aor", "z", {tags.TENSE: "aorist"})
 
 
 # --- Voice (çatı) suffixes -----------------------------------------------------------
@@ -437,11 +480,13 @@ VN_MA = Suffix("ma", "mA", derivational=True, to_pos=tags.NOUN)  # gelme (verbal
 VN_IS = Suffix("is", "(y)Iş", derivational=True, to_pos=tags.NOUN)  # geliş, yürüyüş
 INF = Suffix("mak", "mAk", derivational=True, to_pos=tags.NOUN)  # gelmek (infinitive)
 # verb -> adjective (participles):
-PART_AN = Suffix("an", "(y)An", derivational=True, to_pos=tags.ADJ)  # gelen
+PART_AN = Suffix(
+    "an", "(y)An", derivational=True, to_pos=tags.ADJ, glide_raise=True
+)  # gelen, diyen
 PART_DIK = Suffix("dik", "DIk", derivational=True, to_pos=tags.ADJ, voice_final=True)  # bildiği
 PART_ACAK = Suffix(
-    "acak", "(y)AcAk", derivational=True, to_pos=tags.ADJ, voice_final=True
-)  # gelecek
+    "acak", "(y)AcAk", derivational=True, to_pos=tags.ADJ, voice_final=True, glide_raise=True
+)  # gelecek, diyecek
 
 #: Verb-side derivations that land in the shared N_DERIV nominal state (then inflect). The
 #: infinitive -mAk is handled separately: it lands in the terminal V_INF (no case yet).
@@ -467,10 +512,14 @@ def _root_continuation(aorist_edges: list[tuple[Suffix, str]]) -> list[tuple[Suf
         (ABIL, V_ABIL),
         *aorist_edges,
         (NEG_AOR, V_AOR_NEG),
-        (COND, V_T2),
+        (COND, V_COND),
         (OPT, V_OPT),
         *[(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL],
         (INF, V_INF),
+        # Appended at the end so the pre-existing traversal prefix (and the guesser's ordering)
+        # is byte-stable: the necessitative mood and the impossibilitive voice-negative.
+        (NECESS, V_T1),
+        (IMPOSS, V_IMPOSS),
     ]
 
 
@@ -480,9 +529,19 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
     root_aorists = [(s, V_T1) for s in _AORISTS]
     voiced_aorist = [(AOR_VOICE, V_T1)]
     deriv = [(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL] + [(INF, V_INF)]
-    copula = [(COP_EVID, V_COP1), (COP_PAST, V_COP2)]
+    # The copular layer that stacks on a *finished* verbal tense: the evidential -(y)mIş, the
+    # past -(y)DI, and — this milestone — the copular conditional -(y)sA (gelirse, geldiyse,
+    # gelecekse, geliyorsa, gelmezse). All three take the (y) buffer after a vowel and feed the
+    # copula person states, so gelirsem/gelirsek fall out free from V_COP2. COP_COND is appended
+    # LAST so the pre-existing traversal prefix of every state using ``copula`` is byte-stable.
+    copula = [(COP_EVID, V_COP1), (COP_PAST, V_COP2), (COP_COND, V_COP2)]
     pers_t1 = [(s, V_PERS) for s in _PERSON_T1]
     pers_t2 = [(s, V_PERS) for s in _PERSON_T2]
+    # The bare verbal conditional -sA lands in its OWN state V_COND (not V_T2), whose copula is
+    # the *old* set WITHOUT COP_COND: this is what blocks a conditional-on-conditional restack
+    # (*gelseyse) while V_T2 (reached only by the past -DI) does license geldiyse. Both still
+    # take -(y)DI / -(y)mIş (gelseydi, gelseymiş) and the type-2 persons (gelsek, gelsem).
+    cond_copula = [(COP_EVID, V_COP1), (COP_PAST, V_COP2)]
     # The voice-progression edges are appended AFTER the bare root's full continuation, so the
     # pre-milestone traversal prefix of V_ROOT is byte-identical: plain inflection and the
     # guesser (which forbids voice) see the same order as before.
@@ -490,12 +549,41 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
     return {
         V_ROOT: [*_root_continuation(root_aorists), *voice_from_root],
         # After negation: the primary tenses, ability (gelmeyebilir), conditional (gelmese),
-        # optative (gelmeye). The aorist and negative-aorist edges are intentionally absent —
-        # the aorist's own negative is -mAz on the bare root, not NEG + aorist (*gelmemez).
-        V_NEG: [*_primary_from(), (ABIL, V_ABIL), (COND, V_T2), (OPT, V_OPT), *deriv],
-        # Ability: primary tenses, the deterministic -Ir aorist, conditional, and the verbal
-        # derivations (gelebilmek, gelebilen). Not final -> no bare *gelebil.
-        V_ABIL: [*_primary_from(), (AOR_ABIL, V_T1), (COND, V_T2), *deriv],
+        # optative (gelmeye), the necessitative (gelmemeli). The aorist and negative-aorist -mAz
+        # edges are intentionally absent — the aorist's own negative is -mAz on the bare root,
+        # not NEG + aorist (*gelmemez) — but the irregular negative-aorist 1sg/1pl DO attach to
+        # this -mA stem (gelmem, gelmeyiz), appended last (their surface is not *gelmez-based).
+        V_NEG: [
+            *_primary_from(),
+            (ABIL, V_ABIL),
+            (COND, V_COND),
+            (OPT, V_OPT),
+            *deriv,
+            (NECESS, V_T1),
+            (NEG_AOR_1SG, V_PERS),
+            (NEG_AOR_1PL, V_PERS),
+        ],
+        # Ability: primary tenses, the deterministic -Ir aorist, conditional, the necessitative
+        # (gelebilmeli), and the verbal derivations (gelebilmek, gelebilen). Not final -> no bare
+        # *gelebil.
+        V_ABIL: [*_primary_from(), (AOR_ABIL, V_T1), (COND, V_COND), *deriv, (NECESS, V_T1)],
+        # Impossibilitive -(y)AmA (gelemez, yapamadı): mirrors V_NEG (it is the ability-negative)
+        # — the primary tenses (gelemiyor via -Iyor's vowel drop, gelemeyecek), ability
+        # (gelemeyebilir), conditional (gelemese), optative (gelemeye), necessitative, and the
+        # verb->nominal derivations (gelemeyen, gelememek) — PLUS its aorist -z into V_AOR_NEG
+        # (gelemez = 3sg, gelemezsin/gelemezler defective persons, gelemezdi/gelemezse copula)
+        # and the irregular 1sg/1pl (gelemem, gelemeyiz). Non-final: bare *geleme is not a word.
+        V_IMPOSS: [
+            *_primary_from(),
+            (ABIL, V_ABIL),
+            (COND, V_COND),
+            (OPT, V_OPT),
+            *deriv,
+            (NECESS, V_T1),
+            (IMPOSS_AOR, V_AOR_NEG),
+            (NEG_AOR_1SG, V_PERS),
+            (NEG_AOR_1PL, V_PERS),
+        ],
         # Voice states: each takes the shared voiced-stem continuation (with the deterministic
         # -Ir aorist), plus the onward voice progression. None is a final state, so a bare
         # voiced stem is not accepted (see V_RECIP's note above). Order refl/recip < caus(<=2)
@@ -510,7 +598,11 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         # the impersonal double passive aranıldı is deferred).
         V_PASS: [*_root_continuation(voiced_aorist)],
         V_T1: [*copula, *pers_t1],
+        # V_T2 is reached only by the past -DI, so its copula CAN include COP_COND (geldiyse).
         V_T2: [*copula, *pers_t2],
+        # V_COND is reached by the bare conditional -sA; its copula omits COP_COND to block the
+        # ungrammatical conditional restack (*gelseyse), while keeping gelseydi/gelseymiş/gelsek.
+        V_COND: [*cond_copula, *pers_t2],
         V_COP1: pers_t1,
         V_COP2: pers_t2,
         # Negative aorist: final (gelmez = 3sg), copular stacking (gelmezdi, gelmezmiş,
@@ -526,13 +618,15 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
 VERBAL_GRAPH = _verbal_graph()
 VERBAL_START = V_ROOT
 # V_NEG is final too: a bare negated stem is a negative imperative (gelme! "don't come").
-# V_INF (gelmek) is final: a bare infinitive is a complete word. V_AOR_NEG (gelmez) and
-# V_OPT (gele) are final: a bare negative-aorist / optative 3sg is a complete word.
+# V_INF (gelmek) is final: a bare infinitive is a complete word. V_AOR_NEG (gelmez), V_OPT
+# (gele) and V_COND (gelse) are final: a bare negative-aorist / optative / conditional 3sg is
+# a complete word. V_IMPOSS (geleme) is NOT final — a bare impossibilitive is not a word (it
+# needs at least the aorist -z or a tense), so it is deliberately absent here.
 # The voice states (V_RECIP, V_CAUS1, V_CAUS2, V_PASS) are deliberately NOT final this
 # milestone: a bare voiced stem is a real 2sg imperative (yıkan!) but making it final would
 # rank it above the homograph nouns (sorun, alın) and the -Iş verbal nouns (görüş, geliş).
 VERBAL_FINALS = frozenset(
-    {V_ROOT, V_NEG, V_T1, V_T2, V_COP1, V_COP2, V_AOR_NEG, V_OPT, V_PERS, V_INF}
+    {V_ROOT, V_NEG, V_T1, V_T2, V_COND, V_COP1, V_COP2, V_AOR_NEG, V_OPT, V_PERS, V_INF}
 )
 
 

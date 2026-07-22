@@ -50,6 +50,15 @@ koş) licenses the reciprocal -Iş. A verb without the attribute keeps only its 
 readings (gel has no ``"reciprocal"``, so ``geliş`` stays the -Iş verbal noun, never a
 reciprocal). The passive, by contrast, is fully productive and needs no attribute.
 
+**Glide raising (de-/ye-).** The two irregular verbs ``de`` and ``ye`` raise their /e/ to
+/i/ before a vowel-initial suffix (diyor, diyecek, diye, yiyor), but stay regular elsewhere
+(dedi, demiş, der, deyiş). This raised allomorph is not predictable, so it is stored as a
+lexicon fact — :attr:`Root.raised_form`, from the entry's ``"raised"`` key (``de``->``di``,
+``ye``->``yi``) — and used only by the suffix ``glide_raise`` flag in :mod:`.morphotactics`;
+a root without the key, or a suffix that does not raise (the -(y)Iş verbal noun -> deyiş), is
+unaffected. Like every root-boundary alternation it never changes the first character, so the
+:class:`Lexicon` first-character bucket still reaches ``de`` from the surface ``diyecek``.
+
 **Closed-class irregulars.** A handful of closed classes — the personal pronouns
 (ben/sen/o/biz/siz), the demonstratives (bu/şu), their plurals, and the existentials
 (var/yok) — decline *suppletively*: ``ben`` has the dative ``bana`` (vowel change), the
@@ -174,6 +183,13 @@ class Root:
     #: first-causative edge never fires for a guess. Defaulted last for the same reason as
     #: ``aorist``.
     causative: str | None = None
+    #: The *raised* allomorph a root shows before a vowel-initial glide-raising suffix (de->di,
+    #: ye->yi): the two irregular monosyllabic verbs whose /e/ raises to /i/ before -Iyor /
+    #: -(y)AcAk / -(y)A etc. (diyor, diyecek, diye). Given explicitly via the entry's ``raised``
+    #: key since it is not predictable; used only by the suffix ``glide_raise`` flag, so a root
+    #: without it (or a suffix that does not set the flag, e.g. -(y)Iş -> deyiş) is unaffected.
+    #: ``None`` for every other root and for synthetic roots (guesser/apostrophe).
+    raised_form: str | None = None
 
     @classmethod
     def from_entry(cls, entry: dict) -> Root:
@@ -187,6 +203,8 @@ class Root:
         is_verb = pos in VERBAL_POS
         aorist = _derive_aorist(free, entry.get("aorist")) if is_verb else None
         causative = _derive_causative(free, entry.get("causative")) if is_verb else None
+        raw_raised = entry.get("raised")
+        raised = fold_for_lookup(raw_raised) if (is_verb and raw_raised) else None
         return cls(
             lemma=lemma,
             pos=pos,
@@ -195,6 +213,7 @@ class Root:
             bound_form=bound,
             aorist=aorist,
             causative=causative,
+            raised_form=raised,
         )
 
     @property
