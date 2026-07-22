@@ -175,6 +175,14 @@ def _generate(
                 # (question=True, no person), so nothing is finalized — a bare mi fabricates no
                 # person/copula/case, exactly what distinguishes it from a full nominal.
                 pass
+            elif state in mt.ADVERB_STATES:
+                # Converb (zarf-fiil) acceptance: a verb-derived ADVERB keeps exactly its
+                # accrued features (verbform=converb, any polarity/voice/tense) and fabricates
+                # NOTHING — no nominal number/possessive/case, no verbal person/mood. This
+                # branch MUST precede the verbal fallback below: finalize_verbal_features would
+                # otherwise stamp a spurious mood=imperative/person=2sg (verbform is not one of
+                # its finite keys), turning gelerek into a bogus imperative.
+                pass
             elif state in mt.NOMINAL_STATES:
                 # Nominal-side acceptance: fill nominal defaults *under* whatever was
                 # accrued, so a verb-derived nominal keeps its polarity (gelmeyen) yet

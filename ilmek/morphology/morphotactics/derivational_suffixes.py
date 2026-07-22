@@ -125,3 +125,73 @@ PART_MAZ = Suffix(
 #: (-(A/I)r) and PART_MAZ are NOT here — they are wired positionally in :mod:`.transitions` to
 #: mirror the finite aorist / negative-aorist scope exactly (no aorist participle from V_NEG).
 _VERBAL_DERIVATIONS_TO_NOMINAL = [VN_MA, VN_IS, PART_AN, PART_DIK, PART_ACAK, PART_MIS]
+
+
+# --- Converbs / zarf-fiil (verb -> ADVERB) -------------------------------------------
+# Adverbial verb forms: gelerek, gelip, gelince, geleli, geldikçe (from the root / a voiced
+# stem / negation) plus the privative gelmeden, gelmeksizin (one negative-shaped morpheme on
+# the bare root) and, on a finished tense, -ken (gelirken). Modelled exactly on _PARTICIPLE:
+# each is derivational=True (its ``name`` is recorded under features[tags.DERIVATION]),
+# to_pos=ADV, and carries verbform=converb so the whole converb inventory is uniformly
+# queryable and distinct from the homographous finite tense a surface may share (gelmez the
+# finite negative-aorist vs gelmezken the converb). Every converb keeps the verb lemma/stem
+# and is TERMINAL — it lands in ADV_CVB (see states/transitions), taking no further inflection.
+_CONVERB = {tags.VERBFORM: "converb"}
+
+# -(y)ArAk (gelerek, okuyarak, yaparak, diyerek): A-initial, so glide_raise like PART_AN/FUT
+# (de -> diyerek). The (y) buffer covers the vowel-final stem (okuyarak).
+CVB_ARAK = Suffix(
+    "arak", "(y)ArAk", dict(_CONVERB), derivational=True, to_pos=tags.ADV, glide_raise=True
+)
+# -(y)Ip (gelip, yapıp, okuyup): sequential converb. NO glide_raise — deyip is the TDK-standard
+# form (diyip is a well-known common misspelling), so -(y)Ip mirrors the repo's unflagged
+# -(y)Iş -> deyiş / -(y)IncA -> deyince precedent (a per-suffix flag cannot raise ye- alone
+# while leaving de- unraised — raised_form is per-root — so the corresponding yiyip is
+# deferred rather than shipping the wrong diyip; see the xfail below).
+CVB_IP = Suffix("ip", "(y)Ip", dict(_CONVERB), derivational=True, to_pos=tags.ADV)
+# -(y)IncA (gelince, okuyunca, deyince): "when/as soon as". NO glide_raise — deyince is the
+# uncontested standard form (mirrors the repo's unflagged -(y)Iş -> deyiş precedent).
+CVB_INCA = Suffix("inca", "(y)IncA", dict(_CONVERB), derivational=True, to_pos=tags.ADV)
+# -(y)AlI (geleli, yapalı, diyeli): "since (V-ing)". A-initial, so glide_raise (de -> diyeli).
+CVB_ALI = Suffix(
+    "ali", "(y)AlI", dict(_CONVERB), derivational=True, to_pos=tags.ADV, glide_raise=True
+)
+# -DIkçA (geldikçe, yaptıkça, okudukça): "as long as / the more". Consonant-initial (no glide
+# raise); no voice_final needed — ADV_CVB is terminal, nothing follows to soften a final stop.
+CVB_DIKCE = Suffix("dikce", "DIkçA", dict(_CONVERB), derivational=True, to_pos=tags.ADV)
+# -mAdAn (gelmeden, yapmadan "without V-ing"): ONE privative morpheme on the BARE root, not
+# NEG + something separable (its shape mirrors PART_MAZ's). polarity=negative because it is
+# privative. Wired on the root / voiced stems only, NOT V_NEG (no *gelmemeden double negative).
+CVB_MADAN = Suffix(
+    "madan",
+    "mAdAn",
+    {tags.POLARITY: "negative", **_CONVERB},
+    derivational=True,
+    to_pos=tags.ADV,
+)
+# -mAksIzIn (gelmeksizin, yapmaksızın "without V-ing"): the other privative converb, same
+# scope and polarity as -mAdAn (root / voiced stems only, never V_NEG).
+CVB_MAKSIZIN = Suffix(
+    "maksizin",
+    "mAksIzIn",
+    {tags.POLARITY: "negative", **_CONVERB},
+    derivational=True,
+    to_pos=tags.ADV,
+)
+# -ken (gelirken, geliyorken, gelecekken, gelmezken): the temporal converb "while". UNLIKE the
+# others it attaches to a FINITE stem (the aorist/progressive/future/evidential/necessitative,
+# and the negative aorist), so it is wired onto V_T1 / V_AOR_NEG, not the root — see
+# transitions. It does NOT harmonize (invariant "ken": gelirken, yaparken, koşarken), so the
+# literal "ken" is lowercase; the (y) buffer only covers a vowel-final stem (gelmeliyken). No
+# glide_raise (it never sits on a bare de-/ye- root). The nominal ek-fiil -(y)ken (evdeyken,
+# güzelken) is OUT of scope this milestone and deliberately NOT wired into the copula layer.
+CVB_KEN = Suffix("ken", "(y)ken", dict(_CONVERB), derivational=True, to_pos=tags.ADV)
+
+#: Root/voiced-stem/-negation converbs (the -mAdAn/-mAksIzIn privatives are excluded from the
+#: V_NEG set below — a double negative *gelmemeden is ungrammatical, mirroring PART_MAZ off
+#: V_NEG). Wired positionally in :mod:`.transitions`, appended LAST so traversal prefixes stay
+#: byte-stable.
+_CONVERBS = [CVB_ARAK, CVB_IP, CVB_INCA, CVB_ALI, CVB_DIKCE, CVB_MADAN, CVB_MAKSIZIN]
+#: The subset reachable from V_NEG (gelmeyerek, gelmeyip, gelmeyince, gelmeyeli, gelmedikçe):
+#: the two privatives are dropped (see above).
+_CONVERBS_FROM_NEG = [CVB_ARAK, CVB_IP, CVB_INCA, CVB_ALI, CVB_DIKCE]

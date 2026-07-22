@@ -58,3 +58,13 @@ V_AOR_NEG = "V_AOR_NEG"  # after negative aorist -mAz; final, defective person p
 V_OPT = "V_OPT"  # after optative -(y)A; final, its own person paradigm (1pl is -lIm)
 V_PERS = "V_PERS"
 V_INF = "V_INF"  # infinitive -mAk (a noun); terminal this milestone (no case inflection yet)
+
+# --- Adverbial (converb / zarf-fiil) state -------------------------------------------
+
+# A verb-derived ADVERB (zarf-fiil / converb): gelerek, gelip, gelince, gelmeden, geleli,
+# geldikçe, gelmeksizin, gelirken. TERMINAL — a converb is a complete adverb that takes NO
+# further inflection (no plural/possessive/case, no copula, no verbal person/mood), so its
+# only outgoing edge set is empty. Kept OUT of the nominal N_DERIV precisely so an adverb can
+# never fabricate nominal number/possessive/case nor license *gelerekler/*gelerekte — the
+# no-case/no-plural guard is structural (a dead-end state), not a filter in the analyzer.
+ADV_CVB = "ADV_CVB"

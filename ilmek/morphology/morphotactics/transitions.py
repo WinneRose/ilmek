@@ -13,9 +13,12 @@ from __future__ import annotations
 
 from ...core import tags
 from .derivational_suffixes import (
+    _CONVERBS,
+    _CONVERBS_FROM_NEG,
     _NOMINAL_DERIVATIONS,
     _PART_AORISTS,
     _VERBAL_DERIVATIONS_TO_NOMINAL,
+    CVB_KEN,
     INF,
     PART_AOR_VOICE,
     PART_MAZ,
@@ -29,6 +32,7 @@ from .noun_suffixes import (
     PLURAL,
 )
 from .states import (
+    ADV_CVB,
     N_ACC,
     N_CASE,
     N_COP_DIR,
@@ -269,6 +273,12 @@ def _root_continuation(
         # but NOT from V_NEG, which builds its edges directly — that is the *gelmemez gap.
         *part_aorist_edges,
         (PART_MAZ, N_PART_NEG),
+        # The zarf-fiil (converb) edges, appended AFTER the participle ones so the pre-existing
+        # traversal prefix stays byte-stable. Every converb lands in the terminal ADV_CVB (an
+        # adverb: no case/plural). Reachable from the bare root AND every voiced stem (yapılarak,
+        # yapılmadan, okunmaksızın) exactly as the participles are; -ken is NOT here (it attaches
+        # to a finished tense, wired onto V_T1 / V_AOR_NEG instead).
+        *[(s, ADV_CVB) for s in _CONVERBS],
     ]
 
 
@@ -317,6 +327,11 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
             (NECESS, V_T1),
             (NEG_AOR_1SG, V_PERS),
             (NEG_AOR_1PL, V_PERS),
+            # The converbs reachable after negation (gelmeyerek, gelmeyip, gelmeyince,
+            # gelmeyeli, gelmedikçe), appended LAST for a byte-stable prefix. The privative
+            # -mAdAn/-mAksIzIn are excluded (that is _CONVERBS_FROM_NEG): *gelmemeden is a
+            # double negative, mirroring how -mAz is kept off V_NEG.
+            *[(s, ADV_CVB) for s in _CONVERBS_FROM_NEG],
         ],
         # Ability: primary tenses, the deterministic -Ir aorist, conditional, the necessitative
         # (gelebilmeli), and the verbal derivations (gelebilmek, gelebilen). Not final -> no bare
@@ -360,7 +375,13 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         # After the passive: the continuation only (voice is closed; no double passive here —
         # the impersonal double passive aranıldı is deferred).
         V_PASS: [*_root_continuation(voiced_aorist, part_voiced_aorist)],
-        V_T1: [*copula, *pers_t1],
+        # The -ken converb attaches to a finished tense (gelirken, geliyorken, gelecekken,
+        # gelmişken, gelmeliyken): V_T1 is where the aorist/progressive/future/evidential/
+        # necessitative land, so one edge covers them all. Appended LAST so the pre-existing
+        # V_T1 prefix (copula + persons) is byte-stable. NOT on V_T2 (the past -DI): *geldiyken
+        # is not a word (a negative test pins this). -ken is consonant-initial, so a preceding
+        # FUT's voice_final never fires (gelecek + ken -> gelecekken, no k-softening).
+        V_T1: [*copula, *pers_t1, (CVB_KEN, ADV_CVB)],
         # V_T2 is reached only by the past -DI, so its copula CAN include COP_COND (geldiyse).
         V_T2: [*copula, *pers_t2],
         # V_COND is reached by the bare conditional -sA; its copula omits COP_COND to block the
@@ -369,12 +390,16 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         V_COP1: pers_t1,
         V_COP2: pers_t2,
         # Negative aorist: final (gelmez = 3sg), copular stacking (gelmezdi, gelmezmiş,
-        # gelmezdim), plus only the defective personal set (2sg/2pl/3pl).
-        V_AOR_NEG: [*copula, *[(s, V_PERS) for s in _PERSON_AOR_NEG]],
+        # gelmezdim), the defective personal set (2sg/2pl/3pl), and — appended LAST — the -ken
+        # converb (gelmezken "while not V-ing"), which keeps the accrued polarity=negative.
+        V_AOR_NEG: [*copula, *[(s, V_PERS) for s in _PERSON_AOR_NEG], (CVB_KEN, ADV_CVB)],
         # Optative: final (gele = 3sg), with its own person set (1pl is -lIm). No copula yet.
         V_OPT: [(s, V_PERS) for s in _PERSON_OPT],
         V_PERS: [],
         V_INF: [],
+        # The converb (zarf-fiil) landing state: terminal, so an adverb takes no further
+        # inflection (no case/plural/copula/person) — the no-case/no-plural guard is structural.
+        ADV_CVB: [],
     }
 
 
@@ -413,11 +438,17 @@ Q_START = Q_ROOT
 #: predicate accepted here takes nominal-predicate finalization; a verbal path reaching the
 #: same person/copula states (cur_pos == VERB) still takes verbal finalization.
 COPULA_STATES = frozenset({V_COP1, V_COP2, V_PERS, N_COP_DIR})
+#: The converb (zarf-fiil) landing states: a verb-derived ADVERB, accepted with its accrued
+#: features intact (verbform=converb, any polarity/voice/tense) and NOTHING fabricated — no
+#: nominal number/possessive/case, no verbal person/mood. Its own analyzer branch runs this
+#: closure, kept disjoint from NOMINAL_STATES/COPULA_STATES/Q_ROOT so those closures are
+#: provably untouched. Terminal, so it adds no inflected surfaces (only the bare converb).
+ADVERB_STATES = frozenset({ADV_CVB})
 # Q_ROOT is final (bare mi is a complete word). It is deliberately kept OUT of
 # NOMINAL_FINALS/NOMINAL_STATES/COPULA_STATES so the nominal closure and the guesser's copula
 # gate are provably untouched: its own closure (question=True, no fabricated person) runs from
 # the dedicated Q_ROOT branch in the analyzer.
-FINALS = NOMINAL_FINALS | VERBAL_FINALS | {N_COP_DIR, Q_ROOT}
+FINALS = NOMINAL_FINALS | VERBAL_FINALS | ADVERB_STATES | {N_COP_DIR, Q_ROOT}
 #: States whose accepting side is *nominal*: they take nominal feature defaults and never
 #: run verbal finalization. This includes the shared derived state and the infinitive, so a
 #: verb-derived noun (gelme, gelmek) gets no fabricated person/mood but keeps any polarity.
