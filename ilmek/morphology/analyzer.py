@@ -125,6 +125,7 @@ def _generate(
     allow_derivation: bool = True,
     allow_nominal_copula: bool = True,
     allow_voice: bool = True,
+    allow_possessive: bool = True,
 ) -> list[AnalysisResult]:
     """All full-word analyses reachable from ``root`` via the morphotactic graph.
 
@@ -136,7 +137,12 @@ def _generate(
     so an unknown word is never stripped of a copular ending, keeping guesser output
     byte-identical. ``allow_voice`` gates the voice (çatı) edges likewise: the passive is
     fully productive (no root fact), so without this an OOV word would be voice-split; ``False``
-    on the guesser keeps its output byte-identical.
+    on the guesser keeps its output byte-identical. ``allow_possessive`` gates the six real
+    possessive edges (they alone carry ``tags.POSSESSIVE`` in ``suffix.features``): ``False``
+    on the guesser so an OOV noun is never stripped of a fabricated possessive (enflasyonun ->
+    *enflasyo poss=2sg). Banning the possessive edges also makes the pronominal case states
+    (reachable only after a 3rd-person possessive) unreachable, killing the buffer-n
+    over-strips (salgını -> *salg via ın+ı, başvurunun -> *başvur via un+un).
     """
     if "interrogative" in root.attributes:
         # The interrogative particle mi/mı/mu/mü: start at the dedicated Q_ROOT, whose only
@@ -241,6 +247,15 @@ def _generate(
                 and state in mt.NOMINAL_FINALS
                 and target in mt.COPULA_STATES
             ):
+                continue
+            # Possessive edges: gated off for the guesser (mirrors allow_derivation). Only the
+            # six real possessive suffixes carry ``tags.POSSESSIVE`` in ``suffix.features`` (the
+            # ``possessive:'none'`` seen in final results is stamped by nominal_default_features
+            # at acceptance, NOT by an edge), so this feature test is exact. Banning them stops
+            # the guesser inventing a possessive (enflasyonun -> *enflasyo poss=2sg) and, because
+            # the pronominal case states hang only off a 3rd-person possessive, kills the buffer-n
+            # over-strips (salgını -> *salg, başvurunun -> *başvur).
+            if not allow_possessive and tags.POSSESSIVE in suffix.features:
                 continue
             # Lexically-irregular aorist: an allomorph edge fires only for a root whose
             # lexical aorist class matches. Synthetic roots have aorist=None, so no
@@ -354,11 +369,30 @@ _MAX_GUESS_ALTS = 6
 #: A confident strip must leave a root at least this long. A 1-2 char remnant is almost
 #: never a real Turkish root, so stripping down to one is over-stripping (geler -> *ge via
 #: ge+ler; sene -> *se via se+n+e; zolar -> *zo). Distinct from the suffix bound below:
-#: same value today, different meaning, so they are not a shared constant.
+#: different meaning, so they are not a shared constant.
 _MIN_GUESS_ROOT_LEN = 3
-#: The total stripped inflection must be at least this many characters to be trusted
-#: (blocks over-stripping a root-final vowel/consonant, e.g. kalem -> *kale, kapı -> *kap).
-_MIN_STRONG_SUFFIX_LEN = 3
+#: The total stripped tail must be at least this many characters to be trusted, keyed by the
+#: guessed pos (data, not a hardcoded if). NOUN is 2: this admits a single 2-char case
+#: (kütüphaneye -> kütüphane, dat; enflasyonun -> enflasyon, gen) while still blocking a lone
+#: 1-char strip (a root-final vowel/consonant: kapı -> *kap, zonku -> *zonk). Trade-off of 2 over
+#: 3 for NOUN: an OOV noun whose root happens to end in a syllable homographic with a 2-char case
+#: (-da/-un/-ye...) can be stripped one syllable short; the root>=3+vowel gate and the lexicon
+#: outranking guesses bound the damage, and adding the true root to the lexicon fixes any such
+#: case permanently. VERB stays at 3: a bare 2-char verbal suffix on a synthetic vowel-final root
+#: (hasta+dı, "dı" with no y-buffer needed on a verb stem) is a much weaker signal than a 2-char
+#: case, so it stays conservative and falls back to identity (hastadı must not resemble a
+#: guessed verb "hasta" — see test_y_buffer_is_obligatory_after_vowel).
+_MIN_STRONG_SUFFIX_LEN = {tags.NOUN: 2, tags.VERB: 3}
+_MIN_STRONG_SUFFIX_LEN_DEFAULT = 3
+#: Guessed-root final letters that are phonotactically disfavored as a Turkish noun lemma
+#: ending: native lemmas essentially never end in o/ö (only unassimilated loans — silo, banyo).
+#: Used purely as a sort-key TIE-BREAK (never a filter), it separates the genitive-buffer
+#: ambiguity the structure cannot: enflasyon+un vs enflasyo+nun both parse (the plain genitive
+#: -(n)In has its own optional buffer n), and başvuru+nun vs başvurun+un is the structurally
+#: identical pair with the OPPOSITE desired winner. Penalizing an o/ö-final guessed root picks
+#: enflasyon over enflasyo and başvuru over başvurun. As a tie-break it never blocks an o-final
+#: root when unopposed (silodan -> silo still wins).
+_DISFAVORED_GUESS_ROOT_FINAL = frozenset("oö")
 
 
 def _stripped_len(r: AnalysisResult) -> int:
@@ -369,22 +403,40 @@ def _is_confident_guess(r: AnalysisResult) -> bool:
     """A guessed strip is trustworthy only with strong inflectional evidence.
 
     Conjunctive gate: the surviving root must be a plausible word (>= 3 chars containing a
-    vowel) AND at least 3 chars of inflection must have been removed. A short garbage root
-    (geler -> ge) or a short strip (a single one-char ending) is rejected in favour of the
-    identity fallback — correct until the true root enters the lexicon.
+    vowel) AND at least ``_MIN_STRONG_SUFFIX_LEN[r.pos]`` chars of inflection must have been
+    removed (2 for NOUN, 3 for VERB — see the constant's docstring). A short garbage root
+    (geler -> ge) or a lone short strip is rejected in favour of the identity fallback —
+    correct until the true root enters the lexicon.
     """
+    min_suffix_len = _MIN_STRONG_SUFFIX_LEN.get(r.pos, _MIN_STRONG_SUFFIX_LEN_DEFAULT)
     return (
         len(r.lemma) >= _MIN_GUESS_ROOT_LEN
         and _has_vowel(r.lemma)
-        and _stripped_len(r) >= _MIN_STRONG_SUFFIX_LEN
+        and _stripped_len(r) >= min_suffix_len
     )
 
 
+#: Nominal-over-verbal tie-break for the guess sort key: OOV nouns dominate running text, so a
+#: NOUN parse is preferred over a VERB parse when every other key ties.
+_GUESS_POS_RANK = {tags.NOUN: 0, tags.VERB: 1}
+
+
 def _guess_sort_key(r: AnalysisResult):
-    # Prefer more inflection removed (more morphemes, then more characters), then nominal
-    # over verbal (OOV nouns dominate), then the longer root as a stable tie-break.
-    pos_rank = {tags.NOUN: 0, tags.VERB: 1}
-    return (-len(r.morphemes), -_stripped_len(r), pos_rank.get(r.pos, 2), -len(r.lemma))
+    # Prefer more {plural,case}/verbal-tense morphemes removed first (teminatlardan/zonklardan
+    # strip plural+ablative; şaşırdılar strips past+3pl), THEN penalize a guessed root ending in
+    # a phonotactically-disfavored o/ö (the only signal that separates the genitive-buffer
+    # ambiguity enflasyon/enflasyo and başvuru/başvurun — see _DISFAVORED_GUESS_ROOT_FINAL), THEN
+    # nominal over verbal (so a spurious NOUN+plural parse of an OOV verb, e.g. *şaşırdı+lar,
+    # never beats the correct VERB parse şaşır+dı+lar when the verb parse removes at least as
+    # much), then more characters stripped, then the longer root as a stable tie-break.
+    disfavored_final = 1 if r.lemma and r.lemma[-1] in _DISFAVORED_GUESS_ROOT_FINAL else 0
+    return (
+        -len(r.morphemes),
+        disfavored_final,
+        _GUESS_POS_RANK.get(r.pos, 2),
+        -_stripped_len(r),
+        -len(r.lemma),
+    )
 
 
 class Analyzer:
@@ -464,13 +516,24 @@ class Analyzer:
     def _guess(self, word: str) -> list[AnalysisResult]:
         """Unknown word: propose a stripped root only when the evidence is strong.
 
-        We treat every proper prefix as a hypothetical root and try to parse the rest as a
-        valid inflectional chain (same FSM as the lexicon path, so this improves for free
-        as morphotactics grow). A parse is *confident* only when it leaves a plausible root
-        (>= 3 chars containing a vowel) AND removes >= 3 chars of inflection. Confident: the
-        stripped root becomes the primary guess. Otherwise we stay honest and return the
-        surface as its own stem, keeping every stripped candidate as a ranked alternative so
-        nothing is lost. All results are `guess`.
+        We treat every proper prefix as a hypothetical NOUN or VERB root and try to parse the
+        rest as a valid inflectional tail (same FSM as the lexicon path). Both POS are tried —
+        dropping VERB would confidently mis-tag any OOV verb inflected for 3rd-person plural as
+        a fabricated NOUN+plural (şaşırdılar "they were surprised" -> *NOUN "şaşırdı"+lar, eating
+        the past-tense marker into the lemma), since -lAr is homographic between the nominal
+        plural and the verbal 3pl person marker; keeping both POS in the race and letting
+        ``_guess_sort_key`` prefer whichever removes more morphemes (şaşır+dı+lar, 2 morphemes,
+        beats the single-morpheme NOUN parse) fixes that without reopening the possessive bug —
+        possessive is a nominal-only category, banned below regardless of pos. The possessive,
+        derivation, ek-fiil and voice are all banned: stripping a standalone possessive is what
+        fabricated the poss=2sg / buffer-n over-strips (enflasyonun -> *enflasyo, salgını ->
+        *salg). A parse is *confident* only when it leaves a plausible root (>= 3 chars containing
+        a vowel) AND removes at least ``_MIN_STRONG_SUFFIX_LEN[pos]`` chars of inflection (2 for
+        NOUN, 3 for VERB — see that constant's docstring). Confident: the stripped root becomes
+        the primary guess (among valid parses we maximize the stripped morphemes, so
+        teminatlardan -> teminat still strips plural+ablative, and şaşırdılar strips past+3pl).
+        Otherwise we stay honest and return the surface as its own stem, keeping every stripped
+        candidate as a ranked alternative so nothing is lost. All results are `guess`.
         """
         parses: list[AnalysisResult] = []
         for split in range(2, len(word)):
@@ -479,10 +542,12 @@ class Analyzer:
                 continue
             for pos in (tags.NOUN, tags.VERB):
                 synth = Root(root_guess, pos, frozenset(), root_guess, None)
-                # Derivation, the ek-fiil, and voice all stay off for guesses: an unknown root
-                # must not be split on a derivational suffix (malik -> *ma+lik), a copular
+                # Derivation, possessive, the ek-fiil, and voice all stay off for guesses: an
+                # unknown root must not be split on a derivational suffix (malik -> *ma+lik), a
+                # possessive (the fabricated poss=2sg / buffer-n over-strip — possessive is
+                # nominal-only, so this ban is unaffected by trying pos=VERB here too), a copular
                 # ending (*güzeldi from an OOV güzel), nor a (fully-productive) voice suffix
-                # (*zorla+tıl), so guesser output is byte-identical to before.
+                # (*zorla+tıl).
                 for res in _generate(
                     word,
                     synth,
@@ -490,6 +555,7 @@ class Analyzer:
                     allow_derivation=False,
                     allow_nominal_copula=False,
                     allow_voice=False,
+                    allow_possessive=False,
                 ):
                     if res.morphemes:  # only non-trivial suffix strips are informative
                         parses.append(res)
