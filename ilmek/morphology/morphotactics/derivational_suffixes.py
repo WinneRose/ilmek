@@ -70,6 +70,18 @@ D_SAL = Suffix("sal", "sAl", derivational=True, to_pos=tags.ADJ, applies_to=froz
 #: in N_DERIV like the other nominal derivations, so it is the only new member of this list.
 _NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI, D_CIK, D_SAL]
 
+#: The first-level nominal derivations that may host ONE further -lIk (gazete+ci+lik,
+#: ev+siz+lik, ev+li+lik). Kept in DATA (not a hardcoded branch) per the rules-in-data
+#: contract: a stackable derivation lands in ``N_DERIV_LIK_HOST`` instead of plain ``N_DERIV``,
+#: and that host's only extra edge is -lIk back into plain ``N_DERIV`` (which re-derives nothing),
+#: bounding the second slot at depth two. Deliberately excludes the diminutive -CIk, the
+#: relational -sAl (toplumsallık deferred, correctness over coverage), and -lIk itself
+#: (*kitaplıklık) — so widening/narrowing the productive set is a one-line data change here.
+#: A tuple (not a set): :class:`Suffix` is an unhashable dataclass, and membership testing over
+#: the six-element ``_NOMINAL_DERIVATIONS`` is trivial; each member is a distinct singleton, so
+#: ``s in _LIK_STACKABLE`` (dataclass equality) selects exactly these three.
+_LIK_STACKABLE = (D_LI, D_SIZ, D_CI)
+
 
 # --- Relative / pronominal -ki (evdeki, benimki, dünkü) ------------------------------
 # The relative -ki turns a locative/genitive nominal (or a temporal noun/adverb) into an

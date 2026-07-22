@@ -1655,8 +1655,7 @@
           "lik"
         ]
       },
-      "known_gap": true,
-      "note": "derivation stacking -lI+-lIk deferred (xfail)"
+      "note": "stacked derivation -lI+-lIk (ev+li+lik); one bounded second derivation slot"
     },
     {
       "surface": "evi",

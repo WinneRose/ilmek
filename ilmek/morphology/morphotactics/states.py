@@ -35,6 +35,14 @@ N_ADV_CA = "N_ADV_CA"
 # (birinciydi), so its edges are the shared nominal inflection plus the copula. Final.
 N_ORD = "N_ORD"
 N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, cannot re-derive)
+# A derived nominal reached by the STACKABLE first-level derivations -CI/-sIz/-lI (gazeteci,
+# evsiz, evli). It inflects and hosts the ek-fiil exactly like N_DERIV (identical leading edge
+# prefix, so every bare/inflected gazeteci/evsiz/evli analysis is byte-stable) but may take ONE
+# additional -lIk (gazetecilik, evsizlik, evlilik). That -lIk lands in plain N_DERIV, which has
+# no derivational edge, so the second derivation is bounded at depth two — no recursion, and no
+# -lIk-after-lIk (*kitaplıklık) / -lIk-after-diminutive (*kitapçıklık): only -CI/-sIz/-lI reach
+# here, and -CIk/-sAl/-lIk and the verbal derivations all land in plain N_DERIV instead.
+N_DERIV_LIK_HOST = "N_DERIV_LIK_HOST"
 # The negative-aorist participle -mAz (çıkmaz, tükenmez). It inflects for CASE only (çıkmazda),
 # taking NEITHER the possessive NOR the ek-fiil copula — both attach -Im/-Iz, which would revive
 # the deliberately-defective finite negative-aorist persons (*gelmezim / *gelmeziz). So it lands

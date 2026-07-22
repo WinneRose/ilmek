@@ -350,6 +350,110 @@ def test_guesser_does_not_strip_derivation(analyzer):
         assert r.source != "lexicon"
 
 
+# --- Stacked derivation: -CI/-sIz/-lI + -lIk (gazetecilik, evsizlik, evlilik) --------
+# One bounded second derivation slot: the productive combinations -CIlIk (occupation/field),
+# -sIzlIk (abstract) and -lIlIk compose from the existing single suffixes. The stackable
+# derivation lands in N_DERIV_LIK_HOST, whose only extra edge is -lIk into plain N_DERIV, so
+# depth is bounded at two — no recursion, no overgeneration.
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,lemma,morphemes,derivation",
+    [
+        ("gazetecilik", "gazete", ["ci", "lik"], ("ci", "lik")),  # -CIlIk occupation/field
+        ("denizcilik", "deniz", ["ci", "lik"], ("ci", "lik")),
+        ("kitapçılık", "kitap", ["çı", "lık"], ("ci", "lik")),  # C hardens to ç after p
+        ("yolculuk", "yol", ["cu", "luk"], ("ci", "lik")),  # rounding harmony
+        ("evsizlik", "ev", ["siz", "lik"], ("siz", "lik")),  # -sIzlIk abstract
+        ("işsizlik", "iş", ["siz", "lik"], ("siz", "lik")),
+        ("evlilik", "ev", ["li", "lik"], ("li", "lik")),  # -lIlIk (was the deferred xfail)
+    ],
+)
+def test_stacked_derivation(analyzer, word, lemma, morphemes, derivation):
+    a = _find(analyzer, word, lemma=lemma, pos="NOUN", derivation=derivation)
+    assert a is not None, f"no {lemma}+{derivation} analysis for {word}"
+    assert a.morphemes == morphemes
+    assert a.stem == word  # stem is the surface at the last (second) derivation boundary
+    assert a.lemma == lemma
+    assert a.source == "lexicon"
+    # Order is preserved: the first derivation precedes -lIk, never the reverse.
+    assert a.features["derivation"] == derivation
+    assert a.features["derivation"] != tuple(reversed(derivation))
+
+
+@pytest.mark.positive
+def test_stacked_derivation_inflects_and_softens(analyzer):
+    # A stacked stem inflects normally; -lIk's final k softens before a vowel (k -> ğ).
+    assert has_analysis(
+        analyzer,
+        "gazeteciliği",
+        lemma="gazete",
+        morphemes=["ci", "lik", "i"],
+        features={"derivation": ("ci", "lik")},
+    )
+    a = _find(analyzer, "evsizliğe", lemma="ev", derivation=("siz", "lik"))
+    assert a is not None
+    assert a.morphemes == ["siz", "lik", "e"]
+    assert a.features.get("case") == "dative"
+
+
+@pytest.mark.positive
+def test_stacked_derivation_hosts_ek_fiil(analyzer):
+    # The host inflects for the copula (ek-fiil) exactly like a plain derived noun.
+    a = _find(analyzer, "işsizlikti", lemma="iş", derivation=("siz", "lik"))
+    assert a is not None
+    assert a.features.get("copula") == "past"
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize(
+    "word,lemma",
+    [
+        ("kitaplıklık", "kitap"),  # no -lIk after -lIk (-lIk lands in plain N_DERIV)
+        ("kitapçıklık", "kitap"),  # no -lIk after the diminutive -CIk
+        ("gelmelik", "gel"),  # no -lIk after a verbal noun (-mA lands in plain N_DERIV)
+        ("gazetecici", "gazete"),  # the host has no -CI edge (no re-derivation but -lIk)
+    ],
+)
+def test_stacked_derivation_does_not_overgenerate(analyzer, word, lemma):
+    assert not has_analysis(analyzer, word, lemma=lemma)
+
+
+@pytest.mark.negative
+def test_stacked_derivation_respects_harmony(analyzer):
+    # -lIk must harmonize to the preceding vowel: the unharmonized *-lık/-lük are rejected.
+    assert not has_analysis(analyzer, "gazetecilık", lemma="gazete")
+    assert not has_analysis(analyzer, "evsizlük", lemma="ev")
+
+
+@pytest.mark.negative
+def test_stacking_is_bounded_at_two_only_the_lik_edge(analyzer):
+    # evli (ev+lI) hosts -lIk (evlilik) but NOT a second -sIz: the single new edge is -lIk only.
+    assert has_analysis(analyzer, "evlilik", lemma="ev")
+    assert not has_analysis(analyzer, "evlisiz", lemma="ev")
+
+
+@pytest.mark.negative
+def test_guesser_does_not_fabricate_a_stacked_base(analyzer):
+    # An OOV whose surface looks like base+CI+lIk (hobi is not in the lexicon) must NOT be split
+    # to a fabricated base: the guesser walks no derivational edge (mirrors the 'malik' test).
+    for r in analyzer.analyze("hobicilik"):
+        assert "derivation" not in r.features
+        assert r.source != "lexicon"
+
+
+@pytest.mark.negative
+def test_stacking_does_not_flood_existing_lik_words(analyzer):
+    # Common single-derivation -lIk words keep exactly one derivation — no spurious second slot.
+    best = analyzer.analyze("kitaplığı")[0]
+    assert best.lemma == "kitap"
+    assert best.features.get("derivation") == ("lik",)
+    guzellik = _find(analyzer, "güzellik", lemma="güzel")
+    assert guzellik is not None
+    assert guzellik.features.get("derivation") == ("lik",)
+
+
 # --- Documented deferrals (strict xfail): honest known limitations -------------------
 
 
@@ -359,7 +463,5 @@ def test_infinitive_case_deferred(analyzer):
     assert has_analysis(analyzer, "gelmekten", lemma="gel", features={"case": "ablative"})
 
 
-@pytest.mark.exception
-@pytest.mark.xfail(reason="Derivation stacking (-lI + -lIk) is a later milestone.", strict=True)
-def test_derivation_stacking_deferred(analyzer):
-    assert has_analysis(analyzer, "evlilik", lemma="ev", features={"derivation": ("li", "lik")})
+# NOTE: the former strict-xfail ``test_derivation_stacking_deferred`` (evlilik) is now a
+# supported case — see ``test_stacked_derivation`` in the section below.

@@ -15,6 +15,7 @@ from ...core import tags
 from .derivational_suffixes import (
     _CONVERBS,
     _CONVERBS_FROM_NEG,
+    _LIK_STACKABLE,
     _NOMINAL_DERIVATIONS,
     _PART_AORISTS,
     _TEMPORAL_KI,
@@ -22,6 +23,7 @@ from .derivational_suffixes import (
     CVB_KEN,
     CVB_KEN_BARE,
     D_CA,
+    D_LIK,
     INF,
     KI,
     KI_PRON,
@@ -48,6 +50,7 @@ from .states import (
     N_CASE_LG,
     N_COP_DIR,
     N_DERIV,
+    N_DERIV_LIK_HOST,
     N_DIST,
     N_KI,
     N_ORD,
@@ -249,7 +252,13 @@ def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suf
     poss = [(s, N_POSS) for s in _POSSESSIVES_TO_NONE3] + [(s, N_POSS3) for s in _POSSESSIVES_TO_3]
     plain_case = _case_edges(_PLAIN_CASES)
     pronom_case = _case_edges(_PRONOMINAL_CASES)
-    deriv = [(s, N_DERIV) for s in _NOMINAL_DERIVATIONS]
+    # Same suffix objects in the SAME order — only the LANDING state of the three stackable
+    # derivations (-CI/-sIz/-lI) changes, from plain N_DERIV to N_DERIV_LIK_HOST (which adds one
+    # -lIk edge and is otherwise identical). Every pre-existing analysis is byte-stable: both
+    # states share the same leading edge prefix (inflection + copula) and are both nominal finals.
+    deriv = [
+        (s, N_DERIV_LIK_HOST if s in _LIK_STACKABLE else N_DERIV) for s in _NOMINAL_DERIVATIONS
+    ]
     return {
         # Derivation edges appended after inflection, then the ek-fiil (copula) edges, then the
         # distributive, ordinal, -CA and temporal -ki LAST (in that order): with derivation,
@@ -292,6 +301,15 @@ def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suf
         # A derived stem inflects exactly like a bare root (and hosts the copula: yürüyüştü),
         # but may not derive again.
         N_DERIV: [*inflection, *copula],
+        # A derived stem reached by a STACKABLE first-level derivation (-CI/-sIz/-lI: gazeteci,
+        # evsiz, evli). Identical to N_DERIV — same inflection + copula edges, same objects, same
+        # order — PLUS one further -lIk into plain N_DERIV, appended LAST so the traversal prefix
+        # (and every existing gazeteci/evsiz/evli analysis) is byte-stable. -lIk lands in plain
+        # N_DERIV (no derivational edge), so the second derivation is bounded at depth two:
+        # gazetecilik/evsizlik/evlilik parse, but *kitaplıklık/*kitapçıklık/*gazetecici do not.
+        # applies_to on -lIk ({NOUN, ADJ}) passes for free (after -CI cur_pos=NOUN; after
+        # -sIz/-lI cur_pos=ADJ); voice_final gives gazeteciliği/evsizliğe (k->ğ before a vowel).
+        N_DERIV_LIK_HOST: [*inflection, *copula, (D_LIK, N_DERIV)],
         # The negative-aorist participle -mAz: CASE only (çıkmazda), then N_CASE/N_ACC. It takes
         # NO plural, possessive or copula — the -Im/-Iz those add would resurrect the deliberately
         # -defective finite negative-aorist persons (*gelmezim / *gelmeziz), which an existing
@@ -323,6 +341,10 @@ NOMINAL_FINALS = frozenset(
         N_KI,
         N_ORD,
         N_DERIV,
+        # The -CI/-sIz/-lI host: a bare gazeteci/evsiz/evli is a complete word, exactly as it
+        # was when these landed in N_DERIV. NOMINAL_STATES (the nominal-closure set) is derived
+        # from NOMINAL_FINALS, so nominal acceptance/closure comes for free.
+        N_DERIV_LIK_HOST,
         N_PART_NEG,
         N_DIST,
     }
