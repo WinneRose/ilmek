@@ -27,7 +27,7 @@ import pytest
     "word,root",
     [
         ("zonklardan", "zonk"),  # fake root + plural + ablative (2 morphemes)
-        ("raporlardan", "rapor"),  # real OOV noun + plural + ablative
+        ("faktörlerden", "faktör"),  # real OOV noun + plural + ablative (rapor is now lexicon)
     ],
 )
 def test_guesser_strips_strong_multi_suffix(analyzer, word, root):
@@ -44,11 +44,12 @@ def test_guesser_strips_strong_multi_suffix(analyzer, word, root):
     [
         # A lone 2-char case is now the inclusive minimum strip (threshold lowered from 3 to
         # 2): the possessive is banned, so these strip ONLY the phrase-final case and invent
-        # no possessive. enflasyon/başvuru pin the genitive-buffer disambiguation (the o/ö
-        # tie-break keeps the true consonant-final / vowel-final root).
-        ("enflasyonun", "enflasyon", "genitive", ["un"]),  # NOT enflasyo, NO poss=2sg
-        ("kütüphaneye", "kütüphane", "dative", ["ye"]),  # was strips-nothing (identity) before
-        ("başvurunun", "başvuru", "genitive", ["nun"]),  # NOT başvurun (o/ö is irrelevant here)
+        # no possessive. motivasyon/tabela pin the genitive-buffer disambiguation (the o/ö
+        # tie-break keeps the true consonant-final / vowel-final root). These use still-OOV
+        # analogues since enflasyon/kütüphane/başvuru are now lexicon (batch-2 milestone).
+        ("motivasyonun", "motivasyon", "genitive", ["un"]),  # NOT motivasyo, NO poss=2sg
+        ("sahneye", "sahne", "dative", ["ye"]),  # vowel-final root, strips only the dative
+        ("tabelanın", "tabela", "genitive", ["nın"]),  # NOT tabelan (o/ö is irrelevant here)
         ("zonkta", "zonk", "locative", ["ta"]),  # boundary: 2-char strip, root exactly 3 chars
     ],
 )
@@ -100,7 +101,7 @@ def test_guesser_never_eats_stem_via_buffer_n(analyzer):
 
 
 @pytest.mark.negative
-@pytest.mark.parametrize("word", ["enflasyonun", "salgını", "başvurunun", "problemlerimizde"])
+@pytest.mark.parametrize("word", ["motivasyonun", "aksiyonu", "tabelanın", "problemlerimizde"])
 def test_guesser_never_fabricates_a_possessive(analyzer, word):
     # The guesser strips only [plural]?[case]?, never a possessive: no result (primary or any
     # ranked alternative) may carry a possessive feature other than the "none" default.
@@ -179,7 +180,7 @@ def test_guesser_does_not_over_strip_to_nonword_root(analyzer, word, over_strip)
         # Still-OOV analogues of the old senle/haziran rows (now lexicon): a lone one-char
         # accusative -(y)I is too weak to strip, so the surface stays its own identity, yet
         # the plausible root survives as a ranked alternative.
-        ("raporu", "rapor"),  # rapor+ı(acc): 1-char strip -> identity, rapor kept as alt
+        ("motoru", "motor"),  # motor+u(acc): 1-char strip -> identity, motor kept as alt
         ("problemi", "problem"),  # problem+i(acc): same shape
     ],
 )

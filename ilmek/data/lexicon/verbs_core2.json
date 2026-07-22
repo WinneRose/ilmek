@@ -1,0 +1,463 @@
+{
+  "_comment": [
+    "Batch-2 high-frequency Turkish VERB roots. The aorist allomorph is the documented grammar",
+    "default for every entry here, so none carries an explicit 'aorist': vowel-final -> -r",
+    "(sağlar, karşılar), polysyllabic consonant-final -> -Ir (ulaşır, gerekir, oluşur, bitirir),",
+    "monosyllabic consonant-final -> -Ar (kurar, bozar, dolar, artar, çözer, doğar, ölçer).",
+    "The new monosyllables (art, kur, boz, dol, çöz, doğ, ölç) were each checked against the",
+    "closed ~13-member -Ir monosyllable list (al/bil/bul/dur/gel/gör/kal/ol/öl/san/var/ver/vur)",
+    "and are NOT members, so the -Ar default is correct. Both a base and its lexicalized",
+    "causative are listed where both are common (art/artır, azal/azalt) so neither depends on",
+    "productive causative generation."
+  ],
+  "entries": [
+    {
+      "lemma": "art",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "kur",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "boz",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "dol",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "çöz",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "doğ",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "ölç",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "aktar",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "ulaş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "gerek",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "azal",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "gerçekleş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "oluş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "bulun",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "belirt",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "katıl",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "geliştir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "artır",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "azalt",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "başlat",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "bitir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "değerlendir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "incele",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "araştır",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "kötüleş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "iyileş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yaklaş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "uzaklaş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "gerçekleştir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "oluştur",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yansıt",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yönet",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "öner",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "belirle",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "ilerle",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "uygula",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yürüt",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "sürdür",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "destekle",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "engelle",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "önle",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "kapsa",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "içer",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "düşür",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yüksel",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "indir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "kaldır",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "geçir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "taşın",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yerleş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "ayrıl",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "birleş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "dağıt",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "paylaş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "değiştir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "koru",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "savun",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "saldır",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "uğraş",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "becer",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "inan",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "güven",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "tanı",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "tanımla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "hesapla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "karşılaştır",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "ayır",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "birleştir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yarat",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "üret",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "tüket",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "harca",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "vurgula",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "bildir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "duyur",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yayınla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yayımla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "uyan",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "dinlen",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "boşalt",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yatır",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "etkile",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "ilgilen",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yansı",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "ilet",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "sağla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "karşıla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "tamamla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "düzenle",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "planla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "kanıtla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "öngör",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "varsay",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "amaçla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "hedefle",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yönlendir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "düzelt",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "iyileştir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "güçlendir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "hızlan",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yavaşla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "durdur",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "tekrarla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yinele",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "özetle",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "yorumla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "eleştir",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "öv",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "suçla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "gözet",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "onayla",
+      "pos": "VERB"
+    },
+    {
+      "lemma": "benimse",
+      "pos": "VERB"
+    }
+  ]
+}

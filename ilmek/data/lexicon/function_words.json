@@ -136,6 +136,23 @@
     {"surface": "özellikle", "lemma": "özellikle", "pos": "ADV", "morphemes": [], "features": {}},
     {"surface": "birlikte", "lemma": "birlikte", "pos": "ADV", "morphemes": [], "features": {}},
 
+    {"surface": "herhalde", "lemma": "herhalde", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "aslında", "lemma": "aslında", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "genellikle", "lemma": "genellikle", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "ayrıca", "lemma": "ayrıca", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "gerçekten", "lemma": "gerçekten", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "kesinlikle", "lemma": "kesinlikle", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "tamamen", "lemma": "tamamen", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "oldukça", "lemma": "oldukça", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "giderek", "lemma": "giderek", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "maalesef", "lemma": "maalesef", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "elbette", "lemma": "elbette", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "mutlaka", "lemma": "mutlaka", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "üstelik", "lemma": "üstelik", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "böylece", "lemma": "böylece", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "neredeyse", "lemma": "neredeyse", "pos": "ADV", "morphemes": [], "features": {}},
+    {"surface": "sanki", "lemma": "sanki", "pos": "ADV", "morphemes": [], "features": {}},
+
     {"surface": "her", "lemma": "her", "pos": "DET", "morphemes": [], "features": {}},
     {"surface": "bazı", "lemma": "bazı", "pos": "DET", "morphemes": [], "features": {}},
     {"surface": "hiçbir", "lemma": "hiçbir", "pos": "DET", "morphemes": [], "features": {}}

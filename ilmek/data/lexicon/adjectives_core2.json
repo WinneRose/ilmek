@@ -1,0 +1,513 @@
+{
+  "_comment": [
+    "Batch-2 high-frequency Turkish ADJECTIVEs (relational -i/-sAl, -lI/-sIz qualitatives,",
+    "loan adjectives). They inflect nominally and take the ek-fiil copula (ekonomikti). Only the",
+    "final-stop-softening subset carries attributes=['voicing']: ortak->ortağı, karmaşık->",
+    "karmaşığı, ılık->ılığı, ilginç->ilginci. t-final (eşit, net) and l-final (adil) are left",
+    "unflagged — they keep the stop (eşiti, neti, adili)."
+  ],
+  "entries": [
+    {
+      "lemma": "ortak",
+      "pos": "ADJ",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "karmaşık",
+      "pos": "ADJ",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "ılık",
+      "pos": "ADJ",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "ilginç",
+      "pos": "ADJ",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "düşük",
+      "pos": "ADJ",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "eksik",
+      "pos": "ADJ",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "ekonomik",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "siyasi",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "sosyal",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "kültürel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "politik",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "temel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "çeşitli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "aynı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "bağımsız",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "etkili",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "etkin",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "başarılı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "olumlu",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "olumsuz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "ilgili",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "sorumlu",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "doğal",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yapay",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "geçerli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "geçici",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "sürekli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "kalıcı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yeterli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yetersiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "uygun",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "zorunlu",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "gönüllü",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "özgün",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "benzersiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "bireysel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "ulusal",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yerel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "bölgesel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "küresel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "evrensel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "tarihi",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yasal",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "hukuki",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "adil",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "eşit",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "haklı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "haksız",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "mecburi",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "ücretsiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "ücretli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "ayrıntılı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "kapsamlı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yüzeysel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "belirgin",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "belirsiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "kesin",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "muhtemel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "olası",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "göreceli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "şaşırtıcı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "heyecanlı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "sıradan",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "olağan",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "normal",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "anormal",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "modern",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "çağdaş",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "klasik",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "geleneksel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "güncel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "serin",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "nemli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "verimli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "zararlı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yararlı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "faydalı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "gereksiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "anlamlı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "anlamsız",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "değerli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "değersiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "güvenli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "güvenilir",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "tehlikeli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "riskli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "kızgın",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "sinirli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "endişeli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "huzurlu",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "net",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yoksul",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "varlıklı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "popüler",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "tanınmış",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "gizli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "saklı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "görünür",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "görünmez",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "somut",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "soyut",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "mantıklı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "mantıksız",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "bilinçli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "bilinçsiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "dikkatli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "dikkatsiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "düzenli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "düzensiz",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "deneyimli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "tecrübeli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yetenekli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "becerikli",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yaratıcı",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "tam",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "yarım",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "tekil",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "çoğul",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "kişisel",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "kamusal",
+      "pos": "ADJ"
+    },
+    {
+      "lemma": "bağımlı",
+      "pos": "ADJ"
+    }
+  ]
+}

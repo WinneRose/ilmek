@@ -1,0 +1,1421 @@
+{
+  "_comment": [
+    "Batch-2 aggressive lexicon expansion: high-frequency Turkish NOUNs (institutional,",
+    "politics/economy, society/culture, nature, health, education, daily-life, abstract).",
+    "No engine change — all inflect through the existing nominal FSM.",
+    "",
+    "VOICING POLICY (opt-in engine => omission is always safe): attributes=['voicing'] is set",
+    "ONLY where the final stop VERIFIABLY softens before a vowel suffix:",
+    "  - polysyllabic -lIk/-lUk abstracts (sorumluluk->sorumluluğu, yönetmelik->yönetmeliği);",
+    "  - other polysyllabic native -k (dernek->derneği, emek->emeği, destek->desteği);",
+    "  - polysyllabic ç (süreç->süreci, inanç->inancı, utanç->utancı);",
+    "  - individually-verified Arabic p (talep->talebi).",
+    "NOT flagged (kept a plain stop before a vowel, per TDK): t-final loans (hükümet->hükümeti,",
+    "cumhuriyet, siyaset, ticaret, şart, semt, boyut, hizmet — devlet-class); f-final (taraf,",
+    "teklif, tarif, esnaf); v-final (görev/ödev/grev). A wrong voicing flag silently licenses a",
+    "false analysis (*hükümedi), so unverified stop-finals are omitted rather than guessed.",
+    "",
+    "DEFERRED (NOT added — documented per the correctness-over-coverage contract): 3sg-possessive-",
+    "FUSED compounds (gökyüzü, ayakkabı, havaalanı). The engine has no compound attribute, so a",
+    "plain entry would generate *gökyüzüde instead of the pronominal-n gökyüzünde — a WRONG",
+    "paradigm. Left to the guesser / a future compound milestone."
+  ],
+  "entries": [
+    {
+      "lemma": "sorumluluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "yönetmelik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "bakanlık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "başkanlık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "özgürlük",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "eşitlik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "güvenlik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "değişiklik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "özellik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "nitelik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "kuraklık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "olasılık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "gerçeklik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "yoğunluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "çoğunluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "azınlık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "varlık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "yokluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "birlik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "gençlik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "mutluluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "zorluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "kolaylık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "yoksulluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "işsizlik",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "açlık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "yorgunluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "pişmanlık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "dernek",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "gelenek",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "emek",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "destek",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "istek",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "olanak",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "konak",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "tüzük",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "sözcük",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "süreç",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "inanç",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "utanç",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "talep",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "ışık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "kuşak",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "doğruluk",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "yanlışlık",
+      "pos": "NOUN",
+      "attributes": [
+        "voicing"
+      ]
+    },
+    {
+      "lemma": "enflasyon",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ekonomi",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "siyaset",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "hükümet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "meclis",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "cumhuriyet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ticaret",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "sektör",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "firma",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kurum",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kuruluş",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "örgüt",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "proje",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "plan",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "program",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yöntem",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ilke",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "koşul",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ortam",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "doğa",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "iklim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "belediye",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yönetim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "anayasa",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "vatandaş",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "toplantı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "sözleşme",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "anlaşma",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "parti",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kampanya",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "politika",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "demokrasi",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "dava",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yetki",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kurul",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "komisyon",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "bakan",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "vekil",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "lider",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yönetici",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "bütçe",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "piyasa",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "üretim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tüketim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yatırım",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kredi",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "maaş",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "faiz",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "döviz",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "borsa",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "reklam",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "marka",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "müşteri",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "satış",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ihracat",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ithalat",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "maliyet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "adalet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "edebiyat",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "iletişim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "medya",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "basın",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yayın",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "röportaj",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "sinema",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tiyatro",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "şiir",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "heykel",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "müze",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "eser",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "sanatçı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yazar",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "şair",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "din",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kavram",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "teori",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "akademi",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "bilim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "makale",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "araştırma",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "deney",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "buluş",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "teknoloji",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yazılım",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "donanım",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "internet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "uygulama",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "sel",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kaza",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "afet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "felaket",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "hayvan",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "bitki",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "gezegen",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "evren",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "enerji",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "salgın",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tedavi",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "hemşire",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "muayene",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "aşı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "virüs",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "teşhis",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "reçete",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "beslenme",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ameliyat",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kıyafet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "eğitim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "öğretim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "fakülte",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "veri",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "rapor",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "belge",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "imza",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "çanta",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "cüzdan",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "şemsiye",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "valiz",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "eşya",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "elbise",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "mağaza",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "alışveriş",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ürün",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "mal",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "sebze",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "çorba",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "salata",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "peynir",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yumurta",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "otel",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "restoran",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "lokanta",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kafe",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "büro",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ofis",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "postane",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "karakol",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "istasyon",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "liman",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tünel",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "etki",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "katkı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tepki",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ilgi",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ilişki",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "gelişme",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "değişim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tür",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yön",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yan",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "taraf",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "husus",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "mesele",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "çaba",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "çalışma",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "davranış",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tutum",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yaklaşım",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "bakış",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "öneri",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "teklif",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "gereksinim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "şart",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "şikayet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "itiraz",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "eleştiri",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yorum",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "açıklama",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "belirti",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "işaret",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "özveri",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "dayanışma",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "sıkıntı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "başvuru",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ölçü",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "düzey",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "seviye",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "derece",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "biçim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "önlem",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "aşama",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "çağ",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yüzyıl",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "takvim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "dakika",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "saniye",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "vatan",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ilçe",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "semt",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "başkent",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "gayret",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "faaliyet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "hareket",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "hizmet",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "boyut",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "fırsat",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ihtimal",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "özlem",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "endişe",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kaygı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "heyecan",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "öfke",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "neşe",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "huzur",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "gurur",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "sakin",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "talimat",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ziyaret",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "mühendis",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "gazeteci",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "şoför",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "aşçı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "garson",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "vali",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "çiftçi",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "balıkçı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "mimar",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "pilot",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "savcı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tercüman",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kütüphane",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tarif",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "esnaf",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ödev",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "grev",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kelime",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "cümle",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "konuşma",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "liste",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "tablo",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "fotoğraf",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "video",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "görüntü",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "öğle",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "mevsim",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "bahar",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kış",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "dalga",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kıyı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "gölge",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yalan",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "hata",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kusur",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ölçüt",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "kalite",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "miktar",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "rakam",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yüzde",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "toplam",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "fark",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ortalama",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "görevli",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "yetkili",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "temsilci",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "üye",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "katılımcı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "izleyici",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "seyirci",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "dinleyici",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "birey",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "nüfus",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "ayrıntı",
+      "pos": "NOUN"
+    },
+    {
+      "lemma": "vakıf",
+      "pos": "NOUN",
+      "attributes": [
+        "vowel_drop"
+      ],
+      "forms": [
+        "vakıf",
+        "vakf"
+      ]
+    },
+    {
+      "lemma": "keşif",
+      "pos": "NOUN",
+      "attributes": [
+        "vowel_drop"
+      ],
+      "forms": [
+        "keşif",
+        "keşf"
+      ]
+    },
+    {
+      "lemma": "metin",
+      "pos": "NOUN",
+      "attributes": [
+        "vowel_drop"
+      ],
+      "forms": [
+        "metin",
+        "metn"
+      ]
+    }
+  ]
+}
