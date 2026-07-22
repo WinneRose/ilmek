@@ -392,5 +392,7 @@
   {"lemma": "suç", "pos": "NOUN"},
   {"lemma": "göç", "pos": "NOUN"},
   {"lemma": "sağlık", "pos": "NOUN", "attributes": ["voicing"]},
-  {"lemma": "hastalık", "pos": "NOUN", "attributes": ["voicing"]}
+  {"lemma": "hastalık", "pos": "NOUN", "attributes": ["voicing"]},
+
+  {"lemma": "hasta", "pos": "NOUN"}
 ]

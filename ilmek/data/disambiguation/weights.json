@@ -1,0 +1,72 @@
+{
+  "_about": [
+    "HEURISTIC, hand-set coarse priors for rule+frequency candidate scoring.",
+    "These are NOT corpus frequencies -- this repo ships no corpus. 'Frequency' here",
+    "means coarse, documented POS/source plausibility priors, not learned Zipf counts.",
+    "Every number is a rule weight, kept in DATA (not hardcoded in Python) per the",
+    "project contract. The Python holds only the generic matching/scoring machinery.",
+    "Extension point: score_candidate() will read an optional per-lemma 'frequency'",
+    "field off the lexicon (frequency_weight below) once such counts exist; until then",
+    "no lexicon entry carries it, so that term is a documented no-op.",
+    "All scores feed a bounded, sum-normalized HEURISTIC confidence that ONLY the",
+    "sentence layer sets -- never a learned probability, never on word-level analyze()."
+  ],
+
+  "source_rank": {"lexicon": 6.0, "rule": 4.0, "guess": 2.0},
+
+  "source_reliability": {"lexicon": 1.0, "rule": 0.8, "guess": 0.5},
+
+  "pos_prior": {
+    "NOUN": 3.0, "VERB": 3.0, "PROPN": 3.0, "PRON": 3.0,
+    "ADJ": 3.0, "ADV": 3.0, "NUM": 3.0,
+    "DET": 2.0, "ADP": 2.0, "CONJ": 2.0, "PART": 2.0, "INTJ": 2.0,
+    "ABBR": 2.0, "SYM": 1.0, "PUNCT": 1.0,
+    "X": 0.5
+  },
+  "default_pos_prior": 2.0,
+
+  "morpheme_penalty": 0.25,
+  "derivation_penalty": 0.4,
+  "nominal_predicate_penalty": 0.8,
+  "root_length_bonus": 0.02,
+  "frequency_weight": 0.0,
+
+  "context_rules": [
+    {
+      "name": "gen_before_poss",
+      "doc": "R1: a token after a genitive-marked word prefers a possessive reading (onun evi -> ev+poss3sg; also noun genitives kitabin kapisi).",
+      "bonus": 4.0,
+      "left": {"feature_eq": {"case": "genitive"}},
+      "prefer": {"feature_present": ["possessive"], "feature_ne": {"possessive": "none"}}
+    },
+    {
+      "name": "num_before_noun",
+      "doc": "R3: a numeral immediately before a noun prefers the bare-nominal NUM reading (Yuz kisi -> yuz=NUM).",
+      "bonus": 3.0,
+      "right": {"pos": "NOUN"},
+      "prefer": {"pos": "NUM", "feature_eq": {"case": "nominative", "possessive": "none"}}
+    },
+    {
+      "name": "acc_before_verb",
+      "doc": "R2: a content word before a finite verb, NOT preceded by a genitive, prefers the accusative direct-object reading (evi gordum -> ev+accusative). Guarded off after a genitive because a possessed object would surface with -ni (evini), so the genitive-left evidence (R1) must win.",
+      "bonus": 2.5,
+      "left_absent": {"feature_eq": {"case": "genitive"}},
+      "right": {"pos": "VERB", "feature_present": ["person"], "feature_any": ["tense", "aspect", "evidential"]},
+      "prefer": {"feature_eq": {"case": "accusative"}}
+    },
+    {
+      "name": "final_finite_verb",
+      "doc": "R4: the last analyzable token of a sentence prefers a finite-verb reading (reinforces yuzuyor / birak-tik as the predicate over a nominal/participle homograph).",
+      "bonus": 2.0,
+      "is_final": true,
+      "prefer": {"pos": "VERB", "feature_present": ["person"], "feature_any": ["tense", "aspect", "evidential"]}
+    },
+    {
+      "name": "adj_before_noun",
+      "doc": "R5: a word immediately before a noun prefers an adjective reading (hasta cocuk -> hasta=ADJ). With the current lexicon this reinforces (the analyzer already ranks ADJ before NOUN for an equal-length homograph) and raises the chosen candidate's confidence; it will flip the pick once a NOUN-primary homograph enters the lexicon.",
+      "bonus": 1.5,
+      "right": {"pos": "NOUN"},
+      "prefer": {"pos": "ADJ"}
+    }
+  ]
+}

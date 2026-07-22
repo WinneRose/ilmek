@@ -41,7 +41,7 @@ silently invent a new rule.**
 | `morphology.morphotactics` | noun & verb suffix-transition graphs (data) |
 | `morphology.phonology` | vowel harmony and sound changes (morphophonemics) |
 | `morphology.analyzer` | generate and filter valid analysis candidates |
-| *disambiguator* (future) | sentence-context candidate ranking |
+| `disambiguation` | heuristic candidate scoring + sentence-context candidate ranking (separate, optional) |
 | **Public API** | `stem`, `lemmatize`, `analyze`, `analyze_sentence` |
 
 No circular dependencies between layers. **The contextual model must never be a required
