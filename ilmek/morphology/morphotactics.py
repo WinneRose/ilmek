@@ -19,6 +19,23 @@ root (:attr:`~ilmek.morphology.lexicon.Root.aorist`) selected declaratively by a
 -(y)AmA (gelemez), the copular conditional -(y)sA (gelirse), and the negative-aorist 1sg/1pl
 (gelmem/gelmeyiz) — all xfailed rather than overgenerated.
 
+Verb voice / çatı (this milestone): a bounded voice layer sits between the root and the
+negation/tense chain, encoding the canonical order reflexive/reciprocal < causative(<=2) <
+passive. Reflexive -In and reciprocal -Iş share the ``V_RECIP`` state; the first causative
+(-DIr/-t, and the lexically-limited -Ir/-Ar) enters ``V_CAUS1``, a second causative
+``V_CAUS2``; the passive (-Il/-In/-n) enters ``V_PASS``. Every voice state then reuses the
+bare root's continuation via :func:`_root_continuation`, so a voiced stem inflects for
+negation, all tenses, ability, mood and the verb->nominal derivations for free (yaptırabilir,
+yapılmayacaktı, görüşme). Crucially the post-voice aorist is the deterministic -Ir
+(``AOR_VOICE``), never the root's lexical class (denir, not ``*dener``). Which voice may fire
+is gated declaratively — the causative by :attr:`Suffix.causative_class` against the root fact
+(second/post-voice causatives by :attr:`Suffix.stem_final_class` instead), the passive by
+``stem_final_class`` alone (fully productive), and the semi-productive reflexive/reciprocal by
+:attr:`Suffix.requires_attribute`. Voice is recorded (ordered) under ``features[tags.VOICE]``;
+it is not derivational, so stem and lemma stay the root (yaptırdı -> stem/lemma yap). The
+voice states are deliberately non-final (a bare voiced imperative is deferred), and the
+guesser walks no voice edge (``allow_voice=False``), so OOV stripping is byte-identical.
+
 Derivation (this milestone): a single, non-recursive derivation slot sits between root and
 inflection. Nominal derivations (-lI, -sIz, -lIk, -CI) leave ``N_ROOT`` for ``N_DERIV``;
 verbal derivations (-mA, -(y)Iş, -(y)An, -DIk, -(y)AcAk) leave ``V_ROOT``/``V_NEG`` for the
@@ -65,6 +82,15 @@ N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, 
 N_COP_DIR = "N_COP_DIR"  # after the assertive/generalizing ek-fiil -DIr; terminal this milestone
 
 V_ROOT = "V_ROOT"
+# Voice (çatı) states, between the root and the negation/tense layer. Ordered
+# reflexive/reciprocal < causative(<=2) < passive, encoded as a bounded (acyclic) chain so
+# stacking is finite. None is final this milestone: a bare voiced stem IS a real 2sg
+# imperative (yıkan!, görüş!) but making it final would rank it above the homograph nouns
+# (sorun, alın) and the -Iş verbal nouns (görüş, geliş) — deferred, correctness over coverage.
+V_RECIP = "V_RECIP"  # after reflexive -In or reciprocal -Iş (shared: both precede caus/pass)
+V_CAUS1 = "V_CAUS1"  # after the first causative -DIr/-t/-Ir/-Ar
+V_CAUS2 = "V_CAUS2"  # after a second (stacked) causative (yap-tır-t); bounded at depth 2
+V_PASS = "V_PASS"  # after the passive -Il/-In/-n; takes only the negation/tense continuation
 V_NEG = "V_NEG"
 V_ABIL = "V_ABIL"  # after ability -(y)Abil; not final (no bare *gelebil), takes further tense
 V_T1 = "V_T1"  # after a tense/aspect that takes the type-1 person set
@@ -105,6 +131,27 @@ class Suffix:
     #: only ``gelir`` and a synthetic/guessed root (``aorist=None``) takes none. ``None`` on
     #: every non-aorist suffix (and on the post-ability aorist, which is always ``-Ir``).
     aorist_class: str | None = None
+    #: The verbal voice this edge realizes (``"causative"``/``"passive"``/``"reflexive"``/
+    #: ``"reciprocal"``), appended in order to ``features[tags.VOICE]``. ``None`` on every
+    #: non-voice suffix. A voice suffix is not derivational (stem/lemma stay the root), and it
+    #: is gated off for the guesser (``allow_voice=False``) so OOV stripping is unchanged.
+    voice: str | None = None
+    #: For the lexically-irregular *first* causative: the allomorph class (``"DIr"``/``"t"``/
+    #: ``"Ir"``/``"Ar"``) this edge realizes, matched against the root's own
+    #: :attr:`~ilmek.morphology.lexicon.Root.causative` exactly as ``aorist_class`` is. ``None``
+    #: on the phonologically-chosen (second / post-voice) causatives and every non-causative.
+    causative_class: str | None = None
+    #: A declarative *phonological* guard: the edge fires only when the running surface's
+    #: final segment falls in this class set — ``"vowel"``/``"l"``/``"r"``/``"other"`` (a
+    #: consonant that is not l or r). Used by the passive allomorphs (-In after vowel/l, -Il
+    #: after r/other) and the phonologically-chosen causatives. ``None`` -> no phonological
+    #: restriction. Kept out of the analyzer as a hardcoded ``if`` — the rule lives in data.
+    stem_final_class: frozenset[str] | None = None
+    #: The root attribute this edge requires (declared in the lexicon entry), e.g.
+    #: ``"reflexive"`` / ``"reciprocal"``. The semi-productive reflexive and reciprocal voices
+    #: fire only on a curated verb list, so this is the overgeneration guard for them. ``None``
+    #: -> unrestricted (the fully-productive passive and every non-voice suffix).
+    requires_attribute: str | None = None
 
 
 # --- Nominal suffixes ----------------------------------------------------------------
@@ -309,6 +356,12 @@ _AORISTS = [AOR_R, AOR_AR, AOR_IR]
 #: The post-ability aorist is always -Ir (gel-ebil-ir), independent of the root's class, so
 #: it carries no ``aorist_class`` guard.
 AOR_ABIL = Suffix("aor", "Ir", {tags.TENSE: "aorist"})
+#: The post-*voice* aorist is likewise always -Ir: a voiced stem is always consonant-final,
+#: so its aorist is deterministically -Ir regardless of the root's lexical class (denir,
+#: alınır, okunur, görüşür, yaptırır). Reusing the root-class aorists here would wrongly give
+#: ``*dener`` for the passive ``den``; AOR_VOICE carries no ``aorist_class`` guard (like
+#: AOR_ABIL) so the class fact is correctly ignored after voice.
+AOR_VOICE = Suffix("aor", "Ir", {tags.TENSE: "aorist"})
 
 # Negative aorist -mAz (gelmez, yapmaz): a dedicated negative morpheme (not NEG + aorist).
 NEG_AOR = Suffix("neg_aor", "mAz", {tags.POLARITY: "negative", tags.TENSE: "aorist"})
@@ -317,6 +370,64 @@ NEG_AOR = Suffix("neg_aor", "mAz", {tags.POLARITY: "negative", tags.TENSE: "aori
 # stacks for free. Optative -(y)A (gele) -> its own person set (V_OPT).
 COND = Suffix("cond", "sA", {tags.MOOD: "conditional"})
 OPT = Suffix("opt", "(y)A", {tags.MOOD: "optative"})
+
+
+# --- Voice (çatı) suffixes -----------------------------------------------------------
+# The voice layer sits between the root and negation/tense. Each suffix records its voice
+# under features[tags.VOICE] (an ordered tuple, so stacking is preserved). Passive is fully
+# productive (phonological guard only); reflexive/reciprocal are semi-productive (a root
+# attribute gates them); causative's *first* allomorph is a lexical fact on the root, but a
+# second (stacked) causative — and a causative after another voice suffix — is chosen by the
+# stem's final segment, since a voiced stem's ending is predictable.
+
+_CVR = frozenset({"vowel", "l", "r"})  # a -t causative attaches after a vowel or l/r
+_CONS_OTHER = frozenset({"other"})  # a consonant that is not l or r (D-causative after voice)
+
+# Causative, first (from the bare root / a reciprocal): lexically-irregular allomorph, guarded
+# by the root's causative class exactly like the aorist. -DIr (yaptır, güldür), -t (okut,
+# oturt), and the lexically-limited -Ir (içir, kaçır) / -Ar (çıkar).
+CAUS_DIR = Suffix("caus", "DIr", {}, voice="causative", causative_class="DIr")
+CAUS_T = Suffix("caus", "t", {}, voice="causative", causative_class="t")
+CAUS_IR = Suffix("caus", "Ir", {}, voice="causative", causative_class="Ir")
+CAUS_AR = Suffix("caus", "Ar", {}, voice="causative", causative_class="Ar")
+# Causative, post-voice / second (stacked): the allomorph is phonologically predictable, so it
+# is guarded by the stem's final-segment class, not the root fact. -t after a vowel/l/r
+# (yaptır-t, çıkar-t), -DIr after any other consonant (okut-tur, and görüş-tür after the ş of a
+# reciprocal). D->t hardening after a voiceless stop is free in the phonology.
+CAUS2_T = Suffix("caus", "t", {}, voice="causative", stem_final_class=_CVR)
+CAUS2_DIR = Suffix("caus", "DIr", {}, voice="causative", stem_final_class=_CONS_OTHER)
+
+# Passive, fully productive: -In after a vowel or l (oku-n, de-n, al-ın, bul-un — the (I)
+# linking vowel collapses -n / -In for free), -Il after r or any other consonant (yap-ıl,
+# yaz-ıl, otur-ul). The final-segment guard is what blocks *oku+l -> "okul" as a fake passive.
+PASS_IN = Suffix("pass", "(I)n", {}, voice="passive", stem_final_class=frozenset({"vowel", "l"}))
+PASS_IL = Suffix("pass", "(I)l", {}, voice="passive", stem_final_class=frozenset({"r", "other"}))
+
+# Reflexive -In (yıka-n, giy-in, tara-n) and reciprocal/collective -Iş (gör-üş, bak-ış, döv-üş,
+# anla-ş): semi-productive, so each is gated by a curated root attribute. -In shares its shape
+# with the passive, so an attributed vowel/l-final verb (yıka, al) yields BOTH readings. -Iş
+# shares its shape with the verbal-noun -(y)Iş, but note the reciprocal takes NO (y) buffer
+# after a vowel (anla-ş, distinct from the verbal noun anla-(y)Iş = anlayış).
+REFL_IN = Suffix("refl", "(I)n", {}, voice="reflexive", requires_attribute="reflexive")
+RECIP_IS = Suffix("recip", "(I)ş", {}, voice="reciprocal", requires_attribute="reciprocal")
+
+#: The reflexive/reciprocal edges leaving the bare root (both land in the shared V_RECIP).
+_VOICE_REFL_RECIP = [(REFL_IN, V_RECIP), (RECIP_IS, V_RECIP)]
+#: The lexically-guarded first-causative edges leaving the bare root (into V_CAUS1).
+_VOICE_CAUS1 = [
+    (CAUS_DIR, V_CAUS1),
+    (CAUS_T, V_CAUS1),
+    (CAUS_IR, V_CAUS1),
+    (CAUS_AR, V_CAUS1),
+]
+#: The two passive edges (into V_PASS); exactly one fires per stem (guards are disjoint).
+_VOICE_PASS = [(PASS_IL, V_PASS), (PASS_IN, V_PASS)]
+
+
+def _post_voice_caus(target: str) -> list[tuple[Suffix, str]]:
+    """Phonologically-guarded causative edges after a reciprocal (-> V_CAUS1) or a first
+    causative (-> V_CAUS2). A voiced stem's ending is predictable, so no root fact is used."""
+    return [(CAUS2_T, target), (CAUS2_DIR, target)]
 
 
 # --- Verbal derivational suffixes (verb -> new nominal/adjectival stem) ---------------
@@ -337,37 +448,67 @@ PART_ACAK = Suffix(
 _VERBAL_DERIVATIONS_TO_NOMINAL = [VN_MA, VN_IS, PART_AN, PART_DIK, PART_ACAK]
 
 
-def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
-    primary_from = lambda: [  # noqa: E731 - compact, local
-        (PROG, V_T1),
-        (FUT, V_T1),
-        (EVID, V_T1),
-        (PAST, V_T2),
-    ]
-    # Aorist / mood edges leaving the root and the negation, appended after the primary
-    # tenses so plain-inflection traversal order is unchanged. The three aorist edges are
-    # guarded by ``aorist_class``, so exactly one fires per verb (and none for a guess).
-    aorist_mood = lambda: [  # noqa: E731 - compact, local
+def _primary_from() -> list[tuple[Suffix, str]]:
+    return [(PROG, V_T1), (FUT, V_T1), (EVID, V_T1), (PAST, V_T2)]
+
+
+def _root_continuation(aorist_edges: list[tuple[Suffix, str]]) -> list[tuple[Suffix, str]]:
+    """The negation / tense / mood / derivation edges shared by the bare root AND every
+    voiced stem. The only difference is the aorist: the bare root selects its lexically-
+    irregular allomorph via ``aorist_class`` (``aorist_edges`` = the three guarded -r/-Ar/-Ir
+    edges), whereas a voiced stem is always consonant-final and takes the deterministic -Ir
+    (``aorist_edges`` = the single unguarded AOR_VOICE). Everything else — negation, the four
+    primary tenses, ability, the negative aorist, conditional, optative, and the verb->nominal
+    derivations — is identical, so görüşme, yaptırabilir, yapılmaz, okutmak all fall out free.
+    """
+    return [
+        (NEG, V_NEG),
+        *_primary_from(),
         (ABIL, V_ABIL),
-        *[(s, V_T1) for s in _AORISTS],
+        *aorist_edges,
         (NEG_AOR, V_AOR_NEG),
         (COND, V_T2),
         (OPT, V_OPT),
+        *[(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL],
+        (INF, V_INF),
     ]
-    # Derivation edges appended after the inflectional ones, same as the nominal side.
+
+
+def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
+    # The bare root's aorist is the three lexically-guarded allomorph edges; a voiced stem's
+    # aorist is the single deterministic -Ir (AOR_VOICE), never the root's class.
+    root_aorists = [(s, V_T1) for s in _AORISTS]
+    voiced_aorist = [(AOR_VOICE, V_T1)]
     deriv = [(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL] + [(INF, V_INF)]
     copula = [(COP_EVID, V_COP1), (COP_PAST, V_COP2)]
     pers_t1 = [(s, V_PERS) for s in _PERSON_T1]
     pers_t2 = [(s, V_PERS) for s in _PERSON_T2]
+    # The voice-progression edges are appended AFTER the bare root's full continuation, so the
+    # pre-milestone traversal prefix of V_ROOT is byte-identical: plain inflection and the
+    # guesser (which forbids voice) see the same order as before.
+    voice_from_root = [*_VOICE_REFL_RECIP, *_VOICE_CAUS1, *_VOICE_PASS]
     return {
-        V_ROOT: [(NEG, V_NEG), *primary_from(), *aorist_mood(), *deriv],
+        V_ROOT: [*_root_continuation(root_aorists), *voice_from_root],
         # After negation: the primary tenses, ability (gelmeyebilir), conditional (gelmese),
         # optative (gelmeye). The aorist and negative-aorist edges are intentionally absent —
         # the aorist's own negative is -mAz on the bare root, not NEG + aorist (*gelmemez).
-        V_NEG: [*primary_from(), (ABIL, V_ABIL), (COND, V_T2), (OPT, V_OPT), *deriv],
+        V_NEG: [*_primary_from(), (ABIL, V_ABIL), (COND, V_T2), (OPT, V_OPT), *deriv],
         # Ability: primary tenses, the deterministic -Ir aorist, conditional, and the verbal
         # derivations (gelebilmek, gelebilen). Not final -> no bare *gelebil.
-        V_ABIL: [*primary_from(), (AOR_ABIL, V_T1), (COND, V_T2), *deriv],
+        V_ABIL: [*_primary_from(), (AOR_ABIL, V_T1), (COND, V_T2), *deriv],
+        # Voice states: each takes the shared voiced-stem continuation (with the deterministic
+        # -Ir aorist), plus the onward voice progression. None is a final state, so a bare
+        # voiced stem is not accepted (see V_RECIP's note above). Order refl/recip < caus(<=2)
+        # < pass is enforced by which progression edges each state exposes.
+        # After reflexive/reciprocal: a (phonologically-chosen) causative or a passive.
+        V_RECIP: [*_root_continuation(voiced_aorist), *_post_voice_caus(V_CAUS1), *_VOICE_PASS],
+        # After the first causative: a second (stacked) causative or a passive.
+        V_CAUS1: [*_root_continuation(voiced_aorist), *_post_voice_caus(V_CAUS2), *_VOICE_PASS],
+        # After a second causative: only a passive (depth is bounded at two causatives).
+        V_CAUS2: [*_root_continuation(voiced_aorist), *_VOICE_PASS],
+        # After the passive: the continuation only (voice is closed; no double passive here —
+        # the impersonal double passive aranıldı is deferred).
+        V_PASS: [*_root_continuation(voiced_aorist)],
         V_T1: [*copula, *pers_t1],
         V_T2: [*copula, *pers_t2],
         V_COP1: pers_t1,
@@ -387,6 +528,9 @@ VERBAL_START = V_ROOT
 # V_NEG is final too: a bare negated stem is a negative imperative (gelme! "don't come").
 # V_INF (gelmek) is final: a bare infinitive is a complete word. V_AOR_NEG (gelmez) and
 # V_OPT (gele) are final: a bare negative-aorist / optative 3sg is a complete word.
+# The voice states (V_RECIP, V_CAUS1, V_CAUS2, V_PASS) are deliberately NOT final this
+# milestone: a bare voiced stem is a real 2sg imperative (yıkan!) but making it final would
+# rank it above the homograph nouns (sorun, alın) and the -Iş verbal nouns (görüş, geliş).
 VERBAL_FINALS = frozenset(
     {V_ROOT, V_NEG, V_T1, V_T2, V_COP1, V_COP2, V_AOR_NEG, V_OPT, V_PERS, V_INF}
 )

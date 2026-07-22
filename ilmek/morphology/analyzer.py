@@ -27,6 +27,26 @@ def _has_vowel(text: str) -> bool:
     return any(ch in VOWELS for ch in text)
 
 
+def _stem_final_class(surface: str) -> str:
+    """Classify a stem's final segment for the voice edges' declarative phonological guard.
+
+    ``"vowel"`` / ``"l"`` / ``"r"`` / ``"other"`` (a consonant that is not l or r). This is
+    read off the *running surface* (the free root form or a voiced stem), never a hardcoded
+    per-suffix ``if``; root-boundary voicing (t->d, p->b, k->ğ) never crosses these classes,
+    so peeking with the free form before allomorph selection is safe.
+    """
+    if not surface:
+        return "other"
+    ch = surface[-1]
+    if ch in VOWELS:
+        return "vowel"
+    if ch == "l":
+        return "l"
+    if ch == "r":
+        return "r"
+    return "other"
+
+
 def _ends_with_vowel(text: str) -> bool:
     return bool(text) and text[-1] in VOWELS
 
@@ -89,6 +109,7 @@ def _generate(
     source: str = tags.SOURCE_LEXICON,
     allow_derivation: bool = True,
     allow_nominal_copula: bool = True,
+    allow_voice: bool = True,
 ) -> list[AnalysisResult]:
     """All full-word analyses reachable from ``root`` via the morphotactic graph.
 
@@ -98,7 +119,9 @@ def _generate(
     off, only inflectional edges are walked, exactly as before this milestone.
     ``allow_nominal_copula`` gates the ek-fiil edges the same way — ``False`` on the guesser
     so an unknown word is never stripped of a copular ending, keeping guesser output
-    byte-identical.
+    byte-identical. ``allow_voice`` gates the voice (çatı) edges likewise: the passive is
+    fully productive (no root fact), so without this an OOV word would be voice-split; ``False``
+    on the guesser keeps its output byte-identical.
     """
     if root.is_nominal:
         start = mt.NOMINAL_START
@@ -112,7 +135,17 @@ def _generate(
     graph, finals = mt.GRAPH, mt.FINALS
     out: list[AnalysisResult] = []
 
-    def dfs(state, acc, morphemes, features, prev_voice_final, deriv_names, stem_surface, cur_pos):
+    def dfs(
+        state,
+        acc,
+        morphemes,
+        features,
+        prev_voice_final,
+        deriv_names,
+        stem_surface,
+        cur_pos,
+        voices,
+    ):
         if state in finals and acc == word:
             feats = dict(features)
             if state in mt.NOMINAL_STATES:
@@ -132,6 +165,9 @@ def _generate(
                 mt.finalize_verbal_features(feats)
             if deriv_names:
                 feats[tags.DERIVATION] = deriv_names
+            if voices:
+                # Ordered tuple, so stacked voices survive (a dict-merge would collapse them).
+                feats[tags.VOICE] = voices
             out.append(
                 AnalysisResult(
                     surface=word,
@@ -165,6 +201,31 @@ def _generate(
             # class-guarded aorist is ever emitted for a guess.
             if suffix.aorist_class is not None and suffix.aorist_class != root.aorist:
                 continue
+            # Voice (çatı) edges are gated off for the guesser (mirrors allow_derivation): the
+            # passive is fully productive with no root fact, so an OOV word would otherwise be
+            # voice-split. With it off, OOV stripping stays byte-identical.
+            if suffix.voice is not None and not allow_voice:
+                continue
+            # Lexically-irregular *first* causative allomorph: like the aorist, the edge fires
+            # only for a root whose lexical causative class matches (synthetic/nominal roots
+            # have causative=None, and a suppletive-causative verb has "none": no match, so no
+            # *geldir / *gittir). The phonologically-chosen causatives carry no causative_class.
+            if suffix.causative_class is not None and suffix.causative_class != root.causative:
+                continue
+            # Semi-productive reflexive/reciprocal: fire only on a verb carrying the required
+            # attribute (data-declared curated list), the overgeneration guard for them.
+            if (
+                suffix.requires_attribute is not None
+                and suffix.requires_attribute not in root.attributes
+            ):
+                continue
+            # Declarative phonological guard (passive allomorphy, post-voice causatives): the
+            # running surface's final-segment class must be allowed by the edge.
+            if (
+                suffix.stem_final_class is not None
+                and _stem_final_class(acc) not in suffix.stem_final_class
+            ):
+                continue
             new_acc, morph = _apply(
                 suffix,
                 acc,
@@ -180,6 +241,9 @@ def _generate(
                 next_pos = suffix.to_pos if suffix.to_pos is not None else cur_pos
             else:
                 next_deriv, next_stem, next_pos = deriv_names, stem_surface, cur_pos
+            # Voice is threaded as an ordered tuple beside deriv_names (not merged into the
+            # feature dict) so stacked causatives / causative+passive are all preserved.
+            next_voices = voices + (suffix.voice,) if suffix.voice is not None else voices
             dfs(
                 target,
                 new_acc,
@@ -189,9 +253,10 @@ def _generate(
                 next_deriv,
                 next_stem,
                 next_pos,
+                next_voices,
             )
 
-    dfs(start, root.free_form, [], base_features, False, (), root.lemma, root.pos)
+    dfs(start, root.free_form, [], base_features, False, (), root.lemma, root.pos, ())
     return out
 
 
@@ -368,15 +433,17 @@ class Analyzer:
                 continue
             for pos in (tags.NOUN, tags.VERB):
                 synth = Root(root_guess, pos, frozenset(), root_guess, None)
-                # Derivation and the ek-fiil stay off for guesses: an unknown root must not
-                # be split on a derivational suffix (malik -> *ma+lik) nor on a copular ending
-                # (*güzeldi from an OOV güzel), so guesser output is byte-identical to before.
+                # Derivation, the ek-fiil, and voice all stay off for guesses: an unknown root
+                # must not be split on a derivational suffix (malik -> *ma+lik), a copular
+                # ending (*güzeldi from an OOV güzel), nor a (fully-productive) voice suffix
+                # (*zorla+tıl), so guesser output is byte-identical to before.
                 for res in _generate(
                     word,
                     synth,
                     source=tags.SOURCE_GUESS,
                     allow_derivation=False,
                     allow_nominal_copula=False,
+                    allow_voice=False,
                 ):
                     if res.morphemes:  # only non-trivial suffix strips are informative
                         parses.append(res)

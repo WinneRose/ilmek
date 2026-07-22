@@ -43,6 +43,11 @@ EVIDENTIAL = "evidential"  # true (reported -mIş)
 COPULA = "copula"  # past | assertive (ek-fiil; on a nominal predicate, person marks the
 # zero-copula present — güzelim "I am beautiful" — with no separate copula key)
 MOOD = "mood"  # imperative | conditional | optative
+#: Verbal voice / valency (çatı): an ordered ``tuple`` of voice names in surface order, so
+#: stacked voices are preserved (yaptırt -> ("causative", "causative"); yazdırıl ->
+#: ("causative", "passive")). A tuple (not a scalar) because a dict-merge of suffix features
+#: would otherwise collapse two causatives into one. Absent on a plain (unvoiced) verb.
+VOICE = "voice"  # causative | passive | reflexive | reciprocal (as an ordered tuple)
 PERSON = "person"  # 1sg 2sg 3sg 1pl 2pl 3pl
 PRON_TYPE = "pron_type"  # personal | demonstrative | interrogative (closed-class pronouns)
 EXISTENTIAL = "existential"  # true (existential particle var / yok)
@@ -98,6 +103,12 @@ COPULAS = frozenset({"past", "assertive"})
 #: The VERBAL copular conditional -(y)sA (gelirse) and the copular optative are later
 #: milestones (see the morphotactics module docstring).
 MOODS = frozenset({"imperative", "conditional", "optative"})
+#: Verbal voice values recorded (in order) under :data:`VOICE`. ``causative`` is -DIr/-t/-Ir/
+#: -Ar (yaptır, okut, içir, çıkar; stacked as yaptırt); ``passive`` is -Il/-In/-n (yapıl,
+#: alın, okun); ``reflexive`` is -In (yıkan, giyin); ``reciprocal`` is -Iş (görüş, dövüş). The
+#: -In allomorph is genuinely both passive and reflexive, so a form like yıkan carries both
+#: readings; -Iş likewise collides with the verbal-noun -(y)Iş, and both readings are kept.
+VOICES = frozenset({"causative", "passive", "reflexive", "reciprocal"})
 
 # --- Analysis provenance -------------------------------------------------------------
 

@@ -33,6 +33,23 @@ this field if it is a member of that list** — the default would otherwise wron
 ``-Ar``. Synthetic roots (the guesser, the apostrophe path) leave ``aorist = None``, so a
 root-attached aorist never fires for an unverified guess: no wrong aorist is ever emitted.
 
+**Causative allomorph (verbs).** The causative voice (:mod:`.morphotactics`) is likewise
+lexically irregular in its allomorph: most verbs take the productive -DIr/-t (predictable
+from the final segment), but a lexically-limited set takes -Ir/-Ar (iç -> içir, çık -> çıkar)
+and a few are suppletive (gel -> getir, git -> götür) and must take *no* productive causative
+at all. We store the choice as :attr:`Root.causative` (a value in ``{"DIr", "t", "Ir", "Ar",
+"none"}``; see :func:`_derive_causative`) and let a declarative ``causative_class`` edge guard
+pick the matching suffix — exactly the aorist machinery. Second (stacked) causatives and the
+causative after another voice suffix are *phonologically* predictable instead, so those edges
+are guarded by the running surface's final-segment class, not by this lexical fact.
+
+**Reflexive / reciprocal (verbs).** These voices are only semi-productive, so they are gated
+by a root attribute rather than fired on every verb: ``"reflexive"`` (yıka, giy, tara, sev,
+hazırla, boya) licenses the reflexive -In, and ``"reciprocal"`` (gör, bak, yaz, döv, anla,
+koş) licenses the reciprocal -Iş. A verb without the attribute keeps only its existing
+readings (gel has no ``"reciprocal"``, so ``geliş`` stays the -Iş verbal noun, never a
+reciprocal). The passive, by contrast, is fully productive and needs no attribute.
+
 **Closed-class irregulars.** A handful of closed classes — the personal pronouns
 (ben/sen/o/biz/siz), the demonstratives (bu/şu), their plurals, and the existentials
 (var/yok) — decline *suppletively*: ``ben`` has the dative ``bana`` (vowel change), the
@@ -80,6 +97,44 @@ def _derive_bound_form(
 #: Valid values for the lexical aorist allomorph (see the module docstring).
 _AORIST_CLASSES = frozenset({"r", "Ar", "Ir"})
 
+#: Valid values for the lexical causative allomorph (see :func:`_derive_causative`). ``none``
+#: marks a verb whose causative is *suppletive* (gel -> getir, git -> götür): the productive
+#: -DIr must never fire on it (no ``*geldir`` / ``*gittir``), and no dedicated suffix edge
+#: carries ``causative_class="none"``, so the guard simply matches nothing for such a root.
+_CAUSATIVE_CLASSES = frozenset({"DIr", "t", "Ir", "Ar", "none"})
+
+
+def _derive_causative(free: str, explicit: str | None) -> str:
+    """The causative allomorph class of a VERB root: ``"DIr"`` / ``"t"`` / ``"Ir"`` / ``"Ar"``.
+
+    An explicit lexicon value always wins (validated, and the only way to reach ``"none"``,
+    ``"Ir"`` or ``"Ar"`` — those are lexically limited, not predictable from the surface).
+    Otherwise the documented grammar default for the productive causative:
+
+    * vowel-final stem -> ``"t"`` (oku -> okut, uza -> uzat, yaşa -> yaşat);
+    * ``l``/``r``-final **polysyllabic** stem -> ``"t"`` (otur -> oturt, uzat-style);
+    * everything else (consonant-final, incl. **monosyllabic** ``l``/``r``) -> ``"DIr"``
+      (yap -> yaptır, gül -> güldür, al -> aldır, sar -> sardır).
+
+    The lexically-limited allomorphs must be given explicitly: ``"Ir"`` (iç -> içir, kaç ->
+    kaçır, düş -> düşür), ``"Ar"`` (çık -> çıkar), the vowel-final ``"DIr"`` exceptions (de ->
+    dedir, ye -> yedir, never ``*det`` / ``*yet``), and ``"none"`` for suppletive-causative
+    verbs (gel, git). Synthetic roots (guesser/apostrophe) leave ``causative = None``, so the
+    class-guarded first-causative edge never fires for an unverified guess.
+    """
+    if explicit is not None:
+        if explicit not in _CAUSATIVE_CLASSES:
+            raise ValueError(
+                f"invalid causative class {explicit!r}; expected one of {_CAUSATIVE_CLASSES}"
+            )
+        return explicit
+    if free and free[-1] in VOWELS:
+        return "t"  # vowel-final: okut, uzat, yaşat
+    n_vowels = sum(1 for ch in free if ch in VOWELS)
+    if free and free[-1] in ("l", "r") and n_vowels >= 2:
+        return "t"  # polysyllabic l/r: oturt
+    return "DIr"  # default: yaptır, güldür, aldır, sardır
+
 
 def _derive_aorist(free: str, explicit: str | None) -> str:
     """The aorist allomorph class of a VERB root: ``"r"`` / ``"Ar"`` / ``"Ir"``.
@@ -114,6 +169,11 @@ class Root:
     #: only ever fires for a lexicon-verified verb. Defaulted last, so the positional
     #: constructions in the analyzer keep working and stay ``aorist=None``.
     aorist: str | None = None
+    #: The lexical causative allomorph for VERB roots (``"DIr"`` / ``"t"`` / ``"Ir"`` /
+    #: ``"Ar"`` / ``"none"``); ``None`` for nominals and synthetic roots, so the class-guarded
+    #: first-causative edge never fires for a guess. Defaulted last for the same reason as
+    #: ``aorist``.
+    causative: str | None = None
 
     @classmethod
     def from_entry(cls, entry: dict) -> Root:
@@ -124,7 +184,9 @@ class Root:
         forms = [fold_for_lookup(f) for f in raw_forms] if raw_forms else None
         free = forms[0] if forms else fold_for_lookup(lemma)
         bound = _derive_bound_form(free, attributes, forms)
-        aorist = _derive_aorist(free, entry.get("aorist")) if pos in VERBAL_POS else None
+        is_verb = pos in VERBAL_POS
+        aorist = _derive_aorist(free, entry.get("aorist")) if is_verb else None
+        causative = _derive_causative(free, entry.get("causative")) if is_verb else None
         return cls(
             lemma=lemma,
             pos=pos,
@@ -132,6 +194,7 @@ class Root:
             free_form=free,
             bound_form=bound,
             aorist=aorist,
+            causative=causative,
         )
 
     @property
