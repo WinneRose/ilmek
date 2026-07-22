@@ -31,6 +31,18 @@
   "root_length_bonus": 0.02,
   "frequency_weight": 0.0,
 
+  "archaic_reading_penalty": 2.0,
+  "archaic_readings": [
+    {
+      "doc": "The 2/3-person optative (gele, gelmeye-as-neg-optative) is archaic; demote it below any live reading so the -mA verbal-noun+dative wins. 1sg/1pl optatives (geleyim, gelelim) are fully alive and excluded. Mirrors the analyzer's rare_rank; magnitude (2.0) exceeds the 0.4 derivation gap it must overcome yet is a re-rank, never a removal.",
+      "match": {"mood": "optative"},
+      "unless_person_in": ["1sg", "1pl"]
+    }
+  ],
+
+  "possessive_markedness_penalty": 0.1,
+  "unmarked_possessive": ["none", "3sg"],
+
   "context_rules": [
     {
       "name": "gen_before_poss",

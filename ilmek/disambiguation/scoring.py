@@ -72,6 +72,39 @@ def _n_predicate(r: AnalysisResult) -> int:
     return 1 if any(k in r.features for k in _PREDICATE_KEYS) else 0
 
 
+def _archaic_reading(r: AnalysisResult, w: dict[str, Any]) -> int:
+    """1 if ``r`` matches a data-declared *archaic* reading, else 0 (generic subset match).
+
+    Each entry in ``archaic_readings`` gives a ``match`` (a feature subset that must all be
+    equal) and an optional ``unless_person_in`` escape list. Mirrors the analyzer's
+    ``rare_rank`` so the scoring layer agrees with the analyzer primary: the 2/3-person
+    optative is demoted while the living 1sg/1pl optative is spared. A re-rank, never a
+    filter — the reading keeps its (positive) score, only lowered.
+    """
+    for spec in w.get("archaic_readings", ()):
+        match: dict[str, Any] = spec.get("match", {})
+        if all(r.features.get(k) == v for k, v in match.items()):
+            spared = spec.get("unless_person_in", ())
+            if r.features.get(tags.PERSON) not in spared:
+                return 1
+    return 0
+
+
+def _marked_possessive(r: AnalysisResult, w: dict[str, Any]) -> int:
+    """1 if ``r`` carries a *marked* possessive, else 0 (mirrors the analyzer's poss_rank).
+
+    The unmarked set (``unmarked_possessive``: bare + 3sg) is the default of a factive/
+    possessive reading, so a marked possessive (2sg, 1sg, …) is nudged just below it. A tiny
+    tie-break: it makes the 3sg-over-2sg preference explicit without overriding any real
+    signal (the context bonuses and every other term dwarf it).
+    """
+    unmarked = w.get("unmarked_possessive", ("none",))
+    poss = r.features.get(tags.POSSESSIVE, "none")
+    if poss is None:
+        poss = "none"
+    return 0 if poss in unmarked else 1
+
+
 def score_candidate(r: AnalysisResult, weights: dict[str, Any] | None = None) -> float:
     """Return the **heuristic** plausibility score of one analysis (higher = more likely).
 
@@ -88,6 +121,13 @@ def score_candidate(r: AnalysisResult, weights: dict[str, Any] | None = None) ->
     score -= w["morpheme_penalty"] * len(r.morphemes)
     score -= w["derivation_penalty"] * len(r.features.get(tags.DERIVATION, ()))
     score -= w["nominal_predicate_penalty"] * _n_predicate(r)
+    # Archaic-reading demotion (mirrors the analyzer's rare_rank): a 2/3-person optative sits
+    # below any live alternative, so the -mA verbal-noun+dative outranks the archaic negative
+    # optative for gelmeye. Penalty > derivation gap, yet a re-rank that never removes a reading.
+    score -= w.get("archaic_reading_penalty", 0.0) * _archaic_reading(r, w)
+    # Possessive-markedness tie-break (mirrors poss_rank): the unmarked 3sg/bare possessive
+    # outranks a marked one, so the 3sg factive (geldiğini) beats the 2sg reading by default.
+    score -= w.get("possessive_markedness_penalty", 0.0) * _marked_possessive(r, w)
     score += w["root_length_bonus"] * len(r.lemma)
     # Extension point: coarse per-lemma frequency, if a lexicon ever supplies one. No entry
     # carries a "frequency" feature today, so this term is a documented no-op (weight 0.0).

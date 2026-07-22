@@ -365,17 +365,37 @@ def _dedupe(results: list[AnalysisResult]) -> list[AnalysisResult]:
     return unique
 
 
+#: Possessive values treated as *unmarked* for the markedness tie-break. The 3sg possessive
+#: is the unmarked default of a factive/possessive clause (geldiğini "that he/she came",
+#: kitabını "his/her book"), so it ranks with the bare (none) reading and above a *marked*
+#: possessive (2sg, 1sg, …). Data, not a hardcoded ``if``, so the set is auditable.
+_UNMARKED_POSSESSIVES = frozenset({"none", "3sg"})
+
+#: Optative persons that are *archaic* in modern Turkish and so demoted below any live
+#: alternative reading of the same root. The 2/3-person optative (gele "let him come",
+#: gelmeye as a negative optative) survives only in fixed/literary expressions, whereas the
+#: 1sg/1pl optative (geleyim, gelelim) is fully alive — hence 1sg/1pl are deliberately absent.
+_ARCHAIC_OPTATIVE_PERSONS = frozenset({"2sg", "3sg", "2pl", "3pl"})
+
+
 def _sort_key(r: AnalysisResult):
     # Lexicon before guess; then prefer the longest root (whole-word entries over splits);
+    # then demote an *archaic* reading (the 2/3-person optative) below any live reading of the
+    # same root — this lets the -mA verbal-noun+dative (gelmeye "to coming") outrank the archaic
+    # negative-optative, and sits before ``n_deriv`` precisely so a derived-but-live reading can
+    # win, yet after ``-len(lemma)`` so it never promotes a shorter-root split or a guess;
     # then *fewer derivations* (a finite/inflectional reading outranks a derived one that
     # shares the same root — geldik stays past-1pl, gelecek stays future, gelme stays the
     # negative imperative, while the participle/verbal-noun reading survives as an alt);
     # then a *nominal-predicate* rank so a homograph's finite-verb reading stays primary over
     # its noun+copula reading (yüzdü stays yüz-VERB-past, not yüz-NOUN-copula; öğretmenim
-    # stays possessive over "I am a teacher"); then fewer morphemes; then a stable tie-break.
-    # n_pred is 0 for every pre-existing result (no prior nominal analysis carried a
-    # person/copula/evidential/mood key, and verbal results are pos == VERB), so it never
-    # reorders anything that existed before the ek-fiil milestone.
+    # stays possessive over "I am a teacher"); then fewer morphemes; then a *possessive
+    # markedness* tie-break so the unmarked 3sg (or bare) possessive outranks a marked one
+    # (geldiğini -> 3sg factive over 2sg; gidenlerin -> genitive over 2sg-poss) — placed last
+    # so it only ever settles a full tie and never overrides morpheme count / derivations;
+    # then a stable tie-break. n_pred is 0 for every pre-existing result (no prior nominal
+    # analysis carried a person/copula/evidential/mood key, and verbal results are pos == VERB),
+    # so it never reorders anything that existed before the ek-fiil milestone.
     src_rank = {tags.SOURCE_LEXICON: 0, tags.SOURCE_RULE: 1, tags.SOURCE_GUESS: 2}
     n_deriv = len(r.features.get(tags.DERIVATION, ()))
     n_pred = (
@@ -384,12 +404,21 @@ def _sort_key(r: AnalysisResult):
         and any(k in r.features for k in (tags.PERSON, tags.COPULA, tags.EVIDENTIAL, tags.MOOD))
         else 0
     )
+    rare_rank = (
+        1
+        if r.features.get(tags.MOOD) == "optative"
+        and r.features.get(tags.PERSON) in _ARCHAIC_OPTATIVE_PERSONS
+        else 0
+    )
+    poss_rank = 0 if r.features.get(tags.POSSESSIVE, "none") in _UNMARKED_POSSESSIVES else 1
     return (
         src_rank.get(r.source, 3),
         -len(r.lemma),
+        rare_rank,
         n_deriv,
         n_pred,
         len(r.morphemes),
+        poss_rank,
         r.pos,
         r.lemma,
     )
