@@ -49,6 +49,14 @@ CONSONANTS = frozenset("bcçdfgğhjklmnprsştvyz")
 #: A suffix-initial voiced stop hardens after one of these (D -> t, etc.).
 VOICELESS = frozenset("fstkçşhp")
 
+#: The vowel in each consonant's Turkish LETTER NAME (b=be, c=ce, d=de, ... m=me, ... z=ze —
+#: every consonant name's vowel is "e"). Used to harmonize a suffix onto a *vowelless* stem
+#: read letter-by-letter (an acronym like TBMM: its last letter m is named "me", so the
+#: ablative -DAn realizes as -den, not the blanket -dan). Kept per-letter (data, not a blanket
+#: "e") so a house-style exception stays editable here rather than hardcoded in the phonology
+#: engine. Consonants only: a stem that already contains a vowel never consults this table.
+LETTER_NAME_VOWEL = dict.fromkeys("bcçdfgğhjklmnprsştvyz", "e")
+
 #: Consonant softening on a stem-final stop before a vowel-initial suffix
 #: (ünsüz yumuşaması): kitap -> kitab-ı, ağaç -> ağac-ı, kanat -> kanad-ı, renk -> reng-i.
 #: The *nk -> ng* case is handled specially in phonology because only the k softens.

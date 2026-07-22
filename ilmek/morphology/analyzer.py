@@ -18,6 +18,7 @@ from ..core import tags
 from ..core.alphabet import VOICING, VOWELS
 from ..core.document import AnalysisResult
 from ..core.normalization import normalize, turkish_lower
+from ..core.tokenization import classify_numeric
 from . import morphotactics as mt
 from .lexicon import Lexicon, Root
 from .phonology import realize, starts_with_vowel
@@ -394,6 +395,16 @@ def _sort_key(r: AnalysisResult):
     )
 
 
+def _apostrophe_sort_key(r: AnalysisResult):
+    # Apostrophe-path ranking: a pure-case (or bare) proper-noun reading outranks a homographic
+    # possessive one (TÜİK'in -> genitive, not poss=2sg), then defers entirely to the global
+    # _sort_key. The possessive reading is never dropped — only ranked below — so a surface
+    # whose ONLY parse is possessive (Ankara'm -> poss=1sg) still comes first among its peers.
+    poss = r.features.get(tags.POSSESSIVE, "none")
+    has_possessive = poss not in (None, "none")
+    return (int(has_possessive), *_sort_key(r))
+
+
 # --- Guesser heuristics --------------------------------------------------------------
 
 #: How many alternative candidates to keep on a guess result.
@@ -482,6 +493,15 @@ class Analyzer:
         original = surface
         folded = turkish_lower(normalize(surface))
 
+        # A bare numeric token (digits / percent / date / time) resolves as NUM by rule,
+        # never routed to the morphological guesser. Checked first: numbers carry no lexicon
+        # root and no apostrophe boundary, so this both short-circuits and keeps them out of
+        # the guess path (deterministic, source=rule). A mixed token (3x4, v2) is not a full
+        # numeric match, so classify_numeric returns None and it falls through unchanged.
+        num_kind = classify_numeric(folded)
+        if num_kind is not None:
+            return self._analyze_numeric(original, folded, num_kind)
+
         if "'" in folded:
             head, _, tail = folded.rpartition("'")
             if head and tail:
@@ -527,6 +547,36 @@ class Analyzer:
             r.surface = original
         return irregulars + results
 
+    def _analyze_numeric(self, original: str, folded: str, num_kind: str) -> list[AnalysisResult]:
+        """A bare numeric token (digits / percent / date / time): resolve as NUM by rule.
+
+        Deterministic and lexicon-independent (``source=rule``, never a guess). The lemma and
+        stem are the surface number itself; the orthographic ordinal dot (``3.``) is not a
+        morpheme, so it is dropped from the lemma (``3``). Only the ordinal and percent
+        sub-types record a ``num_type`` feature — cardinals / grouped figures / dates / times
+        fabricate nothing (the milestone requires only ``pos=NUM``).
+        """
+        if num_kind == "ordinal":
+            lemma = folded[:-1]  # drop the orthographic dot: "3." -> "3"
+            features = {tags.NUM_TYPE: "ordinal"}
+        elif num_kind == "percent":
+            lemma = folded
+            features = {tags.NUM_TYPE: "percent"}
+        else:
+            lemma = folded
+            features = {}
+        return [
+            AnalysisResult(
+                surface=original,
+                lemma=lemma,
+                stem=lemma,
+                pos=tags.NUM,
+                morphemes=[],
+                features=features,
+                source=tags.SOURCE_RULE,
+            )
+        ]
+
     def _analyze_apostrophe(self, original: str, folded: str) -> list[AnalysisResult]:
         """Proper noun written with an apostrophe suffix: ``Ankara'da`` -> lemma ``Ankara``."""
         head, _, tail = folded.rpartition("'")
@@ -536,7 +586,13 @@ class Analyzer:
         )
         results = _generate(joined, synth, source=tags.SOURCE_RULE)
         results = _dedupe(results)
-        results.sort(key=_sort_key)
+        # An apostrophe marks a case-inflected proper noun (Ankara'da, TÜİK'in): a pure-CASE
+        # reading is preferred over a POSSESSIVE one when both realize the same surface, so
+        # TÜİK'in ranks genitive over the homographic possessive-2sg. This is scoped to the
+        # apostrophe path only (the global _sort_key is untouched); the possessive reading is
+        # KEPT as a ranked alternative, and a surface with only a possessive parse (Ankara'm)
+        # still wins it. All keys after the possessive flag defer to the normal ranking.
+        results.sort(key=_apostrophe_sort_key)
         if not results:
             results = [
                 AnalysisResult(original, head, head, tags.PROPN, [], {}, source=tags.SOURCE_RULE)

@@ -24,6 +24,7 @@ from __future__ import annotations
 
 from ..core.alphabet import (
     FRONT_COUNTERPART,
+    LETTER_NAME_VOWEL,
     SUFFIX_ALTERNATIONS,
     VOWELS,
     ends_with_voiceless,
@@ -35,12 +36,18 @@ from ..core.alphabet import (
 
 _BUFFER_CONSONANTS = frozenset("ysnş")
 _ARCHI_VOWELS = frozenset("AI")
-#: Fallback vowel when a stem carries no vowel at all (abbreviations, some loanwords).
+#: Last-ditch fallback vowel when a vowelless stem's final letter is not even a classifiable
+#: consonant (should not arise for real Turkish input); the letter-name table is tried first.
 _DEFAULT_LAST_VOWEL = "a"
 
 
 def _harmony_vowel(archi: str, ctx: str, front: bool = False) -> str:
-    lv = last_vowel(ctx) or _DEFAULT_LAST_VOWEL
+    lv = last_vowel(ctx)
+    if lv is None:
+        # Vowelless context (an acronym read letter-by-letter, e.g. TBMM): harmonize by the
+        # last letter's Turkish NAME vowel (m -> "me"), so -DAn realizes -den not the blanket
+        # -dan. Per-letter data (LETTER_NAME_VOWEL); only reachable when the stem has no vowel.
+        lv = LETTER_NAME_VOWEL.get(ctx[-1], _DEFAULT_LAST_VOWEL) if ctx else _DEFAULT_LAST_VOWEL
     if front:
         # Front-harmony loan: read the context's final vowel as its front counterpart so a
         # back-spelled root (saat, kalp, usul) harmonizes as front (saat+I -> saati, not saatı).

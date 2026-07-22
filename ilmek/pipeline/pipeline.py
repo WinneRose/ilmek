@@ -23,8 +23,10 @@ from ..core.tokenization import tokenize
 if TYPE_CHECKING:  # avoid importing the disambiguation layer at module load time
     from ..disambiguation import Disambiguator
 
-#: Token kinds that carry morphology worth analyzing.
-_ANALYZABLE_KINDS = frozenset({"word"})
+#: Token kinds that carry morphology worth analyzing. ``number``/``date``/``time`` resolve as
+#: NUM by rule (the analyzer's numeric fast path), so their Document analyses are populated too;
+#: ``abbr`` (Dr., T.C.) stays unanalyzed (its analysis is ``None``).
+_ANALYZABLE_KINDS = frozenset({"word", "number", "date", "time"})
 
 
 class Pipeline:
