@@ -38,16 +38,21 @@ def _sourced_from_lexicon(analyzer, word, lemma):
 @pytest.mark.consistency
 def test_no_duplicate_regular_lemma_pos_entries():
     # Guards this batch (and future ones) against re-adding a word that already exists.
-    # Scoped to REGULAR root entries: the ``irregular`` lists intentionally repeat a
-    # (lemma, pos) across harmony/spelling variants (mi/mı/mu/mü, hala/hâlâ).
-    pairs: Counter[tuple[str, str]] = Counter()
+    # Scoped to REGULAR root entries. The key includes ``forms`` so the interrogative
+    # particle's harmony variants (mi/mı/mu/mü — all lemma "mi", pos PART, distinguished only
+    # by their surface form) are not false positives, while a genuine accidental re-add
+    # (identical lemma+pos+forms) is still caught. The ``irregular`` lists likewise repeat a
+    # (lemma, pos) across harmony/spelling variants (de/da, hala/hâlâ) and are not scanned here.
+    keys: Counter[tuple] = Counter()
     for path in sorted(_DATA_DIR.glob("*.json")):
         data = json.loads(path.read_text(encoding="utf-8"))
         entries = data.get("entries", ()) if isinstance(data, dict) else data
         for entry in entries:
-            pairs[(entry["lemma"], entry.get("pos", "NOUN").upper())] += 1
-    duplicates = {pair: n for pair, n in pairs.items() if n > 1}
-    assert not duplicates, f"duplicate (lemma, pos) regular entries: {duplicates}"
+            keys[
+                (entry["lemma"], entry.get("pos", "NOUN").upper(), tuple(entry.get("forms", ())))
+            ] += 1
+    duplicates = {key: n for key, n in keys.items() if n > 1}
+    assert not duplicates, f"duplicate (lemma, pos, forms) regular entries: {duplicates}"
 
 
 # --- Positive: bare new roots resolve, lexicon-verified ------------------------------

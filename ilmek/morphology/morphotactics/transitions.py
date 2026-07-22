@@ -35,6 +35,7 @@ from .states import (
     N_POSS,
     N_POSS3,
     N_ROOT,
+    Q_ROOT,
     V_ABIL,
     V_AOR_NEG,
     V_CAUS1,
@@ -107,6 +108,28 @@ _NOMINAL_COPULA: list[tuple[Suffix, str]] = [
     (COP_COND, V_COP2),
     (DIR, N_COP_DIR),
     *[(s, V_PERS) for s in _PERSON_T1],
+]
+
+
+# --- Interrogative-particle edges ----------------------------------------------------
+
+#: The only edges leaving the interrogative-particle root Q_ROOT. It REUSES the shared nominal
+#: ek-fiil layer (:data:`_NOMINAL_COPULA`) rather than duplicating it, so every inflected
+#: question form (midir, misin, miyim, miydi, miymiş, and their harmonic variants) falls out
+#: for free — the copula/persons harmonize to the particle's own vowel via the phonology.
+#: Two edges of the nominal copula are declaratively filtered out (not by a hardcoded surface
+#: list, by the suffix's own feature):
+#:   * the PRESENT 3pl person -lAr: it would surface *miler, exactly the bare plural the
+#:     particle must not take. (3pl AFTER a copula — mıydılar, mıymışlar — stays licensed,
+#:     because it is emitted by V_COP1/V_COP2's own untouched person sets, not this edge.)
+#:   * the copular conditional -(y)sA: *miyse/mıysa is at best marginal, so under "correctness
+#:     over coverage" it is excluded (a negative test pins the choice).
+#: What remains: the past copula -(y)DI, the evidential -(y)mIş, the assertive -DIr, and the
+#: present persons 1sg/2sg/1pl/2pl.
+_Q_COPULA: list[tuple[Suffix, str]] = [
+    (s, t)
+    for s, t in _NOMINAL_COPULA
+    if s.features.get(tags.PERSON) != "3pl" and s.features.get(tags.MOOD) != "conditional"
 ]
 
 
@@ -335,13 +358,23 @@ VERBAL_FINALS = frozenset(
 # appends reference the verbal person sets and copula suffixes defined above.
 
 NOMINAL_GRAPH = _nominal_graph(_NOMINAL_COPULA)
-GRAPH: dict[str, list[tuple[Suffix, str]]] = {**NOMINAL_GRAPH, **VERBAL_GRAPH}
+#: The interrogative-particle graph: Q_ROOT's only edges are the filtered ek-fiil ones. It has
+#: no incoming edges (it is reached solely as a start state, gated by the root attribute), so a
+#: single-entry map merged into GRAPH is enough — its copula targets (V_COP1/V_COP2/V_PERS/
+#: N_COP_DIR) already exist on the verbal/nominal side.
+Q_GRAPH: dict[str, list[tuple[Suffix, str]]] = {Q_ROOT: _Q_COPULA}
+GRAPH: dict[str, list[tuple[Suffix, str]]] = {**NOMINAL_GRAPH, **VERBAL_GRAPH, **Q_GRAPH}
+Q_START = Q_ROOT
 #: The copular (ek-fiil) landing states: the type-1/type-2 person states shared with the
 #: verbal copula, the present-person state, and the assertive -DIr terminal. A NOMINAL
 #: predicate accepted here takes nominal-predicate finalization; a verbal path reaching the
 #: same person/copula states (cur_pos == VERB) still takes verbal finalization.
 COPULA_STATES = frozenset({V_COP1, V_COP2, V_PERS, N_COP_DIR})
-FINALS = NOMINAL_FINALS | VERBAL_FINALS | {N_COP_DIR}
+# Q_ROOT is final (bare mi is a complete word). It is deliberately kept OUT of
+# NOMINAL_FINALS/NOMINAL_STATES/COPULA_STATES so the nominal closure and the guesser's copula
+# gate are provably untouched: its own closure (question=True, no fabricated person) runs from
+# the dedicated Q_ROOT branch in the analyzer.
+FINALS = NOMINAL_FINALS | VERBAL_FINALS | {N_COP_DIR, Q_ROOT}
 #: States whose accepting side is *nominal*: they take nominal feature defaults and never
 #: run verbal finalization. This includes the shared derived state and the infinitive, so a
 #: verb-derived noun (gelme, gelmek) gets no fabricated person/mood but keeps any polarity.
@@ -384,3 +417,24 @@ def finalize_nominal_predicate_features(features: dict) -> dict:
     merged = {**nominal_default_features(), **features}
     merged.setdefault(tags.PERSON, "3sg")
     return merged
+
+
+def interrogative_default_features() -> dict:
+    """The features a bare interrogative particle starts (and, alone, ends) with.
+
+    Only ``question=True`` — the particle is not a noun, so it fabricates NO
+    number/possessive/case. Inflected forms accrue their copula/person keys on top of this.
+    """
+    return {tags.QUESTION: True}
+
+
+def finalize_particle_predicate_features(features: dict) -> dict:
+    """Fill implicit features at an ek-fiil (copular) acceptance on the interrogative PARTICLE.
+
+    Unlike :func:`finalize_nominal_predicate_features`, it fabricates NO nominal
+    number/possessive/case (mi is not a full noun): it only defaults the zero third person, so
+    midir = question+copula:assertive+3sg and misin = question+2sg, nothing else. ``question``
+    is already present (threaded from :func:`interrogative_default_features`).
+    """
+    features.setdefault(tags.PERSON, "3sg")
+    return features

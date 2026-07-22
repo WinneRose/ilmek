@@ -20,6 +20,15 @@ N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, 
 N_COP_DIR = "N_COP_DIR"  # after the assertive/generalizing ek-fiil -DIr; terminal this milestone
 N_DIST = "N_DIST"  # after the distributive numeral suffix -(ş)Ar (birer, ikişer); terminal
 
+# --- Interrogative-particle state ----------------------------------------------------
+
+# The root state of the interrogative (question) particle mi/mı/mu/mü. It is FINAL (a bare mi
+# is a complete word) and its ONLY outgoing edges are the ek-fiil (nominal-copula) edges —
+# the past/evidential/assertive copula and the present persons (midir, misin, miyim, miydi,
+# miymiş) — reusing the verbal copula/person landing states. It deliberately takes NO
+# plural/possessive/case edge (mi is not a full noun: no *miler, no *mide as mi+locative).
+Q_ROOT = "Q_ROOT"
+
 # --- Verbal states -------------------------------------------------------------------
 
 V_ROOT = "V_ROOT"

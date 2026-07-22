@@ -138,7 +138,14 @@ def _generate(
     fully productive (no root fact), so without this an OOV word would be voice-split; ``False``
     on the guesser keeps its output byte-identical.
     """
-    if root.is_nominal:
+    if "interrogative" in root.attributes:
+        # The interrogative particle mi/mı/mu/mü: start at the dedicated Q_ROOT, whose only
+        # edges are the (filtered) ek-fiil ones. Attribute-routed, NOT a hardcoded surface list,
+        # so only the lexicon entries carrying the attribute reach it (synthetic/guessed roots
+        # have empty attributes, so Q_ROOT is unreachable for a guess).
+        start = mt.Q_START
+        base_features = mt.interrogative_default_features()
+    elif root.is_nominal:
         start = mt.NOMINAL_START
         base_features = mt.nominal_default_features()
     elif root.is_verbal:
@@ -163,19 +170,29 @@ def _generate(
     ):
         if state in finals and acc == word:
             feats = dict(features)
-            if state in mt.NOMINAL_STATES:
+            if state == mt.Q_ROOT:
+                # Bare interrogative particle (mi/mı/mu/mü): the features are already complete
+                # (question=True, no person), so nothing is finalized — a bare mi fabricates no
+                # person/copula/case, exactly what distinguishes it from a full nominal.
+                pass
+            elif state in mt.NOMINAL_STATES:
                 # Nominal-side acceptance: fill nominal defaults *under* whatever was
                 # accrued, so a verb-derived nominal keeps its polarity (gelmeyen) yet
                 # never gains a fabricated person/mood (no finalize_verbal_features).
                 feats = {**mt.nominal_default_features(), **feats}
             elif state in mt.COPULA_STATES and cur_pos != tags.VERB:
                 # Ek-fiil acceptance on a NOMINAL/ADJ/PRON/NUM predicate (güzeldi, evdeydim,
-                # güzelim): keep the nominal number/possessive/case, default person to the
-                # zero 3sg, and fabricate no verbal polarity/mood. A verbal path reaches these
-                # same person/copula states with cur_pos == VERB (every verb->nominal
-                # derivation sets to_pos, so no verbal spine arrives here with a non-VERB pos)
-                # and falls through to verbal finalization below, byte-identical to before.
-                feats = mt.finalize_nominal_predicate_features(feats)
+                # güzelim) or on the interrogative PARTICLE (midir, misin, miyim, miydi): keep
+                # any accrued keys, default person to the zero 3sg. The particle takes the
+                # dedicated closure (no fabricated nominal number/case — mi is not a noun); a
+                # nominal predicate takes the nominal one (keeps case/number). A verbal path
+                # reaches these same person/copula states with cur_pos == VERB (every
+                # verb->nominal derivation sets to_pos, so no verbal spine arrives here with a
+                # non-VERB pos) and falls through to verbal finalization below.
+                if cur_pos == tags.PART:
+                    feats = mt.finalize_particle_predicate_features(feats)
+                else:
+                    feats = mt.finalize_nominal_predicate_features(feats)
             else:
                 mt.finalize_verbal_features(feats)
             if deriv_names:

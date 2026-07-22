@@ -52,6 +52,12 @@ VOICE = "voice"  # causative | passive | reflexive | reciprocal (as an ordered t
 PERSON = "person"  # 1sg 2sg 3sg 1pl 2pl 3pl
 PRON_TYPE = "pron_type"  # personal | demonstrative | interrogative (closed-class pronouns)
 EXISTENTIAL = "existential"  # true (existential particle var / yok)
+#: The interrogative (question) particle mi/mı/mu/mü and its copular/personal inflections
+#: (midir, misin, miyim, miydi, miymiş): a separate token that turns its host into a yes/no
+#: question. Set ``True`` so a consumer can detect a question regardless of person/copula. The
+#: particle's lemma/stem stay ``"mi"`` for all four harmonic surfaces; this is the only feature
+#: a *bare* ``mi`` carries (no number/case/possessive — it is not a full noun).
+QUESTION = "question"  # true (the interrogative particle mi and its inflections)
 #: Usage register of a form, set only when a surface is a marked (non-standard) variant of a
 #: standard form. Today its only value is ``colloquial``, carried by the colloquial personal
 #: instrumentals ``benle``/``senle`` (standard: ``benimle``/``seninle``); the standard forms

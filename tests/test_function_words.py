@@ -1,9 +1,12 @@
 """Closed-class function words: conjunctions, postpositions, particles, adverbs.
 
-These high-frequency words are INDECLINABLE — they do not inflect — so each is enumerated
-whole in ``data/lexicon/function_words.json`` and matched by the analyzer BEFORE the FSM.
-They are dictionary-verified: ``source == "lexicon"``, ``lemma == surface`` (except the
-harmony variants and the circumflex spelling), and ``morphemes == []``.
+Most of these high-frequency words are INDECLINABLE — they do not inflect — so each is
+enumerated whole in ``data/lexicon/function_words.json`` and matched by the analyzer BEFORE
+the FSM. They are dictionary-verified: ``source == "lexicon"``, ``lemma == surface`` (except
+the harmony variants and the circumflex spelling), and ``morphemes == []``. (The one declining
+particle, the interrogative mi/mı/mu/mü, is a regular entry that inflects via the dedicated
+Q_ROOT state — its copular/personal forms are covered in ``test_interrogative.py``; here only
+its BARE surface is checked, which still resolves lexicon-verified with ``morphemes == []``.)
 
 The closed-class reading is ranked first but never erases a genuine open-class alternative
 (de = PART vs the verb de- imperative; göre = ADP vs gör-+optative; birden = ADV vs
@@ -237,10 +240,12 @@ def test_forced_inflection_on_indeclinables_not_lexicon(analyzer, word, lemma):
 
 
 @pytest.mark.negative
-@pytest.mark.parametrize("word", ["değildi", "miyim"])
+@pytest.mark.parametrize("word", ["değildi"])
 def test_deferred_copular_inflection_stays_guess(analyzer, word):
-    # Copular inflection of değil (değildi) and mi (miyim) is deferred: these fall to the
-    # guesser rather than being wrongly parsed. Documents the known limitation honestly.
+    # Copular inflection of değil (değildi) is deferred: it falls to the guesser rather than
+    # being wrongly parsed. Documents the known limitation honestly. (The interrogative
+    # particle mi is NO LONGER deferred — see test_interrogative.py: miyim/misin/midir now
+    # parse as lexicon-verified lemma "mi" via the dedicated Q_ROOT state.)
     assert not any(a.source == "lexicon" for a in analyzer.analyze(word))
 
 
