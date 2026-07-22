@@ -29,7 +29,14 @@
 
   "entries": [
     {"lemma": "kim", "pos": "PRON"},
-    {"lemma": "nere", "pos": "PRON"}
+    {"lemma": "nere", "pos": "PRON"},
+
+    {"lemma": "ben", "pos": "PRON", "forms": ["benim"], "attributes": ["ki_host"]},
+    {"lemma": "sen", "pos": "PRON", "forms": ["senin"], "attributes": ["ki_host"]},
+    {"lemma": "o", "pos": "PRON", "forms": ["onun"], "attributes": ["ki_host"]},
+    {"lemma": "o", "pos": "PRON", "forms": ["onda"], "attributes": ["ki_host"]},
+    {"lemma": "biz", "pos": "PRON", "forms": ["bizim"], "attributes": ["ki_host"]},
+    {"lemma": "siz", "pos": "PRON", "forms": ["sizin"], "attributes": ["ki_host"]}
   ],
 
   "irregular": [
@@ -100,6 +107,11 @@
     {"surface": "şununla", "lemma": "şu", "pos": "PRON", "morphemes": ["nun", "la"], "features": {"pron_type": "demonstrative", "number": "singular", "case": "instrumental"}},
 
     {"surface": "kiminle", "lemma": "kim", "pos": "PRON", "morphemes": ["in", "le"], "features": {"pron_type": "interrogative", "case": "instrumental"}},
+
+    {"surface": "bence", "lemma": "ben", "pos": "ADV", "morphemes": ["ce"], "features": {"derivation": ["ca"]}},
+    {"surface": "sence", "lemma": "sen", "pos": "ADV", "morphemes": ["ce"], "features": {"derivation": ["ca"]}},
+    {"surface": "bizce", "lemma": "biz", "pos": "ADV", "morphemes": ["ce"], "features": {"derivation": ["ca"]}},
+    {"surface": "sizce", "lemma": "siz", "pos": "ADV", "morphemes": ["ce"], "features": {"derivation": ["ca"]}},
 
     {"surface": "var", "lemma": "var", "pos": "ADJ", "morphemes": [], "features": {"existential": true}},
     {"surface": "yok", "lemma": "yok", "pos": "ADJ", "morphemes": [], "features": {"existential": true}}

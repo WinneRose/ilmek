@@ -37,12 +37,12 @@
 
   {"lemma": "çok", "pos": "ADV"},
   {"lemma": "az", "pos": "ADV"},
-  {"lemma": "şimdi", "pos": "ADV"},
-  {"lemma": "bugün", "pos": "ADV"},
+  {"lemma": "şimdi", "pos": "ADV", "attributes": ["temporal"]},
+  {"lemma": "bugün", "pos": "ADV", "attributes": ["temporal_rounded"]},
 
-  {"lemma": "dün", "pos": "ADV"},
-  {"lemma": "yarın", "pos": "ADV"},
-  {"lemma": "sonra", "pos": "ADV"},
-  {"lemma": "önce", "pos": "ADV"},
+  {"lemma": "dün", "pos": "ADV", "attributes": ["temporal_rounded"]},
+  {"lemma": "yarın", "pos": "ADV", "attributes": ["temporal"]},
+  {"lemma": "sonra", "pos": "ADV", "attributes": ["temporal"]},
+  {"lemma": "önce", "pos": "ADV", "attributes": ["temporal"]},
   {"lemma": "erken", "pos": "ADV"}
 ]

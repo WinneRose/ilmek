@@ -165,6 +165,15 @@ def _generate(
         # like the above, so a guess never reaches it.
         start = mt.I_START
         base_features = {}
+    elif "ki_host" in root.attributes:
+        # A genitive/locative pronoun hosting the relative -ki (benim->benimki, onda->ondaki):
+        # start at the dedicated, non-final KI_HOST_ROOT, whose ONLY edge is the pronominal -ki.
+        # This branch MUST precede is_nominal: a PRON is nominal, so without it Root "benim" would
+        # start at N_ROOT and license *benimler / *benimde. Non-final, so bare "benim" is never
+        # accepted here (it is the enumerated irregular pronoun). Attribute-routed, so a guess
+        # (empty attributes) never reaches it. No fabricated features (the base is empty).
+        start = mt.KI_HOST_START
+        base_features = {}
     elif root.is_nominal:
         start = mt.NOMINAL_START
         base_features = mt.nominal_default_features()
@@ -198,13 +207,18 @@ def _generate(
                 # finalize_verbal_features and get a spurious mood=imperative + polarity=positive.
                 pass
             elif state in mt.ADVERB_STATES:
-                # Converb (zarf-fiil) acceptance: a verb-derived ADVERB keeps exactly its
-                # accrued features (verbform=converb, any polarity/voice/tense) and fabricates
-                # NOTHING — no nominal number/possessive/case, no verbal person/mood. This
+                # ADVERB acceptance (the converb zarf-fiil ADV_CVB, or the equative -CA state
+                # N_ADV_CA): keep exactly the accrued features (verbform=converb / derivation ca,
+                # any polarity/voice/tense) and fabricate NOTHING — no verbal person/mood. This
                 # branch MUST precede the verbal fallback below: finalize_verbal_features would
                 # otherwise stamp a spurious mood=imperative/person=2sg (verbform is not one of
-                # its finite keys), turning gelerek into a bogus imperative.
-                pass
+                # its finite keys), turning gelerek into a bogus imperative. The nominal-default
+                # number/possessive/case are dropped here (an adverb has none): they are never
+                # present on a converb — the verbal spine adds no such key — so this is a no-op
+                # for converbs and correctly strips them from a NOUN/ADJ-rooted -CA adverb
+                # (güzelce carries only derivation=ca, not a fabricated case=nominative).
+                for _k in (tags.NUMBER, tags.POSSESSIVE, tags.CASE):
+                    feats.pop(_k, None)
             elif state in mt.NOMINAL_STATES:
                 # Nominal-side acceptance: fill nominal defaults *under* whatever was
                 # accrued, so a verb-derived nominal keeps its polarity (gelmeyen) yet

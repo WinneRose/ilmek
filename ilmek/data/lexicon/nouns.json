@@ -112,8 +112,8 @@
   {"lemma": "dünya", "pos": "NOUN"},
   {"lemma": "gece", "pos": "NOUN"},
   {"lemma": "köy", "pos": "NOUN"},
-  {"lemma": "sabah", "pos": "NOUN"},
-  {"lemma": "akşam", "pos": "NOUN"},
+  {"lemma": "sabah", "pos": "NOUN", "attributes": ["temporal"]},
+  {"lemma": "akşam", "pos": "NOUN", "attributes": ["temporal"]},
   {"lemma": "yağmur", "pos": "NOUN"},
   {"lemma": "kar", "pos": "NOUN"},
   {"lemma": "ateş", "pos": "NOUN"},
@@ -394,5 +394,12 @@
   {"lemma": "sağlık", "pos": "NOUN", "attributes": ["voicing"]},
   {"lemma": "hastalık", "pos": "NOUN", "attributes": ["voicing"]},
 
-  {"lemma": "hasta", "pos": "NOUN"}
+  {"lemma": "hasta", "pos": "NOUN"},
+
+  {"lemma": "kimya", "pos": "NOUN"},
+  {"lemma": "tarım", "pos": "NOUN"},
+
+  {"lemma": "türkçe", "pos": "NOUN"},
+  {"lemma": "karınca", "pos": "NOUN"},
+  {"lemma": "kumsal", "pos": "NOUN"}
 ]

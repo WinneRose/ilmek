@@ -51,3 +51,26 @@ _POSSESSIVES_TO_3 = [POSS_3SG, POSS_3PL]
 # birerdi) is deferred, correctness over coverage. The lexical exception yarımşar (ş after a
 # consonant) is not modeled (xfailed): it needs a per-word ``ş`` fact, not this productive rule.
 DIST = Suffix("dist", "(ş)Ar", {tags.NUM_TYPE: "distributive"}, applies_to=frozenset({tags.NUM}))
+
+
+# --- Ordinal numeral suffix -(I)ncI (bir->birinci, iki->ikinci, dört->dördüncü) ------
+# The ordinal "n-th". Like the distributive it is an *inflectional* numeral suffix, NOT a
+# derivation: the lemma and stem stay the bare numeral (birinci -> bir), the pos stays NUM, and
+# ``features[NUM_TYPE]="ordinal"`` records it. The (I) linking vowel appears after a consonant
+# (bir->birinci, on->onuncu) and is absent after a vowel (iki->ikinci, altı->altıncı); dört's
+# voicing bound form (dörd) is selected for free because the suffix is vowel-initial (dördüncü).
+# ``applies_to={NUM}`` is the overgeneration guard: a NOUN/ADJ/VERB stem can never take it
+# (*evinci, *güzelinci), and the guesser (which synthesizes only NOUN/VERB roots) never fires it.
+# It lands in N_ORD, which inflects and hosts the ek-fiil (birincisi, ikincide, birinciydi).
+ORD = Suffix("ordinal", "(I)ncI", {tags.NUM_TYPE: "ordinal"}, applies_to=frozenset({tags.NUM}))
+# The lexically-limited ordinal on the ADJ "son" (sonuncu "last"): son is an ADJECTIVE, not a
+# numeral, so the {NUM}-guarded ORD cannot reach it. This curated twin fires only on an ADJ that
+# carries the ``ordinal_host`` attribute (mirrors the reflexive/reciprocal curated-attribute
+# pattern), keeping the same template/feature; the stem/lemma stay "son".
+ORD_SON = Suffix(
+    "ordinal",
+    "(I)ncI",
+    {tags.NUM_TYPE: "ordinal"},
+    applies_to=frozenset({tags.ADJ}),
+    requires_attribute="ordinal_host",
+)

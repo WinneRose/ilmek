@@ -15,7 +15,25 @@ N_PL = "N_PL"
 N_POSS = "N_POSS"  # non-3rd-person possessive
 N_POSS3 = "N_POSS3"  # 3rd-person possessive (triggers pronominal -n- before case)
 N_CASE = "N_CASE"  # a non-accusative case (grammatical ek-fiil predicate host: evdeydi)
+# The locative/genitive case: like N_CASE (a grammatical ek-fiil host: evdeydi, evinindi) BUT
+# it ALSO hosts the relative/pronominal -ki (evdeki, evinki, kiminki) — the only two cases that
+# do. Split off from N_CASE (which keeps the copula edges as its identical leading prefix) so
+# the -ki edge attaches to exactly the locative and genitive and nowhere else (*evdenki blocked).
+N_CASE_LG = "N_CASE_LG"
 N_ACC = "N_ACC"  # the accusative, split off as terminal: the copula never follows it (*eviydi)
+# After the relative/pronominal -ki (evdeki, benimki, dünkü). A complete ADJ/pronominal that
+# declines like a pronoun (buffer-n before case: evdekini, evdekinde), pluralizes (evdekiler),
+# and hosts the ek-fiil (evdekiydi). Final; reached from N_CASE_LG (evde-ki), from a temporal
+# noun/adv at the root (dün-kü), and from a genitive/locative pronoun host (benim-ki).
+N_KI = "N_KI"
+# After the equative/adverbial -CA (güzelce, insanca, çocukça): a verb-less ADVERB derivation.
+# TERMINAL — güzelce takes no further nominal inflection (no *güzelceyi/*güzelceler) — so, like
+# the converb state ADV_CVB, it is a dead-end; its accepting closure drops the nominal defaults.
+N_ADV_CA = "N_ADV_CA"
+# After the ordinal -(I)ncI (birinci, ikinci, sonuncu): a fully nominal ordinal numeral. It
+# inflects like a bare root (birincisi, ikincide, birinciler) and hosts the ek-fiil
+# (birinciydi), so its edges are the shared nominal inflection plus the copula. Final.
+N_ORD = "N_ORD"
 N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, cannot re-derive)
 # The negative-aorist participle -mAz (çıkmaz, tükenmez). It inflects for CASE only (çıkmazda),
 # taking NEITHER the possessive NOR the ek-fiil copula — both attach -Im/-Iz, which would revive
@@ -24,6 +42,15 @@ N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, 
 N_PART_NEG = "N_PART_NEG"
 N_COP_DIR = "N_COP_DIR"  # after the assertive/generalizing ek-fiil -DIr; terminal this milestone
 N_DIST = "N_DIST"  # after the distributive numeral suffix -(ş)Ar (birer, ikişer); terminal
+
+# --- Relative-particle host state (benimki, seninki, ondaki) -------------------------
+
+# The start state for a genitive/locative PRONOUN that hosts the relative -ki (benim->benimki,
+# senin->seninki, onun->onunki, onda->ondaki). NOT final — a bare "benim" is not accepted here
+# (it is covered by the enumerated irregular pronoun); its ONLY outgoing edge is the pronominal
+# -ki into N_KI, so this host licenses nothing but -ki (no *benimler / *benimde). Reached solely
+# as a start state, gated by the ``ki_host`` root attribute, so a guess can never reach it.
+KI_HOST_ROOT = "KI_HOST_ROOT"
 
 # --- Interrogative-particle state ----------------------------------------------------
 
@@ -81,6 +108,11 @@ V_AOR_NEG = "V_AOR_NEG"  # after negative aorist -mAz; final, defective person p
 V_OPT = "V_OPT"  # after optative -(y)A; final, its own person paradigm (1pl is -lIm)
 V_PERS = "V_PERS"
 V_INF = "V_INF"  # infinitive -mAk (a noun); terminal this milestone (no case inflection yet)
+# After the formal progressive -mAktA (gelmekte, yazmakta): a finite present-continuous. FINAL
+# (bare gelmekte = 3sg). Its edges are the copula layer (gelmekteydi/gelmekteymiş), the type-1
+# persons (gelmekteyim/gelmekteler), and the assertive -DIr (gelmektedir). -DIr sits HERE only,
+# never on V_T1, so the generalizing *gelirdir stays deferred.
+V_MAKTA = "V_MAKTA"
 
 # --- Adverbial (converb / zarf-fiil) state -------------------------------------------
 

@@ -396,7 +396,9 @@ def test_applies_to_only_on_derivations_and_distributive():
             seen[id(suffix)] = suffix
     for suffix in seen.values():
         if suffix.applies_to is not None:
-            # Every applies_to guard belongs to a derivation OR to the distributive (num_type).
-            assert suffix.derivational or suffix.features.get("num_type") == "distributive", (
-                f"non-derivational, non-distributive suffix {suffix.name!r} carries applies_to"
-            )
+            # Every applies_to guard belongs to a derivation OR to an inflectional numeral
+            # suffix (the distributive -(ş)Ar or the ordinal -(I)ncI, both carrying a num_type).
+            assert suffix.derivational or suffix.features.get("num_type") in (
+                "distributive",
+                "ordinal",
+            ), f"non-derivational, non-numeral suffix {suffix.name!r} carries applies_to"

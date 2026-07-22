@@ -44,10 +44,73 @@ D_CIK = Suffix(
     voice_final=True,
 )
 
+# Equative / adverbial -CA (güzelce "nicely", insanca "humanely", çocukça "childishly",
+# aptalca "stupidly"). Turns a NOUN/ADJ into an ADVERB (its manner/equative reading). The C
+# archiphoneme hardens to ç after a voiceless consonant for free (çocukça, kitapça), so that
+# requirement needs no code. ``applies_to={NOUN, ADJ}`` is the overgeneration guard: it never
+# fires on a NUM (*birce) or a VERB (*gelce, structurally unreachable anyway). It lands in the
+# TERMINAL N_ADV_CA (no further inflection — no *güzelceyi/*güzelceler); the pronominal
+# equatives (bence, sence) and the lexicalized language name türkçe are enumerated instead.
+D_CA = Suffix(
+    "ca", "CA", derivational=True, to_pos=tags.ADV, applies_to=frozenset({tags.NOUN, tags.ADJ})
+)
+
+# Relational -sAl (toplumsal "societal", tarihsel "historical", bölgesel "regional",
+# kimyasal "chemical"). Turns a NOUN into an ADJECTIVE. ``applies_to={NOUN}`` blocks it on an
+# ADJ (*güzelsel) or a VERB (*gelsel). Lands in the shared N_DERIV, so it inflects and hosts the
+# ek-fiil for free (toplumsallar, toplumsaldır). The lexicalized kumsal (beach) is a whole-word
+# NOUN entry so the kum+sal split stays a ranked alternative, never the primary.
+D_SAL = Suffix("sal", "sAl", derivational=True, to_pos=tags.ADJ, applies_to=frozenset({tags.NOUN}))
+
 #: Nominal-side derivations, appended after the inflectional edges so inflection-only
 #: traversal order (and the guesser, which forbids derivation) is byte-identical to before.
-#: -CIk is appended LAST so every pre-existing traversal prefix is unchanged.
-_NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI, D_CIK]
+#: -CIk is appended before the new -CA/-sAl so every pre-existing traversal prefix is unchanged;
+#: -CA/-sAl are appended LAST (in that order). -CA targets the terminal N_ADV_CA, so it is wired
+#: positionally in :mod:`.transitions` rather than through this shared N_DERIV list; -sAl lands
+#: in N_DERIV like the other nominal derivations, so it is the only new member of this list.
+_NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI, D_CIK, D_SAL]
+
+
+# --- Relative / pronominal -ki (evdeki, benimki, dünkü) ------------------------------
+# The relative -ki turns a locative/genitive nominal (or a temporal noun/adverb) into an
+# ADJ/pronominal "the one that is (at/of) X". It is DERIVATIONAL (records the name "ki") and,
+# crucially, does NOT harmonize — the template is the literal lowercase "ki", so evdeki/masadaki
+# never become *evdekı by construction (the sole exception is the rounded temporal allomorph -kü
+# after dün/bugün, a per-word lexical fact carried by a separate edge, NOT a harmony rule). Every
+# -ki edge lands in N_KI, which declines the result like a pronoun (buffer-n: evdekini).
+
+#: Relative -ki after a locative/genitive case (evdeki, masadaki, evindeki, evinki, kiminki).
+#: Unrestricted (no ``applies_to``): it is reachable ONLY from N_CASE_LG, which a verb never
+#: reaches, so its scope is already exactly "any locative/genitive nominal".
+KI = Suffix("ki", "ki", derivational=True, to_pos=tags.ADJ)
+#: Pronominal -ki on a genitive/locative pronoun HOST (benimki, seninki, onunki, ondaki). Same
+#: literal "ki"; to_pos=PRON (the result is a pronoun). Reachable only from KI_HOST_ROOT.
+KI_PRON = Suffix("ki", "ki", derivational=True, to_pos=tags.PRON)
+#: Temporal -ki root-adjacent on a temporal noun/adverb (yarınki, sabahki, akşamki, şimdiki,
+#: sonraki, önceki). ``applies_to={NOUN, ADV}`` + ``requires_attribute="temporal"`` gate it to
+#: the curated temporal words only (no *evki). Literal "ki" (unrounded).
+KI_TEMP = Suffix(
+    "ki",
+    "ki",
+    derivational=True,
+    to_pos=tags.ADJ,
+    applies_to=frozenset({tags.NOUN, tags.ADV}),
+    requires_attribute="temporal",
+)
+#: The ROUNDED temporal allomorph -kü (dünkü, bugünkü). This is a per-word LEXICAL fact (dün/
+#: bugün take -kü; yarın/sabah keep -ki; onunki keeps -ki after u), NOT a phonological harmony
+#: rule — so it is a separate edge gated by ``requires_attribute="temporal_rounded"``, with the
+#: literal "kü" template. A vowel-based rule would wrongly give *onunkü/*dünki.
+KU_TEMP = Suffix(
+    "ki",
+    "kü",
+    derivational=True,
+    to_pos=tags.ADJ,
+    applies_to=frozenset({tags.NOUN, tags.ADV}),
+    requires_attribute="temporal_rounded",
+)
+#: The two root-adjacent temporal -ki/-kü edges (appended LAST to N_ROOT in :mod:`.transitions`).
+_TEMPORAL_KI = [KI_TEMP, KU_TEMP]
 
 
 # --- Verbal derivations (verb -> new nominal/adjectival stem) ------------------------

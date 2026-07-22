@@ -17,10 +17,14 @@ from .derivational_suffixes import (
     _CONVERBS_FROM_NEG,
     _NOMINAL_DERIVATIONS,
     _PART_AORISTS,
+    _TEMPORAL_KI,
     _VERBAL_DERIVATIONS_TO_NOMINAL,
     CVB_KEN,
     CVB_KEN_BARE,
+    D_CA,
     INF,
+    KI,
+    KI_PRON,
     PART_AOR_VOICE,
     PART_MAZ,
 )
@@ -30,16 +34,23 @@ from .noun_suffixes import (
     _POSSESSIVES_TO_NONE3,
     _PRONOMINAL_CASES,
     DIST,
+    ORD,
+    ORD_SON,
     PLURAL,
 )
 from .states import (
     ADV_CVB,
     I_ROOT,
+    KI_HOST_ROOT,
     N_ACC,
+    N_ADV_CA,
     N_CASE,
+    N_CASE_LG,
     N_COP_DIR,
     N_DERIV,
     N_DIST,
+    N_KI,
+    N_ORD,
     N_PART_NEG,
     N_PL,
     N_POSS,
@@ -56,6 +67,7 @@ from .states import (
     V_COP2,
     V_IMPOSS,
     V_INF,
+    V_MAKTA,
     V_NEG,
     V_OPT,
     V_PASS,
@@ -93,6 +105,7 @@ from .verb_suffixes import (
     FUT,
     IMPOSS,
     IMPOSS_AOR,
+    MAKTA,
     NECESS,
     NEG,
     NEG_AOR,
@@ -201,16 +214,29 @@ def _post_voice_caus(target: str) -> list[tuple[Suffix, str]]:
 # --- Nominal graph -------------------------------------------------------------------
 
 
-def _case_edges(cases: list[Suffix]) -> list[tuple[Suffix, str]]:
-    """Case edges, with the accusative retargeted to the terminal ``N_ACC``.
+def _case_target(suffix: Suffix) -> str:
+    """The state a case edge lands in, chosen declaratively by the suffix's own case feature.
 
-    Every case but the accusative is a grammatical ek-fiil predicate host (evdeydi,
-    evdendi, benimleydi-style) and lands in ``N_CASE``, which carries the copula edges. The
-    accusative is *not* — ``*eviydi`` read as accusative+copula is ungrammatical — so it goes
-    to ``N_ACC`` (terminal, no copula). Split declaratively by the suffix's own case feature,
-    not by a hardcoded ``if`` in the analyzer.
+    Three-way split, no hardcoded surface list:
+
+    * the **accusative** goes to the terminal ``N_ACC`` — ``*eviydi`` read as accusative+copula
+      is ungrammatical, so the copula never follows it;
+    * the **locative** and **genitive** go to ``N_CASE_LG`` — like ``N_CASE`` they are
+      grammatical ek-fiil hosts (evdeydi, evinindi) AND they alone host the relative -ki
+      (evdeki, evinki, kiminki);
+    * every **other** case (dative/ablative/instrumental) goes to ``N_CASE`` — an ek-fiil host
+      but NOT a -ki host (*evdenki, *ondanki are blocked structurally).
     """
-    return [(s, N_ACC if s.features.get(tags.CASE) == "accusative" else N_CASE) for s in cases]
+    case = suffix.features.get(tags.CASE)
+    if case == "accusative":
+        return N_ACC
+    if case in ("locative", "genitive"):
+        return N_CASE_LG
+    return N_CASE
+
+
+def _case_edges(cases: list[Suffix]) -> list[tuple[Suffix, str]]:
+    return [(s, _case_target(s)) for s in cases]
 
 
 def _nominal_inflection() -> list[tuple[Suffix, str]]:
@@ -226,17 +252,43 @@ def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suf
     deriv = [(s, N_DERIV) for s in _NOMINAL_DERIVATIONS]
     return {
         # Derivation edges appended after inflection, then the ek-fiil (copula) edges, then the
-        # distributive LAST: with derivation, copula *and* distributive disabled/unmatched the
-        # prefix of each list is exactly the pre-milestone graph, so plain inflection and the
-        # guesser stay byte-identical. The distributive edge fires only on a NUM stem (applies_to).
-        N_ROOT: [*inflection, *deriv, *copula, (DIST, N_DIST)],
+        # distributive, ordinal, -CA and temporal -ki LAST (in that order): with derivation,
+        # copula and every appended edge disabled/unmatched the prefix of each list is exactly
+        # the pre-milestone graph, so plain inflection and the guesser stay byte-identical. The
+        # distributive/ordinal fire only on a NUM stem, -CA only on a NOUN/ADJ, and the temporal
+        # -ki/-kü only on a curated temporal word (all via applies_to / requires_attribute).
+        N_ROOT: [
+            *inflection,
+            *deriv,
+            *copula,
+            (DIST, N_DIST),
+            (ORD, N_ORD),
+            (ORD_SON, N_ORD),
+            (D_CA, N_ADV_CA),
+            *[(s, N_KI) for s in _TEMPORAL_KI],
+        ],
         N_PL: [*poss, *plain_case, *copula],
         N_POSS: [*plain_case, *copula],
         N_POSS3: [*pronom_case, *copula],
-        # A non-accusative case is a complete word AND a copular predicate host (evdeydi).
+        # A non-accusative, non-loc/gen case is a complete word AND a copular predicate host
+        # (evdendi, evleydi), but NOT a -ki host.
         N_CASE: [*copula],
+        # The locative/genitive: the copula edges (identical leading prefix to N_CASE, so copular
+        # predicates and the guesser's copula gate are unchanged) PLUS the relative -ki (evdeki,
+        # evinki). -ki is appended last and is derivational, so the guesser never walks it.
+        N_CASE_LG: [*copula, (KI, N_KI)],
         # The accusative is terminal: the copula never attaches after it (*eviydi as acc+cop).
         N_ACC: [],
+        # After the relative/pronominal -ki: it declines like a pronoun (buffer-n before case:
+        # evdekini, evdekinde), pluralizes (evdekiler), and hosts the ek-fiil (evdekiydi). The
+        # pronominal case set gives the buffer-n; recursion (evdekindeki) falls out and is
+        # grammatical.
+        N_KI: [(PLURAL, N_PL), *pronom_case, *copula],
+        # After the equative/adverbial -CA (güzelce): TERMINAL — no further inflection.
+        N_ADV_CA: [],
+        # After the ordinal -(I)ncI (birinci): fully nominal — inflects like a bare root
+        # (birincisi, ikincide, birinciler) and hosts the ek-fiil (birinciydi).
+        N_ORD: [*inflection, *copula],
         # A derived stem inflects exactly like a bare root (and hosts the copula: yürüyüştü),
         # but may not derive again.
         N_DERIV: [*inflection, *copula],
@@ -255,10 +307,25 @@ def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suf
 
 NOMINAL_START = N_ROOT
 #: Accepting nominal states. ``N_ACC`` (the split-off accusative) is a complete word, so it
-#: is final; ``N_DIST`` (the distributive, birer) is a complete word too. ``N_COP_DIR`` is
-#: *not* here — its closure is the copular-predicate one, below.
+#: is final; ``N_DIST`` (the distributive, birer) and ``N_ORD`` (the ordinal, birinci) are
+#: complete words too; ``N_CASE_LG`` (loc/gen, evde) and ``N_KI`` (the relative, evdeki) are
+#: complete words. ``N_COP_DIR`` is *not* here — its closure is the copular-predicate one,
+#: below; ``N_ADV_CA`` is *not* here — güzelce is an adverb, accepted via ADVERB_STATES.
 NOMINAL_FINALS = frozenset(
-    {N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE, N_ACC, N_DERIV, N_PART_NEG, N_DIST}
+    {
+        N_ROOT,
+        N_PL,
+        N_POSS,
+        N_POSS3,
+        N_CASE,
+        N_CASE_LG,
+        N_ACC,
+        N_KI,
+        N_ORD,
+        N_DERIV,
+        N_PART_NEG,
+        N_DIST,
+    }
 )
 
 
@@ -315,6 +382,11 @@ def _root_continuation(
         # yapılmadan, okunmaksızın) exactly as the participles are; -ken is NOT here (it attaches
         # to a finished tense, wired onto V_T1 / V_AOR_NEG instead).
         *[(s, ADV_CVB) for s in _CONVERBS],
+        # The formal present-continuous -mAktA (gelmekte), appended LAST so every pre-existing
+        # traversal prefix stays byte-stable. Reachable from the bare root AND every voiced stem
+        # (yazılmakta, yaptırılmaktadır) exactly like a tense; its assertive -DIr / copula /
+        # persons live on V_MAKTA.
+        (MAKTA, V_MAKTA),
     ]
 
 
@@ -368,11 +440,20 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
             # -mAdAn/-mAksIzIn are excluded (that is _CONVERBS_FROM_NEG): *gelmemeden is a
             # double negative, mirroring how -mAz is kept off V_NEG.
             *[(s, ADV_CVB) for s in _CONVERBS_FROM_NEG],
+            # The formal present-continuous on a negated stem (gelmemekte, gelmemektedir).
+            (MAKTA, V_MAKTA),
         ],
         # Ability: primary tenses, the deterministic -Ir aorist, conditional, the necessitative
-        # (gelebilmeli), and the verbal derivations (gelebilmek, gelebilen). Not final -> no bare
-        # *gelebil.
-        V_ABIL: [*_primary_from(), (AOR_ABIL, V_T1), (COND, V_COND), *deriv, (NECESS, V_T1)],
+        # (gelebilmeli), and the verbal derivations (gelebilmek, gelebilen), plus the formal
+        # present-continuous (gelebilmekte, gelebilmektedir). Not final -> no bare *gelebil.
+        V_ABIL: [
+            *_primary_from(),
+            (AOR_ABIL, V_T1),
+            (COND, V_COND),
+            *deriv,
+            (NECESS, V_T1),
+            (MAKTA, V_MAKTA),
+        ],
         # Impossibilitive -(y)AmA (gelemez, yapamadı): mirrors V_NEG (it is the ability-negative)
         # — the primary tenses (gelemiyor via -Iyor's vowel drop, gelemeyecek), ability
         # (gelemeyebilir), conditional (gelemese), optative (gelemeye), necessitative, and the
@@ -389,6 +470,8 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
             (IMPOSS_AOR, V_AOR_NEG),
             (NEG_AOR_1SG, V_PERS),
             (NEG_AOR_1PL, V_PERS),
+            # The formal present-continuous on the impossibilitive stem (gelememekte).
+            (MAKTA, V_MAKTA),
         ],
         # Voice states: each takes the shared voiced-stem continuation (with the deterministic
         # -Ir aorist), plus the onward voice progression. None is a final state, so a bare
@@ -433,6 +516,13 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         V_OPT: [(s, V_PERS) for s in _PERSON_OPT],
         V_PERS: [],
         V_INF: [],
+        # The formal present-continuous -mAktA (gelmekte): FINAL (bare gelmekte = 3sg). Its
+        # edges are the copula layer (gelmekteydi/gelmekteymiş/gelmekteyse), the type-1 persons
+        # (gelmekteyim/gelmektesin/gelmekteler), and the assertive -DIr (gelmektedir, accepted at
+        # N_COP_DIR — with cur_pos==VERB it falls to verbal finalization, so lemma gel + tense
+        # present + copula assertive). -DIr sits HERE only, never on V_T1, so *gelirdir stays
+        # deferred; N_COP_DIR is terminal, so *gelmektedirler is likewise deferred.
+        V_MAKTA: [*copula, *pers_t1, (DIR, N_COP_DIR)],
         # The converb (zarf-fiil) landing state: terminal, so an adverb takes no further
         # inflection (no case/plural/copula/person) — the no-case/no-plural guard is structural.
         ADV_CVB: [],
@@ -449,8 +539,9 @@ VERBAL_START = V_ROOT
 # The voice states (V_RECIP, V_CAUS1, V_CAUS2, V_PASS) are deliberately NOT final this
 # milestone: a bare voiced stem is a real 2sg imperative (yıkan!) but making it final would
 # rank it above the homograph nouns (sorun, alın) and the -Iş verbal nouns (görüş, geliş).
+# V_MAKTA (gelmekte) IS final: a bare formal present-continuous is a complete 3sg word.
 VERBAL_FINALS = frozenset(
-    {V_ROOT, V_NEG, V_T1, V_T2, V_COND, V_COP1, V_COP2, V_AOR_NEG, V_OPT, V_PERS, V_INF}
+    {V_ROOT, V_NEG, V_T1, V_T2, V_COND, V_COP1, V_COP2, V_AOR_NEG, V_OPT, V_PERS, V_INF, V_MAKTA}
 )
 
 
@@ -475,27 +566,36 @@ NEG_COP_GRAPH: dict[str, list[tuple[Suffix, str]]] = {NEG_COP_ROOT: _NEG_COP_COP
 #: Reached solely as a start state (gated by the ``substantive_verb`` root attribute); its
 #: targets (V_COP1/V_COP2/ADV_CVB) already exist on the verbal side.
 I_GRAPH: dict[str, list[tuple[Suffix, str]]] = {I_ROOT: _I_EDGES}
+#: The relative-particle-host graph: KI_HOST_ROOT's ONLY edge is the pronominal -ki into N_KI
+#: (benim->benimki). Reached solely as a start state (gated by the ``ki_host`` root attribute,
+#: so a guess never reaches it); N_KI already exists on the nominal side. NON-final (bare benim
+#: is not accepted here — it is the enumerated irregular pronoun), so KI_HOST_ROOT stays OUT of
+#: FINALS and licenses nothing but -ki (no *benimler / *benimde).
+KI_HOST_GRAPH: dict[str, list[tuple[Suffix, str]]] = {KI_HOST_ROOT: [(KI_PRON, N_KI)]}
 GRAPH: dict[str, list[tuple[Suffix, str]]] = {
     **NOMINAL_GRAPH,
     **VERBAL_GRAPH,
     **Q_GRAPH,
     **NEG_COP_GRAPH,
     **I_GRAPH,
+    **KI_HOST_GRAPH,
 }
 Q_START = Q_ROOT
 NEG_COP_START = NEG_COP_ROOT
 I_START = I_ROOT
+KI_HOST_START = KI_HOST_ROOT
 #: The copular (ek-fiil) landing states: the type-1/type-2 person states shared with the
 #: verbal copula, the present-person state, and the assertive -DIr terminal. A NOMINAL
 #: predicate accepted here takes nominal-predicate finalization; a verbal path reaching the
 #: same person/copula states (cur_pos == VERB) still takes verbal finalization.
 COPULA_STATES = frozenset({V_COP1, V_COP2, V_PERS, N_COP_DIR})
-#: The converb (zarf-fiil) landing states: a verb-derived ADVERB, accepted with its accrued
-#: features intact (verbform=converb, any polarity/voice/tense) and NOTHING fabricated — no
-#: nominal number/possessive/case, no verbal person/mood. Its own analyzer branch runs this
-#: closure, kept disjoint from NOMINAL_STATES/COPULA_STATES/Q_ROOT so those closures are
-#: provably untouched. Terminal, so it adds no inflected surfaces (only the bare converb).
-ADVERB_STATES = frozenset({ADV_CVB})
+#: The ADVERB landing states, accepted with their accrued features but NOTHING fabricated — no
+#: verbal person/mood, and (via the analyzer's ADVERB_STATES branch) the nominal number/
+#: possessive/case defaults dropped. Two members: the converb (zarf-fiil) ADV_CVB (verbform=
+#: converb, any polarity/voice/tense) and the equative -CA state N_ADV_CA (güzelce, derivation
+#: ca). Both are terminal, so they add no inflected surfaces. Kept disjoint from NOMINAL_STATES/
+#: COPULA_STATES/Q_ROOT so those closures stay provably untouched.
+ADVERB_STATES = frozenset({ADV_CVB, N_ADV_CA})
 # Q_ROOT and NEG_COP_ROOT are final (bare mi / bare değil are complete words). Both are kept
 # OUT of NOMINAL_FINALS/NOMINAL_STATES/COPULA_STATES so the nominal closure and the guesser's
 # copula gate are provably untouched: each runs its own particle closure from a dedicated branch

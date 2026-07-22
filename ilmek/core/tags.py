@@ -38,7 +38,7 @@ POS_TAGS = frozenset(
 # --- Feature keys --------------------------------------------------------------------
 
 NUMBER = "number"  # singular | plural
-NUM_TYPE = "num_type"  # distributive (the numeral suffix -(ş)Ar: birer, ikişer, üçer)
+NUM_TYPE = "num_type"  # distributive (-(ş)Ar: birer, ikişer) | ordinal (-(I)ncI: birinci)
 POSSESSIVE = "possessive"  # none | 1sg 2sg 3sg 1pl 2pl 3pl
 CASE = "case"  # nominative accusative dative locative ablative genitive instrumental
 POLARITY = "polarity"  # positive | negative
@@ -86,11 +86,13 @@ DERIVATION = "derivation"
 VERBFORM = "verbform"  # participle (verb->adjective) | converb (verb->adverb)
 
 #: The closed vocabulary of derivational-suffix names recorded under :data:`DERIVATION`.
-#: Noun/adj-forming: li (-lI), siz (-sIz), lik (-lIk), ci (-CI), cik (diminutive -CIk);
-#: verb->noun: ma (-mA), is (-(y)Iş), mak (infinitive -mAk); verb->adj participles: an
-#: (-(y)An), dik (-DIk), acak (-(y)AcAk), mis (-mIş), ar (aorist -(A/I)r), maz (negative
-#: aorist -mAz); verb->adv converbs (zarf-fiil): arak (-(y)ArAk), ip (-(y)Ip), inca (-(y)IncA),
-#: ali (-(y)AlI), dikce (-DIkçA), madan (-mAdAn), maksizin (-mAksIzIn), ken (finite-stem -ken).
+#: Noun/adj-forming: li (-lI), siz (-sIz), lik (-lIk), ci (-CI), cik (diminutive -CIk),
+#: ca (equative/adverbial -CA: güzelce, insanca), sal (relational -sAl: toplumsal), ki
+#: (relative/pronominal -ki: evdeki, benimki, dünkü); verb->noun: ma (-mA), is (-(y)Iş),
+#: mak (infinitive -mAk); verb->adj participles: an (-(y)An), dik (-DIk), acak (-(y)AcAk),
+#: mis (-mIş), ar (aorist -(A/I)r), maz (negative aorist -mAz); verb->adv converbs
+#: (zarf-fiil): arak (-(y)ArAk), ip (-(y)Ip), inca (-(y)IncA), ali (-(y)AlI), dikce (-DIkçA),
+#: madan (-mAdAn), maksizin (-mAksIzIn), ken (finite-stem -ken).
 #: The intensive-adjective diminutives (sıcacık, küçücük) are enumerated IrregularForm surfaces
 #: but record the same ``cik`` name.
 DERIVATIONS = frozenset(
@@ -100,6 +102,9 @@ DERIVATIONS = frozenset(
         "lik",
         "ci",
         "cik",
+        "ca",
+        "sal",
+        "ki",
         "ma",
         "is",
         "mak",
@@ -123,10 +128,11 @@ DERIVATIONS = frozenset(
 # --- Feature value vocabulary (for validation / documentation) -----------------------
 
 NUMBERS = frozenset({"singular", "plural"})
-#: Numeral sub-types recorded under :data:`NUM_TYPE`. Today only ``distributive`` (the
-#: numeral suffix -(ş)Ar: bir->birer, iki->ikişer, "n each / n at a time"). The suffix is
-#: inflectional, not derivational, so the lemma/stem stay the bare numeral (birer -> bir).
-NUM_TYPES = frozenset({"distributive"})
+#: Numeral sub-types recorded under :data:`NUM_TYPE`. ``distributive`` (the numeral suffix
+#: -(ş)Ar: bir->birer, iki->ikişer, "n each / n at a time") and ``ordinal`` (the ordinal
+#: suffix -(I)ncI: bir->birinci, iki->ikinci, "n-th"). Both are inflectional, not
+#: derivational, so the lemma/stem stay the bare numeral (birer -> bir, birinci -> bir).
+NUM_TYPES = frozenset({"distributive", "ordinal"})
 PERSONS = frozenset({"1sg", "2sg", "3sg", "1pl", "2pl", "3pl"})
 #: Sub-types recorded on closed-class pronouns. We label ``personal`` (ben/sen/biz/siz)
 #: and ``demonstrative`` (bu/şu) and ``interrogative`` (kim); the ``o``/``onlar`` paradigm

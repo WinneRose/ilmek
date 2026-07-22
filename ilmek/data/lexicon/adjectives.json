@@ -80,7 +80,7 @@
   {"lemma": "çıplak", "pos": "ADJ", "attributes": ["voicing"]},
   {"lemma": "uzak", "pos": "ADJ", "attributes": ["voicing"]},
 
-  {"lemma": "son", "pos": "ADJ"},
+  {"lemma": "son", "pos": "ADJ", "attributes": ["ordinal_host"]},
   {"lemma": "ilk", "pos": "ADJ"},
   {"lemma": "tek", "pos": "ADJ"},
   {"lemma": "özel", "pos": "ADJ"},

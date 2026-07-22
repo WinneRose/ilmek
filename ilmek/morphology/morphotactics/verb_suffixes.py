@@ -20,6 +20,13 @@ FUT = Suffix("fut", "(y)AcAk", {tags.TENSE: "future"}, voice_final=True, glide_r
 EVID = Suffix("evid", "mIş", {tags.EVIDENTIAL: True})
 PAST = Suffix("past", "DI", {tags.TENSE: "past"})
 
+# Formal / written present-continuous -mAktA (gelmekte, yazmakta): the same present +
+# progressive as -Iyor, but a distinct morpheme (the name "makta" keeps the two apart — no
+# fabricated feature). It is consonant-initial, so it never drops a preceding vowel (okumakta)
+# nor triggers root voicing. It lands in its own V_MAKTA state, whose assertive -DIr (gelmektedir)
+# and copula/persons (gelmekteydi, gelmekteyim) are wired in :mod:`.transitions`.
+MAKTA = Suffix("makta", "mAktA", {tags.TENSE: "present", tags.ASPECT: "progressive"})
+
 # Copula (ek-fiil) forms stack on a finished tense and take the (y) buffer after a vowel
 # (geldi -> geldiydi / geldiymiş), unlike the primary tense suffixes which attach to the
 # bare stem. The past copula records a separate ``copula`` feature so it never overwrites a
