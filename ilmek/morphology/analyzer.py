@@ -151,6 +151,20 @@ def _generate(
         # have empty attributes, so Q_ROOT is unreachable for a guess).
         start = mt.Q_START
         base_features = mt.interrogative_default_features()
+    elif "negative_copula" in root.attributes:
+        # The negative copula değil: start at the dedicated NEG_COP_ROOT, whose only edges are
+        # the (full) ek-fiil ones. Attribute-routed exactly like the interrogative particle, so
+        # a guess (empty attributes) can never reach it. Polarity=negative is seeded here and,
+        # since no copula/person suffix carries a polarity key, survives to acceptance intact.
+        start = mt.NEG_COP_START
+        base_features = mt.negative_copula_default_features()
+    elif "substantive_verb" in root.attributes:
+        # The standalone substantive verb i- (idi, imiş, ise, iken): start at the dedicated,
+        # non-final I_ROOT, whose only edges are the four bufferless copula/converb ones. It is
+        # polarity-neutral, so the base features are empty (nothing fabricated). Attribute-routed
+        # like the above, so a guess never reaches it.
+        start = mt.I_START
+        base_features = {}
     elif root.is_nominal:
         start = mt.NOMINAL_START
         base_features = mt.nominal_default_features()
@@ -176,10 +190,12 @@ def _generate(
     ):
         if state in finals and acc == word:
             feats = dict(features)
-            if state == mt.Q_ROOT:
-                # Bare interrogative particle (mi/mı/mu/mü): the features are already complete
-                # (question=True, no person), so nothing is finalized — a bare mi fabricates no
-                # person/copula/case, exactly what distinguishes it from a full nominal.
+            if state == mt.Q_ROOT or state == mt.NEG_COP_ROOT:
+                # Bare interrogative particle (mi) or bare negative copula (değil): the features
+                # are already complete (question=True / polarity=negative, no person), so nothing
+                # is finalized — a bare particle fabricates no person/copula/case, exactly what
+                # distinguishes it from a full nominal. WITHOUT this, bare değil would fall to
+                # finalize_verbal_features and get a spurious mood=imperative + polarity=positive.
                 pass
             elif state in mt.ADVERB_STATES:
                 # Converb (zarf-fiil) acceptance: a verb-derived ADVERB keeps exactly its
@@ -196,14 +212,16 @@ def _generate(
                 feats = {**mt.nominal_default_features(), **feats}
             elif state in mt.COPULA_STATES and cur_pos != tags.VERB:
                 # Ek-fiil acceptance on a NOMINAL/ADJ/PRON/NUM predicate (güzeldi, evdeydim,
-                # güzelim) or on the interrogative PARTICLE (midir, misin, miyim, miydi): keep
-                # any accrued keys, default person to the zero 3sg. The particle takes the
-                # dedicated closure (no fabricated nominal number/case — mi is not a noun); a
-                # nominal predicate takes the nominal one (keeps case/number). A verbal path
-                # reaches these same person/copula states with cur_pos == VERB (every
+                # güzelim), on the interrogative PARTICLE / negative copula (midir, değildi,
+                # değilim), or on the standalone substantive verb i- (idi, imiş, ise): keep any
+                # accrued keys, default person to the zero 3sg. A PART (mi/değil) or AUX (i-)
+                # takes the dedicated particle closure (no fabricated nominal number/case — none
+                # of them is a noun; değil's polarity=negative and i-'s neutrality survive
+                # untouched); a nominal predicate takes the nominal one (keeps case/number). A
+                # verbal path reaches these same person/copula states with cur_pos == VERB (every
                 # verb->nominal derivation sets to_pos, so no verbal spine arrives here with a
                 # non-VERB pos) and falls through to verbal finalization below.
-                if cur_pos == tags.PART:
+                if cur_pos in (tags.PART, tags.AUX):
                     feats = mt.finalize_particle_predicate_features(feats)
                 else:
                     feats = mt.finalize_nominal_predicate_features(feats)

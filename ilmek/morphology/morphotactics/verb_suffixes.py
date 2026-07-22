@@ -34,6 +34,15 @@ COP_PAST = Suffix("cop_past", "(y)DI", {tags.COPULA: "past"})
 COP_COND = Suffix("cop_cond", "(y)sA", {tags.MOOD: "conditional"})
 DIR = Suffix("cop_dir", "DIr", {tags.COPULA: "assertive"})
 
+# BUFFERLESS copula variants for the STANDALONE substantive verb i- (idi, imiş, ise). The
+# free-standing ek-fiil is vowel-final ("i") yet takes NO (y) buffer — the forms are idi/imiş/
+# ise, never *iydi/*iymiş/*iyse — so the (y)-buffered COP_* above cannot be reused here (they
+# would realize the glide after the vowel). Same features/targets as their buffered twins; wired
+# ONLY onto I_ROOT (see transitions.I_GRAPH), so nothing else can reach a bufferless copula.
+COP_PAST_BARE = Suffix("cop_past", "DI", {tags.COPULA: "past"})
+COP_EVID_BARE = Suffix("cop_evid", "mIş", {tags.EVIDENTIAL: True})
+COP_COND_BARE = Suffix("cop_cond", "sA", {tags.MOOD: "conditional"})
+
 # --- Person paradigms ----------------------------------------------------------------
 
 # Person set type-1 (present/future/evidential/aorist; 3sg is zero).

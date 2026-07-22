@@ -21,13 +21,18 @@ CONJ = "CONJ"
 DET = "DET"
 INTJ = "INTJ"
 PART = "PART"
+#: The auxiliary/copular verb. Carried by the standalone substantive verb i- (the ek-fiil
+#: written as a separate word: idi, imiş, ise, iken), which is AUX in UD. A copular ending
+#: on a NOMINAL predicate keeps that predicate's own POS (güzeldi stays ADJ); AUX is used only
+#: for the free-standing i- word, whose lemma/stem is "i".
+AUX = "AUX"
 PUNCT = "PUNCT"
 SYM = "SYM"
 ABBR = "ABBR"
 X = "X"  # unknown / unanalyzable
 
 POS_TAGS = frozenset(
-    {NOUN, PROPN, VERB, ADJ, ADV, PRON, NUM, ADP, CONJ, DET, INTJ, PART, PUNCT, SYM, ABBR, X}
+    {NOUN, PROPN, VERB, ADJ, ADV, PRON, NUM, ADP, CONJ, DET, INTJ, PART, AUX, PUNCT, SYM, ABBR, X}
 )
 
 # --- Feature keys --------------------------------------------------------------------

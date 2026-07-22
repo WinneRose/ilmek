@@ -19,6 +19,7 @@ from .derivational_suffixes import (
     _PART_AORISTS,
     _VERBAL_DERIVATIONS_TO_NOMINAL,
     CVB_KEN,
+    CVB_KEN_BARE,
     INF,
     PART_AOR_VOICE,
     PART_MAZ,
@@ -33,6 +34,7 @@ from .noun_suffixes import (
 )
 from .states import (
     ADV_CVB,
+    I_ROOT,
     N_ACC,
     N_CASE,
     N_COP_DIR,
@@ -43,6 +45,7 @@ from .states import (
     N_POSS,
     N_POSS3,
     N_ROOT,
+    NEG_COP_ROOT,
     Q_ROOT,
     V_ABIL,
     V_AOR_NEG,
@@ -80,8 +83,11 @@ from .verb_suffixes import (
     CAUS_T,
     COND,
     COP_COND,
+    COP_COND_BARE,
     COP_EVID,
+    COP_EVID_BARE,
     COP_PAST,
+    COP_PAST_BARE,
     DIR,
     EVID,
     FUT,
@@ -138,6 +144,36 @@ _Q_COPULA: list[tuple[Suffix, str]] = [
     (s, t)
     for s, t in _NOMINAL_COPULA
     if s.features.get(tags.PERSON) != "3pl" and s.features.get(tags.MOOD) != "conditional"
+]
+
+
+# --- Negative-copula (değil) edges ---------------------------------------------------
+
+#: The only edges leaving the negative-copula root NEG_COP_ROOT. It REUSES the shared nominal
+#: ek-fiil layer (:data:`_NOMINAL_COPULA`) rather than duplicating it, so every inflected form
+#: (değildi, değildim, değilim, değilsin, değildir, değilse, değilmiş, değiliz, değilsiniz,
+#: değiller) falls out for free, harmonizing off değil's front vowel. UNLIKE :data:`_Q_COPULA`
+#: it is the FULL, unfiltered layer: değilse (conditional) IS valid, so COP_COND stays, and
+#: değiller (present 3pl) IS valid, so the -lAr person edge stays. The negation is inherent to
+#: değil (seeded as a base feature, :func:`negative_copula_default_features`); no copula/person
+#: suffix here carries a polarity key, so polarity=negative is never overwritten.
+_NEG_COP_COPULA: list[tuple[Suffix, str]] = list(_NOMINAL_COPULA)
+
+
+# --- Substantive-verb (i-) edges -----------------------------------------------------
+
+#: The only edges leaving the substantive-verb root I_ROOT (the standalone ek-fiil i-: idi,
+#: imiş, ise, iken). They use the BUFFERLESS copula/converb variants (idi, NOT *iydi): the past
+#: -DI and conditional -sA feed the type-2 person state V_COP2 (idim, isem), the evidential -mIş
+#: feeds the type-1 state V_COP1 (imişim), and the bufferless -ken converb lands in the terminal
+#: ADV_CVB (iken). The person paradigms then come FREE from V_COP1/V_COP2's own untouched person
+#: sets. No present zero-copula persons (*iyim) and no -DIr (*idir): a bare copula stem needs an
+#: overt tense/mood, and those standalone forms are not used.
+_I_EDGES: list[tuple[Suffix, str]] = [
+    (COP_PAST_BARE, V_COP2),
+    (COP_EVID_BARE, V_COP1),
+    (COP_COND_BARE, V_COP2),
+    (CVB_KEN_BARE, ADV_CVB),
 ]
 
 
@@ -431,8 +467,24 @@ NOMINAL_GRAPH = _nominal_graph(_NOMINAL_COPULA)
 #: single-entry map merged into GRAPH is enough — its copula targets (V_COP1/V_COP2/V_PERS/
 #: N_COP_DIR) already exist on the verbal/nominal side.
 Q_GRAPH: dict[str, list[tuple[Suffix, str]]] = {Q_ROOT: _Q_COPULA}
-GRAPH: dict[str, list[tuple[Suffix, str]]] = {**NOMINAL_GRAPH, **VERBAL_GRAPH, **Q_GRAPH}
+#: The negative-copula graph: NEG_COP_ROOT's only edges are the FULL ek-fiil ones. Like Q_GRAPH
+#: it has no incoming edges (reached solely as a start state, gated by the ``negative_copula``
+#: root attribute), and its copula targets already exist on the verbal/nominal side.
+NEG_COP_GRAPH: dict[str, list[tuple[Suffix, str]]] = {NEG_COP_ROOT: _NEG_COP_COPULA}
+#: The substantive-verb graph: I_ROOT's only edges are the four bufferless copula/converb ones.
+#: Reached solely as a start state (gated by the ``substantive_verb`` root attribute); its
+#: targets (V_COP1/V_COP2/ADV_CVB) already exist on the verbal side.
+I_GRAPH: dict[str, list[tuple[Suffix, str]]] = {I_ROOT: _I_EDGES}
+GRAPH: dict[str, list[tuple[Suffix, str]]] = {
+    **NOMINAL_GRAPH,
+    **VERBAL_GRAPH,
+    **Q_GRAPH,
+    **NEG_COP_GRAPH,
+    **I_GRAPH,
+}
 Q_START = Q_ROOT
+NEG_COP_START = NEG_COP_ROOT
+I_START = I_ROOT
 #: The copular (ek-fiil) landing states: the type-1/type-2 person states shared with the
 #: verbal copula, the present-person state, and the assertive -DIr terminal. A NOMINAL
 #: predicate accepted here takes nominal-predicate finalization; a verbal path reaching the
@@ -444,11 +496,12 @@ COPULA_STATES = frozenset({V_COP1, V_COP2, V_PERS, N_COP_DIR})
 #: closure, kept disjoint from NOMINAL_STATES/COPULA_STATES/Q_ROOT so those closures are
 #: provably untouched. Terminal, so it adds no inflected surfaces (only the bare converb).
 ADVERB_STATES = frozenset({ADV_CVB})
-# Q_ROOT is final (bare mi is a complete word). It is deliberately kept OUT of
-# NOMINAL_FINALS/NOMINAL_STATES/COPULA_STATES so the nominal closure and the guesser's copula
-# gate are provably untouched: its own closure (question=True, no fabricated person) runs from
-# the dedicated Q_ROOT branch in the analyzer.
-FINALS = NOMINAL_FINALS | VERBAL_FINALS | ADVERB_STATES | {N_COP_DIR, Q_ROOT}
+# Q_ROOT and NEG_COP_ROOT are final (bare mi / bare değil are complete words). Both are kept
+# OUT of NOMINAL_FINALS/NOMINAL_STATES/COPULA_STATES so the nominal closure and the guesser's
+# copula gate are provably untouched: each runs its own particle closure from a dedicated branch
+# in the analyzer (Q_ROOT: question=True; NEG_COP_ROOT: polarity=negative — both fabricate no
+# person). I_ROOT is deliberately absent: a bare "i" is not a word, so it never accepts.
+FINALS = NOMINAL_FINALS | VERBAL_FINALS | ADVERB_STATES | {N_COP_DIR, Q_ROOT, NEG_COP_ROOT}
 #: States whose accepting side is *nominal*: they take nominal feature defaults and never
 #: run verbal finalization. This includes the shared derived state and the infinitive, so a
 #: verb-derived noun (gelme, gelmek) gets no fabricated person/mood but keeps any polarity.
@@ -500,6 +553,18 @@ def interrogative_default_features() -> dict:
     number/possessive/case. Inflected forms accrue their copula/person keys on top of this.
     """
     return {tags.QUESTION: True}
+
+
+def negative_copula_default_features() -> dict:
+    """The features the negative copula değil starts (and, bare, ends) with.
+
+    Only ``polarity=negative`` — the negation is INHERENT to değil (it is the negative mirror
+    of the zero copula). Like the interrogative particle it fabricates NO number/possessive/
+    case (değil is a particle, not a noun). Inflected forms accrue their copula/person keys ON
+    TOP of this, and since no copula/person suffix carries a polarity key, the negative polarity
+    is never overwritten — that is the fix for the old değildim -> polarity=positive guesser bug.
+    """
+    return {tags.POLARITY: "negative"}
 
 
 def finalize_particle_predicate_features(features: dict) -> dict:

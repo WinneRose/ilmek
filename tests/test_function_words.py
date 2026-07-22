@@ -239,14 +239,17 @@ def test_forced_inflection_on_indeclinables_not_lexicon(analyzer, word, lemma):
     assert not any(a.source == "lexicon" and a.lemma == lemma for a in analyzer.analyze(word))
 
 
-@pytest.mark.negative
-@pytest.mark.parametrize("word", ["değildi"])
-def test_deferred_copular_inflection_stays_guess(analyzer, word):
-    # Copular inflection of değil (değildi) is deferred: it falls to the guesser rather than
-    # being wrongly parsed. Documents the known limitation honestly. (The interrogative
-    # particle mi is NO LONGER deferred — see test_interrogative.py: miyim/misin/midir now
-    # parse as lexicon-verified lemma "mi" via the dedicated Q_ROOT state.)
-    assert not any(a.source == "lexicon" for a in analyzer.analyze(word))
+@pytest.mark.positive
+def test_negative_copula_inflection_is_lexicon(analyzer):
+    # Copular inflection of değil is now IMPLEMENTED (previously deferred to the guesser):
+    # değildi parses as a lexicon-verified negative copula, lemma "değil", PART, with the
+    # inherent polarity=negative — no longer a guess. Full paradigm coverage (değildim/değilim/
+    # değilse/değilmiş/...) lives in test_negative_copula.py.
+    best = analyzer.analyze("değildi")[0]
+    assert best.source == "lexicon"
+    assert best.lemma == "değil" and best.pos == "PART"
+    assert best.features.get("polarity") == "negative"
+    assert best.features.get("copula") == "past"
 
 
 @pytest.mark.negative

@@ -186,6 +186,11 @@ CVB_MAKSIZIN = Suffix(
 # glide_raise (it never sits on a bare de-/ye- root). The nominal ek-fiil -(y)ken (evdeyken,
 # güzelken) is OUT of scope this milestone and deliberately NOT wired into the copula layer.
 CVB_KEN = Suffix("ken", "(y)ken", dict(_CONVERB), derivational=True, to_pos=tags.ADV)
+# BUFFERLESS -ken for the STANDALONE substantive verb i- (iken, NOT *iyken): i- is vowel-final
+# but takes no (y) buffer, so the shared CVB_KEN's "(y)ken" cannot be reused (it would realize
+# iyken). Same converb closure as CVB_KEN (to_pos=ADV, verbform=converb, terminal in ADV_CVB);
+# wired ONLY onto I_ROOT (see transitions.I_GRAPH). "ken" is invariant (no harmony), like CVB_KEN.
+CVB_KEN_BARE = Suffix("ken", "ken", dict(_CONVERB), derivational=True, to_pos=tags.ADV)
 
 #: Root/voiced-stem/-negation converbs (the -mAdAn/-mAksIzIn privatives are excluded from the
 #: V_NEG set below — a double negative *gelmemeden is ungrammatical, mirroring PART_MAZ off

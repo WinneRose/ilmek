@@ -163,7 +163,12 @@ whole surfaces with `lemma == surface` and no morphemes, never routed through th
 would overgenerate `*amalar`/`*gibiye`, and turn run-on misspellings like `belkide` into false
 locatives). Homographs are preserved, not erased: `de` → particle (primary) keeps the verb
 `de-` imperative as an alternative; `göre`/`bile`/`birden` keep their `gör`/`bil`+optative and
-`bir`(NUM)+ablative readings. Copular inflection (`değildi`, `miyim`) is deferred to the guesser.
+`bir`(NUM)+ablative readings. The three *declining* function words are the exception, routed
+through dedicated FSM start states by a lexicon attribute: the interrogative particle `mi`
+(`midir`, `miyim`, `miydi`), the **negative copula** `değil` (`değildi`, `değilim`, `değilse`,
+`değilmiş` — lemma `değil`, `polarity=negative` inherent), and the standalone **substantive
+verb** `i-` (`idi`, `imiş`, `ise`, `iken` — lemma `i`, AUX). Remaining copular corners
+(`değilken`, `idiyse`, `-DIrlAr` stacking) stay deferred to the guesser.
 
 **Handled:** Turkish casing/normalization; tokenization incl. apostrophe proper nouns;
 noun plural, all six possessives, all six cases, pronominal `-n-` buffering; verb negation,

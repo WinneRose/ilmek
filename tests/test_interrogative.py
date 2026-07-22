@@ -255,11 +255,15 @@ def test_bare_particle_primary_has_no_number_case_or_mood(analyzer):
     assert feats == {"question": True}
 
 
-@pytest.mark.negative
-def test_deger_degildi_stays_a_guess(analyzer):
-    # değil stays frozen/indeclinable this milestone: its copular inflection değildi must NOT
-    # become lexicon-verified (this milestone widens only the interrogative particle).
-    assert not any(a.source == "lexicon" for a in analyzer.analyze("değildi"))
+@pytest.mark.positive
+def test_degildi_is_now_the_negative_copula(analyzer):
+    # değildi is NO LONGER deferred (was a guess-only contrast pin): it now parses as a
+    # lexicon-verified NEGATIVE COPULA (lemma "değil", polarity=negative), the negative mirror
+    # of the interrogative/ek-fiil machinery this file exercises for mi (see test_negative_copula).
+    best = analyzer.analyze("değildi")[0]
+    assert best.source == "lexicon"
+    assert best.lemma == "değil"
+    assert best.features.get("polarity") == "negative"
 
 
 @pytest.mark.negative

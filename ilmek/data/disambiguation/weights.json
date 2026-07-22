@@ -19,7 +19,7 @@
   "pos_prior": {
     "NOUN": 3.0, "VERB": 3.0, "PROPN": 3.0, "PRON": 3.0,
     "ADJ": 3.0, "ADV": 3.0, "NUM": 3.0,
-    "DET": 2.0, "ADP": 2.0, "CONJ": 2.0, "PART": 2.0, "INTJ": 2.0,
+    "DET": 2.0, "ADP": 2.0, "CONJ": 2.0, "PART": 2.0, "AUX": 2.0, "INTJ": 2.0,
     "ABBR": 2.0, "SYM": 1.0, "PUNCT": 1.0,
     "X": 0.5
   },

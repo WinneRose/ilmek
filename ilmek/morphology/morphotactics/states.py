@@ -34,6 +34,29 @@ N_DIST = "N_DIST"  # after the distributive numeral suffix -(ş)Ar (birer, ikiş
 # plural/possessive/case edge (mi is not a full noun: no *miler, no *mide as mi+locative).
 Q_ROOT = "Q_ROOT"
 
+# --- Negative-copula-particle state --------------------------------------------------
+
+# The root state of the negative copula değil (the negative mirror of the ek-fiil: değildi is
+# the negative of güzeldi). FINAL — bare değil is a complete word — and, exactly like Q_ROOT,
+# its only outgoing edges are the ek-fiil (nominal-copula) layer, reusing the verbal copula/
+# person landing states so değildi/değildim/değilim/değilsin/değildir/değilse/değilmiş/değiller
+# all fall out for free (harmonizing off değil's front vowel). Unlike Q_ROOT the layer is the
+# FULL, unfiltered one (değilse and değiller ARE valid). Polarity=negative is inherent to değil
+# (seeded as a base feature, never overwritten by a copula/person suffix). It takes NO
+# plural/possessive/case edge (değil is a particle, not a noun: no *değile, no *değilde).
+NEG_COP_ROOT = "NEG_COP_ROOT"
+
+# --- Substantive-verb state ----------------------------------------------------------
+
+# The root state of the standalone substantive verb i- (the ek-fiil written as a SEPARATE word:
+# idi, imiş, ise, iken). NOT final — a bare "i" is not a word — so acceptance is structurally
+# impossible until a copula/converb edge fires. Its only outgoing edges are the four BUFFERLESS
+# substantive-verb suffixes (idi, NOT *iydi): the bufferless past -DI / evidential -mIş / con-
+# ditional -sA feed the shared copula-person states (V_COP2/V_COP1) so the persons come free
+# (idim, imişsin, isem), and a bufferless -ken converb lands in the terminal ADV_CVB (iken).
+# It carries NO polarity (i- is polarity-neutral — negation is a separate word, değil).
+I_ROOT = "I_ROOT"
+
 # --- Verbal states -------------------------------------------------------------------
 
 V_ROOT = "V_ROOT"
