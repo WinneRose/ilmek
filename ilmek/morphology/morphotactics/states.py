@@ -17,6 +17,11 @@ N_POSS3 = "N_POSS3"  # 3rd-person possessive (triggers pronominal -n- before cas
 N_CASE = "N_CASE"  # a non-accusative case (grammatical ek-fiil predicate host: evdeydi)
 N_ACC = "N_ACC"  # the accusative, split off as terminal: the copula never follows it (*eviydi)
 N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, cannot re-derive)
+# The negative-aorist participle -mAz (çıkmaz, tükenmez). It inflects for CASE only (çıkmazda),
+# taking NEITHER the possessive NOR the ek-fiil copula — both attach -Im/-Iz, which would revive
+# the deliberately-defective finite negative-aorist persons (*gelmezim / *gelmeziz). So it lands
+# here rather than in the full N_DERIV, keeping the participle adjectival. Final (bare çıkmaz).
+N_PART_NEG = "N_PART_NEG"
 N_COP_DIR = "N_COP_DIR"  # after the assertive/generalizing ek-fiil -DIr; terminal this milestone
 N_DIST = "N_DIST"  # after the distributive numeral suffix -(ş)Ar (birer, ikişer); terminal
 

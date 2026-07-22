@@ -106,5 +106,9 @@
   {"lemma": "dene", "pos": "VERB"},
   {"lemma": "anlat", "pos": "VERB"},
   {"lemma": "gönder", "pos": "VERB"},
-  {"lemma": "kapat", "pos": "VERB"}
+  {"lemma": "kapat", "pos": "VERB"},
+
+  {"lemma": "piş", "pos": "VERB", "causative": "Ir"},
+  {"lemma": "ak", "pos": "VERB", "causative": "none"},
+  {"lemma": "tüken", "pos": "VERB", "causative": "none"}
 ]

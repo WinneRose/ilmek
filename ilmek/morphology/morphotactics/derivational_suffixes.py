@@ -1,8 +1,9 @@
 """Derivational suffixes — a single, non-recursive derivation slot between root and inflection.
 
 Nominal derivations (-lI, -sIz, -lIk, -CI, -CIk) turn a root/adjective into a new nominal
-stem; verbal derivations (-mA, -(y)Iş, participles -(y)An/-DIk/-(y)AcAk, infinitive -mAk) turn
-a verb into a nominal one. Each is data-declared: ``derivational=True`` opens a boundary (its
+stem; verbal derivations (-mA, -(y)Iş, the participles -(y)An/-DIk/-(y)AcAk/-mIş, the aorist
+participle -(A/I)r, the negative-aorist participle -mAz, and the infinitive -mAk) turn a verb
+into a nominal one. Each is data-declared: ``derivational=True`` opens a boundary (its
 ``name`` is recorded under ``features[tags.DERIVATION]``), ``applies_to`` is the overgeneration
 guard, and the graph position handles the verb-side gating. The wiring lives in
 :mod:`.transitions`.
@@ -55,15 +56,72 @@ _NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI, D_CIK]
 VN_MA = Suffix("ma", "mA", derivational=True, to_pos=tags.NOUN)  # gelme (verbal noun / act)
 VN_IS = Suffix("is", "(y)Iş", derivational=True, to_pos=tags.NOUN)  # geliş, yürüyüş
 INF = Suffix("mak", "mAk", derivational=True, to_pos=tags.NOUN)  # gelmek (infinitive)
-# verb -> adjective (participles):
+# verb -> adjective (participles / sıfat-fiil). Every participle carries verbform=participle so
+# the inventory is uniformly queryable AND each is distinguished from the homographous finite
+# tense it shares a surface with (the -mIş participle vs the finite evidential; the aorist
+# participle vs the finite aorist). All keep the verb lemma/stem and inflect nominally after.
+_PARTICIPLE = {tags.VERBFORM: "participle"}
 PART_AN = Suffix(
-    "an", "(y)An", derivational=True, to_pos=tags.ADJ, glide_raise=True
+    "an", "(y)An", dict(_PARTICIPLE), derivational=True, to_pos=tags.ADJ, glide_raise=True
 )  # gelen, diyen
-PART_DIK = Suffix("dik", "DIk", derivational=True, to_pos=tags.ADJ, voice_final=True)  # bildiği
+PART_DIK = Suffix(
+    "dik", "DIk", dict(_PARTICIPLE), derivational=True, to_pos=tags.ADJ, voice_final=True
+)  # bildiği
 PART_ACAK = Suffix(
-    "acak", "(y)AcAk", derivational=True, to_pos=tags.ADJ, voice_final=True, glide_raise=True
+    "acak",
+    "(y)AcAk",
+    dict(_PARTICIPLE),
+    derivational=True,
+    to_pos=tags.ADJ,
+    voice_final=True,
+    glide_raise=True,
 )  # gelecek, diyecek
+# -mIş participle (completed-action adjective: geçmiş, pişmiş, okunmuş). DISTINCT from the finite
+# evidential -mIş (verb_suffixes.EVID, {evidential: True}) — the two feature dicts are kept
+# disjoint so the participle never masquerades as finite. Consonant-initial, so no glide_raise;
+# the ş takes no final voicing. It joins the shared verb->nominal list, so it fires from the bare
+# root, negation (gelmemiş), ability, and every voice state (okunmuş, kırılmış) exactly as -(y)An.
+PART_MIS = Suffix("mis", "mIş", dict(_PARTICIPLE), derivational=True, to_pos=tags.ADJ)
+
+# Aorist participle -(A/I)r (akar su, güler yüz, biter): REUSES the lexically-irregular aorist
+# allomorph machinery — three edges sharing the name "ar", each guarded by ``aorist_class``
+# against the root's own class exactly like the finite aorist (verb_suffixes._AORISTS). de/ye are
+# class "r" (der/yer: consonant-attached -r, no raising), so no glide_raise is needed.
+PART_AOR_R = Suffix(
+    "ar", "r", dict(_PARTICIPLE), derivational=True, to_pos=tags.ADJ, aorist_class="r"
+)  # okur, yürür
+PART_AOR_AR = Suffix(
+    "ar", "Ar", dict(_PARTICIPLE), derivational=True, to_pos=tags.ADJ, aorist_class="Ar"
+)  # akar, yapar
+PART_AOR_IR = Suffix(
+    "ar", "Ir", dict(_PARTICIPLE), derivational=True, to_pos=tags.ADJ, aorist_class="Ir"
+)  # gelir, oturur
+#: The three class-guarded aorist-participle edges (bare root), parallel to ``_AORISTS``.
+_PART_AORISTS = [PART_AOR_R, PART_AOR_AR, PART_AOR_IR]
+#: Post-*voice* aorist participle: a voiced stem is always consonant-final, so its aorist is the
+#: deterministic -Ir regardless of the root's class (okunur, görülür), carrying no aorist_class —
+#: exactly like the finite AOR_VOICE. Never fires for a guess (derivational + no synthetic voice).
+PART_AOR_VOICE = Suffix("ar", "Ir", dict(_PARTICIPLE), derivational=True, to_pos=tags.ADJ)
+
+# Negative aorist participle -mAz (bitmez, çıkmaz, tükenmez, geçmez): the participle counterpart
+# of the finite negative aorist. Carries the accrued polarity=negative (nominal acceptance keeps
+# it, like gelmeyen) plus verbform, but NOT tense — a participle is not finite. It is wired
+# positionally (transitions._root_continuation), NOT via _VERBAL_DERIVATIONS_TO_NOMINAL, so it
+# never fires from V_NEG (no *gelmemez, mirroring the finite negative-aorist gap). It also lands
+# in a DEDICATED state (N_PART_NEG, case-only), not the shared N_DERIV: the possessive/copula -Im
+# / -Iz it would otherwise take there revive the deliberately-defective finite persons
+# (*gelmezim / *gelmeziz), so the negative-aorist participle is kept adjectival (see transitions).
+PART_MAZ = Suffix(
+    "maz",
+    "mAz",
+    {tags.POLARITY: "negative", tags.VERBFORM: "participle"},
+    derivational=True,
+    to_pos=tags.ADJ,
+)
 
 #: Verb-side derivations that land in the shared N_DERIV nominal state (then inflect). The
-#: infinitive -mAk is handled separately: it lands in the terminal V_INF (no case yet).
-_VERBAL_DERIVATIONS_TO_NOMINAL = [VN_MA, VN_IS, PART_AN, PART_DIK, PART_ACAK]
+#: infinitive -mAk is handled separately: it lands in the terminal V_INF (no case yet). PART_MIS
+#: is appended LAST so every pre-existing traversal prefix is byte-stable. The aorist participle
+#: (-(A/I)r) and PART_MAZ are NOT here — they are wired positionally in :mod:`.transitions` to
+#: mirror the finite aorist / negative-aorist scope exactly (no aorist participle from V_NEG).
+_VERBAL_DERIVATIONS_TO_NOMINAL = [VN_MA, VN_IS, PART_AN, PART_DIK, PART_ACAK, PART_MIS]

@@ -69,12 +69,24 @@ REGISTER = "register"  # colloquial (a marked non-standard variant)
 #: for de-duplication. Vocabulary is the closed set of names below.
 DERIVATION = "derivation"
 
+#: Non-finite verb form marker (UD ``VerbForm``). Set on the verb->adjective participle
+#: derivations so the whole participle inventory is uniformly queryable, and so each
+#: participle is distinguishable from the homographous *finite* tense it shares a surface
+#: with: the -mIş participle (geçmiş "past") vs the finite evidential -mIş (gelmiş "reportedly
+#: came"), and the aorist participle -(A/I)r (akar "flowing") vs the finite aorist (akar
+#: "flows"). Only value today is ``participle``. A participle keeps its verb lemma/stem and
+#: inflects nominally afterwards, so it also carries a :data:`DERIVATION` name.
+VERBFORM = "verbform"  # participle (a non-finite verb->adjective form)
+
 #: The closed vocabulary of derivational-suffix names recorded under :data:`DERIVATION`.
 #: Noun/adj-forming: li (-lI), siz (-sIz), lik (-lIk), ci (-CI), cik (diminutive -CIk);
 #: verb->noun: ma (-mA), is (-(y)Iş), mak (infinitive -mAk); verb->adj participles: an
-#: (-(y)An), dik (-DIk), acak (-(y)AcAk). The intensive-adjective diminutives (sıcacık,
-#: küçücük) are enumerated IrregularForm surfaces but record the same ``cik`` name.
-DERIVATIONS = frozenset({"li", "siz", "lik", "ci", "cik", "ma", "is", "mak", "an", "dik", "acak"})
+#: (-(y)An), dik (-DIk), acak (-(y)AcAk), mis (-mIş), ar (aorist -(A/I)r), maz (negative
+#: aorist -mAz). The intensive-adjective diminutives (sıcacık, küçücük) are enumerated
+#: IrregularForm surfaces but record the same ``cik`` name.
+DERIVATIONS = frozenset(
+    {"li", "siz", "lik", "ci", "cik", "ma", "is", "mak", "an", "dik", "acak", "mis", "ar", "maz"}
+)
 
 # --- Feature value vocabulary (for validation / documentation) -----------------------
 
@@ -115,6 +127,9 @@ COPULAS = frozenset({"past", "assertive"})
 #: (gele); ``necessitative`` is -mAlI (gelmeli "must come"). The copular optative remains a
 #: later milestone (see the morphotactics module docstring).
 MOODS = frozenset({"imperative", "conditional", "optative", "necessitative"})
+#: Non-finite verb-form values recorded under :data:`VERBFORM`. Closed set; only ``participle``
+#: is used today (the -(y)An/-DIk/-(y)AcAk/-mIş/aorist/-mAz verb->adjective forms).
+VERBFORMS = frozenset({"participle"})
 #: Verbal voice values recorded (in order) under :data:`VOICE`. ``causative`` is -DIr/-t/-Ir/
 #: -Ar (yaptır, okut, içir, çıkar; stacked as yaptırt); ``passive`` is -Il/-In/-n (yapıl,
 #: alın, okun); ``reflexive`` is -In (yıkan, giyin); ``reciprocal`` is -Iş (görüş, dövüş). The

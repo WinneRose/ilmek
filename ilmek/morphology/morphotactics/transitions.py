@@ -14,8 +14,11 @@ from __future__ import annotations
 from ...core import tags
 from .derivational_suffixes import (
     _NOMINAL_DERIVATIONS,
+    _PART_AORISTS,
     _VERBAL_DERIVATIONS_TO_NOMINAL,
     INF,
+    PART_AOR_VOICE,
+    PART_MAZ,
 )
 from .noun_suffixes import (
     _PLAIN_CASES,
@@ -31,6 +34,7 @@ from .states import (
     N_COP_DIR,
     N_DERIV,
     N_DIST,
+    N_PART_NEG,
     N_PL,
     N_POSS,
     N_POSS3,
@@ -196,6 +200,12 @@ def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suf
         # A derived stem inflects exactly like a bare root (and hosts the copula: yürüyüştü),
         # but may not derive again.
         N_DERIV: [*inflection, *copula],
+        # The negative-aorist participle -mAz: CASE only (çıkmazda), then N_CASE/N_ACC. It takes
+        # NO plural, possessive or copula — the -Im/-Iz those add would resurrect the deliberately
+        # -defective finite negative-aorist persons (*gelmezim / *gelmeziz), which an existing
+        # test pins as invalid. None of the plain case suffixes (-(y)I/-(y)A/-DA/-DAn/-(n)In/
+        # -(y)lA) surface as -Im/-Iz, so the participle stays adjectival. Final (bare çıkmaz).
+        N_PART_NEG: [*plain_case],
         # After the assertive -DIr: terminal (person/plural -DIrlAr stacking deferred).
         N_COP_DIR: [],
         # After the distributive -(ş)Ar: terminal this milestone (birerden/birerdi deferred).
@@ -207,7 +217,9 @@ NOMINAL_START = N_ROOT
 #: Accepting nominal states. ``N_ACC`` (the split-off accusative) is a complete word, so it
 #: is final; ``N_DIST`` (the distributive, birer) is a complete word too. ``N_COP_DIR`` is
 #: *not* here — its closure is the copular-predicate one, below.
-NOMINAL_FINALS = frozenset({N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE, N_ACC, N_DERIV, N_DIST})
+NOMINAL_FINALS = frozenset(
+    {N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE, N_ACC, N_DERIV, N_PART_NEG, N_DIST}
+)
 
 
 # --- Verbal graph --------------------------------------------------------------------
@@ -217,7 +229,10 @@ def _primary_from() -> list[tuple[Suffix, str]]:
     return [(PROG, V_T1), (FUT, V_T1), (EVID, V_T1), (PAST, V_T2)]
 
 
-def _root_continuation(aorist_edges: list[tuple[Suffix, str]]) -> list[tuple[Suffix, str]]:
+def _root_continuation(
+    aorist_edges: list[tuple[Suffix, str]],
+    part_aorist_edges: list[tuple[Suffix, str]],
+) -> list[tuple[Suffix, str]]:
     """The negation / tense / mood / derivation edges shared by the bare root AND every
     voiced stem. The only difference is the aorist: the bare root selects its lexically-
     irregular allomorph via ``aorist_class`` (``aorist_edges`` = the three guarded -r/-Ar/-Ir
@@ -225,6 +240,15 @@ def _root_continuation(aorist_edges: list[tuple[Suffix, str]]) -> list[tuple[Suf
     (``aorist_edges`` = the single unguarded AOR_VOICE). Everything else — negation, the four
     primary tenses, ability, the negative aorist, conditional, optative, and the verb->nominal
     derivations — is identical, so görüşme, yaptırabilir, yapılmaz, okutmak all fall out free.
+
+    ``part_aorist_edges`` is the aorist *participle* set, parallel to ``aorist_edges`` (the three
+    class-guarded edges on the bare root, the single -Ir on a voiced stem). It is appended LAST,
+    together with the negative-aorist participle -mAz, so the pre-existing traversal prefix stays
+    byte-stable AND the participle scope mirrors the finite side exactly: an aorist/-mAz
+    participle is only ever reachable where the finite aorist/negative-aorist already is, so no
+    new *bare* surface is accepted (akar/gelir/bitmez all already parse finitely) — only inflected
+    continuations (geçmişi, çıkmazda, akarlar) are genuinely new. -mAz lands in the case-only
+    N_PART_NEG (see states), never N_DERIV.
     """
     return [
         (NEG, V_NEG),
@@ -240,6 +264,11 @@ def _root_continuation(aorist_edges: list[tuple[Suffix, str]]) -> list[tuple[Suf
         # is byte-stable: the necessitative mood and the impossibilitive voice-negative.
         (NECESS, V_T1),
         (IMPOSS, V_IMPOSS),
+        # The sıfat-fiil (participle) aorist edges, appended LAST (byte-stable prefix). The -mAz
+        # participle is here too (so it fires from the bare root AND voiced stems: yapılmaz-ADJ),
+        # but NOT from V_NEG, which builds its edges directly — that is the *gelmemez gap.
+        *part_aorist_edges,
+        (PART_MAZ, N_PART_NEG),
     ]
 
 
@@ -248,6 +277,12 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
     # aorist is the single deterministic -Ir (AOR_VOICE), never the root's class.
     root_aorists = [(s, V_T1) for s in _AORISTS]
     voiced_aorist = [(AOR_VOICE, V_T1)]
+    # The aorist *participle* edges, parallel to the finite ones: the bare root uses the three
+    # class-guarded -r/-Ar/-Ir (akar, gelir, okur), a voiced stem the deterministic -Ir
+    # (okunur). All cross into the shared derived-nominal state N_DERIV (so akarlar/geçmişi
+    # inflect like the other participles); no aorist participle from V_NEG/V_ABIL this milestone.
+    part_root_aorists = [(s, N_DERIV) for s in _PART_AORISTS]
+    part_voiced_aorist = [(PART_AOR_VOICE, N_DERIV)]
     deriv = [(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL] + [(INF, V_INF)]
     # The copular layer that stacks on a *finished* verbal tense: the evidential -(y)mIş, the
     # past -(y)DI, and — this milestone — the copular conditional -(y)sA (gelirse, geldiyse,
@@ -267,7 +302,7 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
     # guesser (which forbids voice) see the same order as before.
     voice_from_root = [*_VOICE_REFL_RECIP, *_VOICE_CAUS1, *_VOICE_PASS]
     return {
-        V_ROOT: [*_root_continuation(root_aorists), *voice_from_root],
+        V_ROOT: [*_root_continuation(root_aorists, part_root_aorists), *voice_from_root],
         # After negation: the primary tenses, ability (gelmeyebilir), conditional (gelmese),
         # optative (gelmeye), the necessitative (gelmemeli). The aorist and negative-aorist -mAz
         # edges are intentionally absent — the aorist's own negative is -mAz on the bare root,
@@ -309,14 +344,22 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         # voiced stem is not accepted (see V_RECIP's note above). Order refl/recip < caus(<=2)
         # < pass is enforced by which progression edges each state exposes.
         # After reflexive/reciprocal: a (phonologically-chosen) causative or a passive.
-        V_RECIP: [*_root_continuation(voiced_aorist), *_post_voice_caus(V_CAUS1), *_VOICE_PASS],
+        V_RECIP: [
+            *_root_continuation(voiced_aorist, part_voiced_aorist),
+            *_post_voice_caus(V_CAUS1),
+            *_VOICE_PASS,
+        ],
         # After the first causative: a second (stacked) causative or a passive.
-        V_CAUS1: [*_root_continuation(voiced_aorist), *_post_voice_caus(V_CAUS2), *_VOICE_PASS],
+        V_CAUS1: [
+            *_root_continuation(voiced_aorist, part_voiced_aorist),
+            *_post_voice_caus(V_CAUS2),
+            *_VOICE_PASS,
+        ],
         # After a second causative: only a passive (depth is bounded at two causatives).
-        V_CAUS2: [*_root_continuation(voiced_aorist), *_VOICE_PASS],
+        V_CAUS2: [*_root_continuation(voiced_aorist, part_voiced_aorist), *_VOICE_PASS],
         # After the passive: the continuation only (voice is closed; no double passive here —
         # the impersonal double passive aranıldı is deferred).
-        V_PASS: [*_root_continuation(voiced_aorist)],
+        V_PASS: [*_root_continuation(voiced_aorist, part_voiced_aorist)],
         V_T1: [*copula, *pers_t1],
         # V_T2 is reached only by the past -DI, so its copula CAN include COP_COND (geldiyse).
         V_T2: [*copula, *pers_t2],
