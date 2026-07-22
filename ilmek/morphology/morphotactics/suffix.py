@@ -59,6 +59,13 @@ class Suffix:
     #: fire only on a curated verb list, so this is the overgeneration guard for them. ``None``
     #: -> unrestricted (the fully-productive passive and every non-voice suffix).
     requires_attribute: str | None = None
+    #: The inverse of :attr:`requires_attribute`: the root attribute that BLOCKS this edge. Used
+    #: to keep a broadly-``applies_to``-gated but not fully productive inflectional edge (the
+    #: numeral ordinal/distributive, ``applies_to={NUM}``) off a curated subset of that POS that
+    #: does not actually take it — the fraction numerals yarım/çeyrek/buçuk carry ``"fraction"``,
+    #: so *yarımıncı/*çeyreğer never fire, without narrowing ``applies_to`` for every other
+    #: cardinal (birinci, ikişer stay unaffected). ``None`` -> no exclusion.
+    excludes_attribute: str | None = None
     #: When this suffix is *root-adjacent* (first in the chain), realize it against the root's
     #: :attr:`~ilmek.morphology.lexicon.Root.raised_form` (de->di, ye->yi) instead of its free
     #: form. Models the irregular glide raising of de-/ye- before a vowel-initial suffix

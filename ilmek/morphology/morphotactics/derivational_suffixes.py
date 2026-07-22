@@ -62,13 +62,63 @@ D_CA = Suffix(
 # NOUN entry so the kum+sal split stays a ranked alternative, never the primary.
 D_SAL = Suffix("sal", "sAl", derivational=True, to_pos=tags.ADJ, applies_to=frozenset({tags.NOUN}))
 
+# Associative -DAş (NOUN -> NOUN): the "fellow / co- / -mate" nominal — meslek->meslektaş
+# (colleague), vatan->vatandaş (compatriot), yol->yoldaş (comrade), din->dindaş (co-religionist),
+# çağ->çağdaş (contemporary), plus the front-allomorph ses->sesteş (homophone). CRITICAL Turkish
+# fact: -DAş does NOT vowel-harmonize in the productive/common set — meslek+DAş is meslektaş, NOT
+# *meslekteş; din+DAş is dindaş, NOT *dindeş — so a single harmonizing "DAş" template would be a
+# WRONG rule. A small lexical subset takes the front -DEş (ses->sesteş). Modelled EXACTLY on the
+# -ki/-kü temporal split (KI_TEMP/KU_TEMP): TWO literal-vowel edges (no A archiphoneme), each
+# gated by a curated root attribute; only the D archiphoneme is kept, so voicing assimilation
+# stays free (meslek+taş hardens D->t after k, din+daş keeps d after n). Double-guarded like the
+# denominal verbalizers: applies_to={NOUN} blocks a non-noun base and requires_attribute gates it
+# to the curated roots (assoc_das / assoc_des), so no common noun is flooded (no *evdaş,
+# *kitaptaş). Both land in the shared N_DERIV, so the result inflects and hosts the ek-fiil for
+# free (meslektaşım, vatandaşlar, dindaştı). The lexicalized arkadaş/kardeş stay whole-word roots
+# (arka carries no assoc_das, so arka+daş never fires); vatandaş is ALSO a whole-word root, so its
+# root reading stays primary and vatan+daş is a ranked alternative (the kumsal precedent).
+D_DAS = Suffix(
+    "das",
+    "Daş",
+    derivational=True,
+    to_pos=tags.NOUN,
+    applies_to=frozenset({tags.NOUN}),
+    requires_attribute="assoc_das",
+)
+D_DES = Suffix(
+    "das",
+    "Deş",
+    derivational=True,
+    to_pos=tags.NOUN,
+    applies_to=frozenset({tags.NOUN}),
+    requires_attribute="assoc_des",
+)
+
+# Attenuative -(I)msI (ADJ -> ADJ): the "-ish" adjective — a weakened / approximate shade or
+# quality (mavi->mavimsi "bluish", ekşi->ekşimsi "sourish", beyaz->beyazımsı "whitish",
+# sarı->sarımsı "yellowish", acı->acımsı "somewhat bitter"). The (I) linking vowel is inserted
+# only after a consonant (beyaz+ımsı, sarı+msı with none) by the existing phonology, and the
+# final I harmonizes. Double-guarded like -DAş: applies_to={ADJ} blocks a NOUN/VERB base (no
+# *evimsi even if an attribute leaked) and requires_attribute="attenuative" gates it to the
+# curated color/taste adjectives (no *güzelimsi, *büyükümsü). Lands in the shared N_DERIV, so
+# mavimsiydi / beyazımsılar (inflection + ek-fiil) fall out for free.
+D_IMSI = Suffix(
+    "imsi",
+    "(I)msI",
+    derivational=True,
+    to_pos=tags.ADJ,
+    applies_to=frozenset({tags.ADJ}),
+    requires_attribute="attenuative",
+)
+
 #: Nominal-side derivations, appended after the inflectional edges so inflection-only
 #: traversal order (and the guesser, which forbids derivation) is byte-identical to before.
-#: -CIk is appended before the new -CA/-sAl so every pre-existing traversal prefix is unchanged;
-#: -CA/-sAl are appended LAST (in that order). -CA targets the terminal N_ADV_CA, so it is wired
-#: positionally in :mod:`.transitions` rather than through this shared N_DERIV list; -sAl lands
-#: in N_DERIV like the other nominal derivations, so it is the only new member of this list.
-_NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI, D_CIK, D_SAL]
+#: -CIk is appended before -CA/-sAl so every pre-existing traversal prefix is unchanged; -CA/-sAl
+#: come next; the associative -DAş/-DEş and the attenuative -(I)msI are appended LAST (in that
+#: order), each attribute-gated so they fire only on curated roots. -CA targets the terminal
+#: N_ADV_CA, so it is wired positionally in :mod:`.transitions` rather than through this shared
+#: N_DERIV list; every other member here (incl. -sAl, -DAş/-DEş, -(I)msI) lands in N_DERIV.
+_NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI, D_CIK, D_SAL, D_DAS, D_DES, D_IMSI]
 
 #: The first-level nominal derivations that may host ONE further -lIk (gazete+ci+lik,
 #: ev+siz+lik, ev+li+lik). Kept in DATA (not a hardcoded branch) per the rules-in-data

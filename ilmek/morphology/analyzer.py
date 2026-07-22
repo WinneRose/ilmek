@@ -17,7 +17,7 @@ from __future__ import annotations
 from ..core import tags
 from ..core.alphabet import VOICING, VOWELS
 from ..core.document import AnalysisResult
-from ..core.normalization import normalize, turkish_lower
+from ..core.normalization import fold_for_lookup
 from ..core.tokenization import classify_numeric
 from . import morphotactics as mt
 from .lexicon import Lexicon, Root
@@ -313,6 +313,14 @@ def _generate(
                 and suffix.requires_attribute not in root.attributes
             ):
                 continue
+            # Inverse guard: a root carrying an excluded attribute never takes this edge, even
+            # though its POS matches applies_to (yarım/çeyrek/buçuk carry "fraction", so the
+            # productive numeral ordinal/distributive skip them: no *yarımıncı, no *çeyreğer).
+            if (
+                suffix.excludes_attribute is not None
+                and suffix.excludes_attribute in root.attributes
+            ):
+                continue
             # Declarative phonological guard (passive allomorphy, post-voice causatives): the
             # running surface's final-segment class must be allowed by the edge.
             if (
@@ -520,7 +528,11 @@ class Analyzer:
     def analyze(self, surface: str) -> list[AnalysisResult]:
         """Return every valid analysis of ``surface``, best candidate first."""
         original = surface
-        folded = turkish_lower(normalize(surface))
+        # fold_for_lookup adds circumflex folding (â/î/û -> a/i/u) on top of NFC + Turkish
+        # lowercasing, so kâğıt matches the plain root kağıt while the original circumflex
+        # surface is restored (r.surface = original) below. For a word with no circumflex this
+        # is byte-identical to the previous turkish_lower(normalize(...)).
+        folded = fold_for_lookup(surface)
 
         # A bare numeric token (digits / percent / date / time) resolves as NUM by rule,
         # never routed to the morphological guesser. Checked first: numbers carry no lexicon

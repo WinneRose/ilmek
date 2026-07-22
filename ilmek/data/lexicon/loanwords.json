@@ -49,6 +49,8 @@
     {"lemma": "usul", "pos": "NOUN", "attributes": ["front_harmony"]},
     {"lemma": "hal", "pos": "NOUN", "attributes": ["front_harmony"]},
     {"lemma": "meşgul", "pos": "ADJ", "attributes": ["front_harmony"]},
-    {"lemma": "hukuk", "pos": "NOUN"}
+    {"lemma": "hukuk", "pos": "NOUN"},
+
+    {"lemma": "alim", "pos": "NOUN"}
   ]
 }

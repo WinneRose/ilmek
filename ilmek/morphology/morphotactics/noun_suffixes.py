@@ -50,7 +50,16 @@ _POSSESSIVES_TO_3 = [POSS_3SG, POSS_3PL]
 # It lands in the terminal ``N_DIST``: further inflection/copula on a distributive (birerden,
 # birerdi) is deferred, correctness over coverage. The lexical exception yarımşar (ş after a
 # consonant) is not modeled (xfailed): it needs a per-word ``ş`` fact, not this productive rule.
-DIST = Suffix("dist", "(ş)Ar", {tags.NUM_TYPE: "distributive"}, applies_to=frozenset({tags.NUM}))
+# ``excludes_attribute="fraction"`` keeps it off yarım/çeyrek/buçuk entirely: without it the
+# productive rule would wrongly accept *yarımar/*çeyreker (real Turkish has no such forms; the
+# only attested distributive of yarım is the lexical exception yarımşar, itself still unmodeled).
+DIST = Suffix(
+    "dist",
+    "(ş)Ar",
+    {tags.NUM_TYPE: "distributive"},
+    applies_to=frozenset({tags.NUM}),
+    excludes_attribute="fraction",
+)
 
 
 # --- Ordinal numeral suffix -(I)ncI (bir->birinci, iki->ikinci, dört->dördüncü) ------
@@ -62,7 +71,17 @@ DIST = Suffix("dist", "(ş)Ar", {tags.NUM_TYPE: "distributive"}, applies_to=froz
 # ``applies_to={NUM}`` is the overgeneration guard: a NOUN/ADJ/VERB stem can never take it
 # (*evinci, *güzelinci), and the guesser (which synthesizes only NOUN/VERB roots) never fires it.
 # It lands in N_ORD, which inflects and hosts the ek-fiil (birincisi, ikincide, birinciydi).
-ORD = Suffix("ordinal", "(I)ncI", {tags.NUM_TYPE: "ordinal"}, applies_to=frozenset({tags.NUM}))
+# ``excludes_attribute="fraction"`` keeps it off yarım/çeyrek/buçuk: a fraction has no ordinal
+# reading in Turkish (there is no "*yarımıncı"/"*çeyreğinci"/"*buçuğuncu" — ordinals attach to
+# counting cardinals, not to quantity fractions), so without this guard the shared {NUM} gate
+# would wrongly accept them once the fractions joined the lexicon as NUM.
+ORD = Suffix(
+    "ordinal",
+    "(I)ncI",
+    {tags.NUM_TYPE: "ordinal"},
+    applies_to=frozenset({tags.NUM}),
+    excludes_attribute="fraction",
+)
 # The lexically-limited ordinal on the ADJ "son" (sonuncu "last"): son is an ADJECTIVE, not a
 # numeral, so the {NUM}-guarded ORD cannot reach it. This curated twin fires only on an ADJ that
 # carries the ``ordinal_host`` attribute (mirrors the reflexive/reciprocal curated-attribute

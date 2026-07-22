@@ -32,6 +32,16 @@ _APOSTROPHE_TABLE = {ord(k): v for k, v in _APOSTROPHES.items()}
 #: once casing has been resolved so it never leaks into a lemma.
 _COMBINING_DOT_ABOVE = "̇"
 
+#: Circumflex-marked vowels fold to their plain counterparts for LOOKUP ONLY (never in
+#: :func:`normalize`, so the surface/token keeps the circumflex). The circumflex (düzeltme
+#: işareti) marks vowel length / a palatalized preceding consonant in Ottoman-origin loans —
+#: kâğıt, hâlâ, âlim, kâr — but the modern lexicon stores the plain spelling (kağıt, hala,
+#: alim), so folding lets a circumflex surface match its plain root. Only the three vowels that
+#: actually carry the mark in Turkish (â/î/û — never *ô/*ê); the uppercase Â/Î/Û reach these via
+#: :func:`turkish_lower`'s ``ch.lower()`` fallback before the fold runs. NFC (guaranteed by
+#: :func:`normalize`) keeps each as a single composed codepoint, so a one-char translate suffices.
+_CIRCUMFLEX_FOLD = {ord("â"): "a", ord("î"): "i", ord("û"): "u"}
+
 
 def turkish_lower(text: str) -> str:
     """Lowercase ``text`` using Turkish casing rules (``I -> ı``, ``İ -> i``)."""
@@ -78,5 +88,11 @@ def normalize(
 
 
 def fold_for_lookup(text: str) -> str:
-    """Canonical form used for lexicon lookup: normalized + Turkish-lowercased."""
-    return turkish_lower(normalize(text))
+    """Canonical form used for lexicon lookup: normalized + Turkish-lowercased + circumflex-folded.
+
+    The circumflex fold (â/î/û -> a/i/u) is applied AFTER Turkish-lowercasing so a circumflex
+    surface (kâğıt, hâlâ, âlim) matches its plain lexicon root (kağıt, hala, alim). It lives
+    here, not in :func:`normalize`, so the preserved surface/token keeps its circumflex — only
+    the lookup key is folded.
+    """
+    return turkish_lower(normalize(text)).translate(_CIRCUMFLEX_FOLD)

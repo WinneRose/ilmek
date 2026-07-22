@@ -66,3 +66,29 @@ def test_normalize_is_nfc_and_preserves_case():
 def test_fold_for_lookup_lowercases_turkishly():
     assert fold_for_lookup("KİTAP") == "kitap"
     assert fold_for_lookup("IŞIK") == "ışık"
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "text,expected",
+    [
+        ("kâğıt", "kağıt"),  # â -> a
+        ("hâlâ", "hala"),  # two â in one word
+        ("âlim", "alim"),  # word-initial â
+        ("HÂLÂ", "hala"),  # uppercase Â reaches the fold via turkish_lower
+        ("Û", "u"),  # û -> u
+        ("târîh", "tarih"),  # î -> i (and â -> a)
+    ],
+)
+def test_fold_for_lookup_folds_circumflex(text, expected):
+    # The circumflex (düzeltme işareti) is folded ONLY on the lookup path so a circumflex
+    # surface matches its plain lexicon root.
+    assert fold_for_lookup(text) == expected
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize("text", ["kâğıt", "hâlâ", "âlim", "Û"])
+def test_normalize_preserves_circumflex(text):
+    # normalize() must NOT fold the circumflex — the surface/token keeps it; only the lookup
+    # key (fold_for_lookup) is folded.
+    assert normalize(text) == text

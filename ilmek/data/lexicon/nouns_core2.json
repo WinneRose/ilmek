@@ -630,7 +630,8 @@
     },
     {
       "lemma": "din",
-      "pos": "NOUN"
+      "pos": "NOUN",
+      "attributes": ["assoc_das"]
     },
     {
       "lemma": "kavram",
@@ -1062,7 +1063,8 @@
     },
     {
       "lemma": "çağ",
-      "pos": "NOUN"
+      "pos": "NOUN",
+      "attributes": ["assoc_das"]
     },
     {
       "lemma": "yüzyıl",
@@ -1082,7 +1084,8 @@
     },
     {
       "lemma": "vatan",
-      "pos": "NOUN"
+      "pos": "NOUN",
+      "attributes": ["assoc_das"]
     },
     {
       "lemma": "ilçe",

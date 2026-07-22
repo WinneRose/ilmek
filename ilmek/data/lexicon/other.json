@@ -29,6 +29,10 @@
   {"lemma": "elli", "pos": "NUM"},
   {"lemma": "bin", "pos": "NUM"},
 
+  {"lemma": "yarım", "pos": "NUM", "attributes": ["fraction"]},
+  {"lemma": "çeyrek", "pos": "NUM", "attributes": ["voicing", "fraction"]},
+  {"lemma": "buçuk", "pos": "NUM", "attributes": ["voicing", "fraction"]},
+
   {"lemma": "yüz", "pos": "NUM"},
   {"lemma": "yüz", "pos": "NOUN"},
   {"lemma": "yüz", "pos": "VERB"},
