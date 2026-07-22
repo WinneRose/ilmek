@@ -1,4 +1,5 @@
 [
+  {"lemma": "ol", "pos": "VERB", "aorist": "Ir"},
   {"lemma": "gel", "pos": "VERB", "aorist": "Ir"},
   {"lemma": "git", "pos": "VERB", "attributes": ["voicing"]},
   {"lemma": "et", "pos": "VERB", "attributes": ["voicing"]},
@@ -83,5 +84,10 @@
   {"lemma": "ısır", "pos": "VERB"},
   {"lemma": "sar", "pos": "VERB"},
   {"lemma": "giy", "pos": "VERB"},
-  {"lemma": "sür", "pos": "VERB"}
+  {"lemma": "sür", "pos": "VERB"},
+
+  {"lemma": "öl", "pos": "VERB", "aorist": "Ir"},
+  {"lemma": "bit", "pos": "VERB"},
+  {"lemma": "başar", "pos": "VERB"},
+  {"lemma": "değiş", "pos": "VERB"}
 ]

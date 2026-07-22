@@ -151,3 +151,70 @@ def test_copula_without_buffer_is_not_a_word(analyzer, nonword):
     results = analyzer.analyze(nonword)
     assert results[0].source == "guess"
     assert not has_analysis(analyzer, nonword, lemma="gel")
+
+
+# --- The verb "ol" (olmak, the most common Turkish verb) -----------------------------
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,morphemes,features",
+    [
+        ("oldu", ["du"], {"tense": "past", "person": "3sg"}),
+        ("olur", ["ur"], {"tense": "aorist", "person": "3sg"}),  # -Ir class, not *olar
+        ("olmaz", ["maz"], {"polarity": "negative", "tense": "aorist"}),
+    ],
+)
+def test_ol_finite_inflection(analyzer, word, morphemes, features):
+    assert has_analysis(
+        analyzer, word, lemma="ol", pos="VERB", morphemes=morphemes, features=features
+    )
+
+
+@pytest.mark.positive
+def test_olmadiktan_neg_participle_ablative(analyzer):
+    # The milestone headline: olmadıktan = ol + Neg(-mA) + Participle(-DIk) + Ablative(-tAn).
+    # The -DIk participle derives a nominal, so the accepting pos is ADJ, lemma stays ol.
+    best = analyzer.analyze("olmadıktan")[0]
+    assert best.lemma == "ol"
+    assert best.source == "lexicon"
+    assert best.morphemes == ["ma", "dık", "tan"]
+    assert best.features.get("polarity") == "negative"
+    assert best.features.get("case") == "ablative"
+
+
+@pytest.mark.positive
+def test_olmak_infinitive_is_lexicon_ol(analyzer):
+    # -mAk infinitive derives a verbal noun; lemma is still ol.
+    assert has_analysis(analyzer, "olmak", lemma="ol", morphemes=["mak"])
+    assert analyzer.analyze("olmak")[0].source == "lexicon"
+
+
+@pytest.mark.negative
+def test_ol_aorist_is_ir_not_ar(analyzer):
+    # ol is in the ~13 -Ir monosyllable class: the -Ar aorist edge is guarded off, so *olar
+    # is never a lexicon analysis of ol (it falls back to an honest OOV guess instead).
+    assert not has_analysis(analyzer, "olar", lemma="ol")
+    assert analyzer.analyze("olar")[0].source == "guess"
+
+
+@pytest.mark.positive
+def test_ol_ability_chain(analyzer):
+    # Ability + aorist: olabilir = ol + (y)Abil + Ir.
+    assert has_analysis(
+        analyzer, "olabilir", lemma="ol", morphemes=["abil", "ir"], features={"ability": True}
+    )
+
+
+@pytest.mark.consistency
+def test_ol_long_chain_and_views_agree(analyzer):
+    import ilmek
+
+    # Long chain: negation + participle + plural + possessive + case still lemmatizes to ol.
+    assert ilmek.lemmatize("olmadıklarından") == "ol"
+    assert has_analysis(analyzer, "olmadıklarından", lemma="ol", features={"case": "ablative"})
+    # Three views of the participle chain agree: lemma is the root, stem is the surface at the
+    # last derivation boundary (-DIk), per the project's stem contract.
+    best = analyzer.analyze("olmadıktan")[0]
+    assert ilmek.lemmatize("olmadıktan") == best.lemma == "ol"
+    assert ilmek.stem("olmadıktan") == best.stem == "olmadık"

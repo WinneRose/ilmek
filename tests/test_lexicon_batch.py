@@ -269,3 +269,129 @@ def test_stem_lemma_analyze_agree_for_batch():
     # A voiced accusative reduces to the free lemma across all three views.
     assert ilmek.lemmatize("yumuşağı") == "yumuşak"
     assert ilmek.stem("yumuşağı") == "yumuşak"
+
+
+# --- Ultra-common roots: months, days, high-frequency nouns, and "anlam" -------------
+# This batch adds the month and day names, ~24 very common nouns, and the noun "anlam",
+# all NOUN roots that inflect through the existing nominal FSM with no engine change.
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,lemma,features",
+    [
+        ("hazirana", "haziran", {"case": "dative"}),  # milestone headline
+        ("hazirandan", "haziran", {"case": "ablative"}),
+        ("ocağı", "ocak", {"case": "accusative"}),  # k -> ğ voicing (January)
+        ("aralığa", "aralık", {"case": "dative"}),  # k -> ğ voicing (December)
+        ("temmuzda", "temmuz", {"case": "locative"}),
+        ("eylülde", "eylül", {"case": "locative"}),
+    ],
+)
+def test_month_names_inflect(analyzer, word, lemma, features):
+    assert has_analysis(analyzer, word, lemma=lemma, pos="NOUN", features=features)
+    assert _sourced_from_lexicon(analyzer, word, lemma)
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize("word,lemma", [("şubadı", "şubat"), ("mardı", "mart")])
+def test_t_final_month_loans_do_not_false_voice(analyzer, word, lemma):
+    # şubat / mart are t-final loans WITHOUT voicing: the voiced bound form must not resolve.
+    assert not has_analysis(analyzer, word, lemma=lemma)
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize("word,lemma", [("şubatı", "şubat"), ("martı", "mart"), ("marta", "mart")])
+def test_t_final_month_keeps_stop(analyzer, word, lemma):
+    # ...and the plain (unvoiced) t stays before both vowel and consonant suffixes.
+    assert has_analysis(analyzer, word, lemma=lemma)
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,lemma",
+    [
+        ("pazartesiye", "pazartesi"),
+        ("salıya", "salı"),
+        ("çarşambayı", "çarşamba"),
+        ("cumaya", "cuma"),
+        ("cumartesiden", "cumartesi"),
+    ],
+)
+def test_day_names_inflect(analyzer, word, lemma):
+    assert has_analysis(analyzer, word, lemma=lemma, pos="NOUN")
+    assert _sourced_from_lexicon(analyzer, word, lemma)
+
+
+@pytest.mark.exception
+def test_pazar_single_entry_serves_day_and_market(analyzer):
+    # "pazar" (Sunday AND market/bazaar) is ONE lexicon entry, not a duplicate lemma row.
+    entries = [
+        e
+        for path in _DATA_DIR.glob("*.json")
+        for e in (
+            json.loads(path.read_text(encoding="utf-8")) if path.name != "pronouns.json" else []
+        )
+        if isinstance(e, dict) and e.get("lemma") == "pazar"
+    ]
+    assert len(entries) == 1
+    assert has_analysis(analyzer, "pazara", lemma="pazar", features={"case": "dative"})
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "word,lemma,features",
+    [
+        ("durumun", "durum", {"case": "genitive"}),
+        ("konuyu", "konu", {"case": "accusative"}),  # vowel stem, y-buffer
+        ("sonucu", "sonuç", {"case": "accusative"}),  # ç -> c voicing
+        ("nedenle", "neden", {"case": "instrumental"}),
+        ("değeri", "değer", {"case": "accusative"}),
+        ("olayların", "olay", {"number": "plural", "case": "genitive"}),
+        ("örneği", "örnek", {"case": "accusative"}),  # k -> ğ voicing
+        ("kaynağa", "kaynak", {"case": "dative"}),  # k -> ğ voicing
+    ],
+)
+def test_common_nouns_inflect(analyzer, word, lemma, features):
+    assert has_analysis(analyzer, word, lemma=lemma, pos="NOUN", features=features)
+    assert _sourced_from_lexicon(analyzer, word, lemma)
+
+
+# --- "anlam": primary despite the homographic verb "anla" ----------------------------
+
+
+@pytest.mark.positive
+def test_anlami_resolves_to_anlam(analyzer):
+    # anlamı -> anlam (NOUN): the noun "anlam" is primary (its lemma is longer than the
+    # verb "anla"), and it is at least among the analyses.
+    results = analyzer.analyze("anlamı")
+    assert results[0].lemma == "anlam"
+    assert results[0].pos == "NOUN"
+    assert any(a.lemma == "anlam" for a in results)
+    assert has_analysis(analyzer, "anlamlar", lemma="anlam", features={"number": "plural"})
+
+
+@pytest.mark.exception
+def test_anlama_ambiguous_noun_primary_verb_retained(analyzer):
+    # anlama = anlam+a (dative, primary) AND anla+ma (negative imperative "don't understand!"):
+    # the longer-lemma noun leads, but the verb reading is never erased.
+    results = analyzer.analyze("anlama")
+    assert results[0].lemma == "anlam"
+    assert results[0].features.get("case") == "dative"
+    assert any(
+        a.lemma == "anla"
+        and a.pos == "VERB"
+        and a.features.get("polarity") == "negative"
+        and a.features.get("mood") == "imperative"
+        for a in results
+    )
+
+
+@pytest.mark.consistency
+def test_stem_lemma_analyze_agree_for_common_nouns():
+    # Three views agree on a voiced month accusative and a plain common-noun dative.
+    assert ilmek.lemmatize("ocağı") == "ocak"
+    assert ilmek.stem("ocağı") == "ocak"
+    assert ilmek.lemmatize("hazirana") == ilmek.stem("hazirana") == "haziran"
+    best = ilmek.analyze("anlamı")[0]
+    assert best.stem == best.lemma == "anlam"

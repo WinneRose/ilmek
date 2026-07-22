@@ -241,9 +241,9 @@ def _sort_key(r: AnalysisResult):
 #: How many alternative candidates to keep on a guess result.
 _MAX_GUESS_ALTS = 6
 #: A confident strip must leave a root at least this long. A 1-2 char remnant is almost
-#: never a real Turkish root, so stripping down to one is over-stripping (senle -> *se via
-#: se+n+le; hazirana -> *hazira; geler -> *ge; zolar -> *zo). Distinct from the suffix
-#: bound below: same value today, different meaning, so they are not a shared constant.
+#: never a real Turkish root, so stripping down to one is over-stripping (geler -> *ge via
+#: ge+ler; sene -> *se via se+n+e; zolar -> *zo). Distinct from the suffix bound below:
+#: same value today, different meaning, so they are not a shared constant.
 _MIN_GUESS_ROOT_LEN = 3
 #: The total stripped inflection must be at least this many characters to be trusted
 #: (blocks over-stripping a root-final vowel/consonant, e.g. kalem -> *kale, kapı -> *kap).
@@ -259,7 +259,7 @@ def _is_confident_guess(r: AnalysisResult) -> bool:
 
     Conjunctive gate: the surviving root must be a plausible word (>= 3 chars containing a
     vowel) AND at least 3 chars of inflection must have been removed. A short garbage root
-    (senle -> se) or a short strip (a single one-char ending) is rejected in favour of the
+    (geler -> ge) or a short strip (a single one-char ending) is rejected in favour of the
     identity fallback — correct until the true root enters the lexicon.
     """
     return (

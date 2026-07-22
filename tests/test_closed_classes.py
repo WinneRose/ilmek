@@ -221,11 +221,36 @@ def test_wrong_dative_genitive_are_not_lexicon_pronouns(analyzer, word):
         assert not (a.source == "lexicon" and a.lemma == "ben")
 
 
+@pytest.mark.positive
+@pytest.mark.parametrize("word,lemma,person", [("benle", "ben", "1sg"), ("senle", "sen", "2sg")])
+def test_colloquial_personal_instrumental_is_lexicon(analyzer, word, lemma, person):
+    # The colloquial personal instrumentals benle/senle ARE enumerated (this milestone's
+    # variants pass): lexicon PRON, instrumental, flagged register=colloquial.
+    best = _primary(analyzer, word)
+    assert best.lemma == lemma
+    assert best.pos == "PRON"
+    assert best.source == "lexicon"
+    assert best.features["case"] == "instrumental"
+    assert best.features["person"] == person
+    assert best.features["register"] == "colloquial"
+
+
+@pytest.mark.exception
+def test_colloquial_and_standard_instrumental_split_by_register(analyzer):
+    # The pair documents the variant split: the colloquial senle carries register=colloquial,
+    # the standard seninle carries no register key at all.
+    senle = _primary(analyzer, "senle")
+    seninle = _primary(analyzer, "seninle")
+    assert senle.features.get("register") == "colloquial"
+    assert "register" not in seninle.features
+    assert senle.lemma == seninle.lemma == "sen"
+
+
 @pytest.mark.negative
-@pytest.mark.parametrize("word", ["benle", "senle", "bunla"])
-def test_colloquial_instrumental_is_excluded(analyzer, word):
-    # Standard forms only (benimle/seninle/bununla). The colloquial variants get no
-    # source=lexicon pronoun analysis — documents the deliberate standard-only stance.
+@pytest.mark.parametrize("word", ["bunla", "onla"])
+def test_colloquial_instrumental_still_excluded(analyzer, word):
+    # Still deferred: the DEMONSTRATIVE colloquial bunla and the personal-o colloquial onla
+    # get no source=lexicon PRON analysis (onla only ever reads as on(NUM)+la "with ten").
     assert not any(a.source == "lexicon" and a.pos == "PRON" for a in analyzer.analyze(word))
 
 

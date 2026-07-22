@@ -46,6 +46,11 @@ MOOD = "mood"  # imperative | conditional | optative
 PERSON = "person"  # 1sg 2sg 3sg 1pl 2pl 3pl
 PRON_TYPE = "pron_type"  # personal | demonstrative | interrogative (closed-class pronouns)
 EXISTENTIAL = "existential"  # true (existential particle var / yok)
+#: Usage register of a form, set only when a surface is a marked (non-standard) variant of a
+#: standard form. Today its only value is ``colloquial``, carried by the colloquial personal
+#: instrumentals ``benle``/``senle`` (standard: ``benimle``/``seninle``); the standard forms
+#: carry no ``register`` key at all, so the pair documents the variant split explicitly.
+REGISTER = "register"  # colloquial (a marked non-standard variant)
 #: Derivational history: an ordered ``tuple`` of derivational-suffix *names* (a derived stem
 #: inflects normally afterwards, so this makes the derivation-vs-inflection boundary visible).
 #: The value is a tuple (not a list) so an :class:`AnalysisResult`'s features stay hashable
@@ -68,6 +73,8 @@ PERSONS = frozenset({"1sg", "2sg", "3sg", "1pl", "2pl", "3pl"})
 #: carries *no* pron_type because its surface is genuinely ambiguous between the personal
 #: and demonstrative reading — we do not fabricate a distinction the form does not show.
 PRON_TYPES = frozenset({"personal", "demonstrative", "interrogative"})
+#: Register values (see :data:`REGISTER`). Closed set; only ``colloquial`` is used today.
+REGISTERS = frozenset({"colloquial"})
 CASES = frozenset(
     {
         "nominative",

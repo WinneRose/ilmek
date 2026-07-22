@@ -75,8 +75,9 @@ def test_boundary_root_and_suffix_len_are_inclusive(analyzer):
 @pytest.mark.parametrize(
     "word,over_strip",
     [
-        ("senle", "se"),  # se+n+le: root "se" has 2 chars -> reject, keep identity
-        ("hazirana", "hazira"),  # hazira+n+a: stripped "na" is 2 chars -> reject
+        # NB: senle / hazirana used to live here as guesser over-strips; they are now
+        # lexicon words (sen PRON, haziran NOUN) and have moved to the closed-class / batch
+        # tests. These remaining rows are still genuinely OOV.
         ("geler", "ge"),  # ge+ler: root "ge" has 2 chars -> reject
         ("sene", "se"),  # se+n+e: root "se" has 2 chars -> reject
         ("zolar", "zo"),  # zo+lar: "lar" is 3 chars but root "zo" is 2 -> reject
@@ -95,28 +96,28 @@ def test_guesser_does_not_over_strip_to_nonword_root(analyzer, word, over_strip)
 @pytest.mark.parametrize(
     "word,alt",
     [
-        ("senle", "sen"),  # the plausible root survives as a ranked alternative
-        ("hazirana", "haziran"),
+        # Still-OOV analogues of the old senle/haziran rows (now lexicon): a lone one-char
+        # accusative -(y)I is too weak to strip, so the surface stays its own identity, yet
+        # the plausible root survives as a ranked alternative.
+        ("raporu", "rapor"),  # rapor+ı(acc): 1-char strip -> identity, rapor kept as alt
+        ("problemi", "problem"),  # problem+i(acc): same shape
     ],
 )
 def test_rejected_strip_survives_as_alternative(analyzer, word, alt):
     # Falling back to identity must not lose the stripped candidate: it stays in .analyses
-    # so a later lexicon entry (sen, haziran) has a ready alternative to promote.
+    # so a later lexicon entry (rapor, problem) has a ready alternative to promote.
     result = analyzer.analyze(word)[0]
     assert result.lemma == word
     assert any(a.lemma == alt for a in result.analyses)
 
 
-@pytest.mark.negative
-@pytest.mark.xfail(
-    reason="bare 1-char pronominal/possessive -n morpheme lets a 2-morpheme garbage parse "
-    "(hazira+n+dan) outrank haziran+dan under the kept maximize-morphemes sort; needs a "
-    "single-char-morpheme penalty or a lexicon entry for 'haziran' in a later milestone",
-    strict=True,
-)
-def test_hazirandan_still_over_strips(analyzer):
-    # Documented residual: root "hazira" (6 chars) and stripped "ndan" (4 chars) both clear
-    # the new gate, so the junk parse still wins. Left as a wrong root deliberately, not
-    # papered over with an ad-hoc rule.
+@pytest.mark.positive
+def test_hazirandan_resolves_to_haziran_lexicon(analyzer):
+    # Regression (was a strict xfail: the guesser over-stripped hazirandan -> *hazira+n+dan
+    # while haziran was OOV). Now that "haziran" is a lexicon month, the ablative resolves
+    # to it cleanly and outranks any guess — the documented fix, not a single-char penalty.
     result = analyzer.analyze("hazirandan")[0]
-    assert result.lemma != "hazira"
+    assert result.lemma == "haziran"
+    assert result.pos == "NOUN"
+    assert result.source == "lexicon"
+    assert result.features.get("case") == "ablative"
