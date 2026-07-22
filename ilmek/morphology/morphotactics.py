@@ -90,6 +90,7 @@ N_CASE = "N_CASE"  # a non-accusative case (grammatical ek-fiil predicate host: 
 N_ACC = "N_ACC"  # the accusative, split off as terminal: the copula never follows it (*eviydi)
 N_DERIV = "N_DERIV"  # a derived nominal/adjectival stem (inflects like N_ROOT, cannot re-derive)
 N_COP_DIR = "N_COP_DIR"  # after the assertive/generalizing ek-fiil -DIr; terminal this milestone
+N_DIST = "N_DIST"  # after the distributive numeral suffix -(ş)Ar (birer, ikişer); terminal
 
 V_ROOT = "V_ROOT"
 # Voice (çatı) states, between the root and the negation/tense layer. Ordered
@@ -242,6 +243,19 @@ D_CIK = Suffix(
 _NOMINAL_DERIVATIONS = [D_LI, D_SIZ, D_LIK, D_CI, D_CIK]
 
 
+# --- Distributive numeral suffix -(ş)Ar (bir->birer, iki->ikişer) --------------------
+# A numeral-only *inflectional* suffix ("n each / n at a time"): the ş buffer appears after a
+# vowel-final numeral (iki->ikişer, altı->altışar), and is absent after a consonant (bir->birer,
+# beş->beşer, on->onar). It is NOT derivational — the lemma and stem stay the bare numeral
+# (birer -> bir) for stem(), lemmatize() and analyze() alike. ``applies_to={NUM}`` is the
+# declarative overgeneration guard, checked by the analyzer for any suffix (not just
+# derivations): a NOUN/ADJ/VERB stem can never take it (no *ever from ev+Ar, no OOV zom+ar).
+# It lands in the terminal ``N_DIST``: further inflection/copula on a distributive (birerden,
+# birerdi) is deferred, correctness over coverage. The lexical exception yarımşar (ş after a
+# consonant) is not modeled (xfailed): it needs a per-word ``ş`` fact, not this productive rule.
+DIST = Suffix("dist", "(ş)Ar", {tags.NUM_TYPE: "distributive"}, applies_to=frozenset({tags.NUM}))
+
+
 def _case_edges(cases: list[Suffix]) -> list[tuple[Suffix, str]]:
     """Case edges, with the accusative retargeted to the terminal ``N_ACC``.
 
@@ -266,10 +280,11 @@ def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suf
     pronom_case = _case_edges(_PRONOMINAL_CASES)
     deriv = [(s, N_DERIV) for s in _NOMINAL_DERIVATIONS]
     return {
-        # Derivation edges appended after inflection, then the ek-fiil (copula) edges last:
-        # with derivation *and* copula disabled the prefix of each list is exactly the
-        # pre-milestone graph, so plain inflection and the guesser stay byte-identical.
-        N_ROOT: [*inflection, *deriv, *copula],
+        # Derivation edges appended after inflection, then the ek-fiil (copula) edges, then the
+        # distributive LAST: with derivation, copula *and* distributive disabled/unmatched the
+        # prefix of each list is exactly the pre-milestone graph, so plain inflection and the
+        # guesser stay byte-identical. The distributive edge fires only on a NUM stem (applies_to).
+        N_ROOT: [*inflection, *deriv, *copula, (DIST, N_DIST)],
         N_PL: [*poss, *plain_case, *copula],
         N_POSS: [*plain_case, *copula],
         N_POSS3: [*pronom_case, *copula],
@@ -282,13 +297,16 @@ def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suf
         N_DERIV: [*inflection, *copula],
         # After the assertive -DIr: terminal (person/plural -DIrlAr stacking deferred).
         N_COP_DIR: [],
+        # After the distributive -(ş)Ar: terminal this milestone (birerden/birerdi deferred).
+        N_DIST: [],
     }
 
 
 NOMINAL_START = N_ROOT
 #: Accepting nominal states. ``N_ACC`` (the split-off accusative) is a complete word, so it
-#: is final; ``N_COP_DIR`` is *not* here — its closure is the copular-predicate one, below.
-NOMINAL_FINALS = frozenset({N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE, N_ACC, N_DERIV})
+#: is final; ``N_DIST`` (the distributive, birer) is a complete word too. ``N_COP_DIR`` is
+#: *not* here — its closure is the copular-predicate one, below.
+NOMINAL_FINALS = frozenset({N_ROOT, N_PL, N_POSS, N_POSS3, N_CASE, N_ACC, N_DERIV, N_DIST})
 
 
 # --- Verbal suffixes -----------------------------------------------------------------

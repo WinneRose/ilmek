@@ -83,13 +83,17 @@ def _apply(
 ) -> tuple[str, str]:
     """Attach ``suffix`` to accumulated surface ``acc``. Returns ``(new_surface, morph)``."""
     if is_first:
+        # Front-harmony loan (saat, kalp, usul): the root-adjacent suffix harmonizes as if the
+        # root's final vowel were fronted (saat+I -> saati). Only the root-adjacent realization
+        # needs the flag; later suffixes inherit front harmony from the emitted front vowel.
+        front = "front_harmony" in root.attributes
         # Irregular glide raising (de->di, ye->yi) before a vowel-initial glide-raising suffix:
         # realize against the raised allomorph so diyecek/diye/diyen come out right, while the
         # unflagged suffixes (dedi, deyiş) keep the free form. Only de/ye carry a raised_form.
         base = root.raised_form if (suffix.glide_raise and root.raised_form) else root.free_form
         # Buffer decisions depend only on vowel/consonant ending, identical for the free
-        # and bound allomorphs, so peeking with the free form is safe.
-        peek = realize(suffix.template, base)
+        # and bound allomorphs (and unaffected by fronting a->e etc.), so peeking is safe.
+        peek = realize(suffix.template, base, front_root=front)
         stem = root.bound_form if (starts_with_vowel(peek) and root.bound_form) else base
         if suffix.drop_preceding and _ends_with_vowel(stem):
             dropped = stem[:-1]
@@ -99,9 +103,9 @@ def _apply(
             # (de -> diyor, ye -> yiyor), then drop. Polysyllabic stems keep a vowel after the
             # drop, so this is a no-op for them (söyle -> söylüyor, başla -> başlıyor).
             ctx = dropped if _has_vowel(dropped) else stem
-            morph = realize(suffix.template, ctx)
+            morph = realize(suffix.template, ctx, front_root=front)
             return dropped + morph, morph
-        morph = realize(suffix.template, stem)
+        morph = realize(suffix.template, stem, front_root=front)
         return stem + morph, morph
 
     stem = acc
@@ -193,11 +197,17 @@ def _generate(
                 )
             )
         for suffix, target in graph[state]:
-            if suffix.derivational:
-                if not allow_derivation:
-                    continue
-                if suffix.applies_to is not None and cur_pos not in suffix.applies_to:
-                    continue
+            if suffix.derivational and not allow_derivation:
+                continue
+            # Declarative POS guard. Every derivation carries an ``applies_to`` (the
+            # overgeneration guard: -CI is {NOUN} so *güzelci is blocked); the inflectional
+            # distributive -(ş)Ar carries {NUM} so it fires only on a numeral (birer, but not
+            # *ever from ev). Every other inflectional suffix leaves ``applies_to=None``, so
+            # this is a provable no-op for them — behavior is byte-identical to before the
+            # check was lifted out of the derivational branch. ``cur_pos`` is the current
+            # stem's POS, so a derived/copular stem is gated by what it has become.
+            if suffix.applies_to is not None and cur_pos not in suffix.applies_to:
+                continue
             # Ek-fiil edges leave a nominal final for a copular state; gate them off for the
             # guesser (mirrors allow_derivation) so an unknown word is never stripped of a
             # copular ending and OOV output stays byte-identical.

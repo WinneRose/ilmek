@@ -92,5 +92,19 @@
   {"lemma": "değiş", "pos": "VERB"},
 
   {"lemma": "döv", "pos": "VERB", "attributes": ["reciprocal"]},
-  {"lemma": "tara", "pos": "VERB", "attributes": ["reflexive"]}
+  {"lemma": "tara", "pos": "VERB", "attributes": ["reflexive"]},
+
+  {"lemma": "bin", "pos": "VERB"},
+  {"lemma": "say", "pos": "VERB"},
+  {"lemma": "sun", "pos": "VERB"},
+  {"lemma": "at", "pos": "VERB"},
+  {"lemma": "uç", "pos": "VERB"},
+  {"lemma": "öde", "pos": "VERB"},
+  {"lemma": "ekle", "pos": "VERB"},
+  {"lemma": "hatırla", "pos": "VERB"},
+  {"lemma": "sakla", "pos": "VERB"},
+  {"lemma": "dene", "pos": "VERB"},
+  {"lemma": "anlat", "pos": "VERB"},
+  {"lemma": "gönder", "pos": "VERB"},
+  {"lemma": "kapat", "pos": "VERB"}
 ]

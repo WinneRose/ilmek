@@ -33,6 +33,7 @@ POS_TAGS = frozenset(
 # --- Feature keys --------------------------------------------------------------------
 
 NUMBER = "number"  # singular | plural
+NUM_TYPE = "num_type"  # distributive (the numeral suffix -(ş)Ar: birer, ikişer, üçer)
 POSSESSIVE = "possessive"  # none | 1sg 2sg 3sg 1pl 2pl 3pl
 CASE = "case"  # nominative accusative dative locative ablative genitive instrumental
 POLARITY = "polarity"  # positive | negative
@@ -72,6 +73,10 @@ DERIVATIONS = frozenset({"li", "siz", "lik", "ci", "cik", "ma", "is", "mak", "an
 # --- Feature value vocabulary (for validation / documentation) -----------------------
 
 NUMBERS = frozenset({"singular", "plural"})
+#: Numeral sub-types recorded under :data:`NUM_TYPE`. Today only ``distributive`` (the
+#: numeral suffix -(ş)Ar: bir->birer, iki->ikişer, "n each / n at a time"). The suffix is
+#: inflectional, not derivational, so the lemma/stem stay the bare numeral (birer -> bir).
+NUM_TYPES = frozenset({"distributive"})
 PERSONS = frozenset({"1sg", "2sg", "3sg", "1pl", "2pl", "3pl"})
 #: Sub-types recorded on closed-class pronouns. We label ``personal`` (ben/sen/biz/siz)
 #: and ``demonstrative`` (bu/şu) and ``interrogative`` (kim); the ``o``/``onlar`` paradigm

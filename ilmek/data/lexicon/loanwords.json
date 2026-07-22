@@ -1,0 +1,43 @@
+{
+  "_comment": [
+    "Loanword phonological EXCEPTIONS whose bound form the plain defaults get wrong. Kept in",
+    "one documented file so each per-word fact is auditable against TDK. Two attribute classes:",
+    "",
+    "1. `gemination` (ünsüz ikizleşmesi): an Arabic-origin loan whose final consonant DOUBLES",
+    "   before a vowel-initial suffix. hak->hakkı, af->affı, his->hissi, hac->haccı, zan->zannı.",
+    "   `ret` also VOICES as it doubles (gemination + voicing -> redd-): reddi, redde. Before a",
+    "   CONSONANT suffix the single free form is kept: hakta, afta, histe (the analyzer switches",
+    "   to the doubled bound form only for a vowel-initial suffix). So `hakı` (single k) is",
+    "   unrepresentable, and `hakta` (not *hakkta) is the only locative.",
+    "",
+    "2. `front_harmony`: a back-SPELLED loan that HARMONIZES as if front (its historical vowel",
+    "   was front). The final vowel is read through core.alphabet.FRONT_COUNTERPART for the",
+    "   first suffix vowel; later suffixes inherit front harmony from the emitted front vowel.",
+    "   kalp->kalbi/kalbe (also `voicing`: p->b before a vowel, but kalpte keeps p), rol->rolü/",
+    "   role/roller, kabul->kabulü, usul->usulü/usulüne, meşgul (ADJ)->meşgulüm. `saat` carries",
+    "   the same flag but lives in nouns.json (it was already there): saati/saate/saatte.",
+    "",
+    "3. `hukuk` is the control case: NO attribute. Voicing is OPT-IN in this engine, so a plain",
+    "   entry already gives hukuku/hukuka and blocks *hukuğu by construction — no flag needed.",
+    "",
+    "Verified against TDK: kalp voices (kalbi) but does NOT stay a stop before a vowel; rol/",
+    "kabul/usul do NOT voice (rolü not *rolğü); ret both geminates and voices; hak geminates",
+    "WITHOUT voicing (hakkı, never *hağğı). Each surface is pinned in tests/test_loanwords.py."
+  ],
+
+  "entries": [
+    {"lemma": "hak", "pos": "NOUN", "attributes": ["gemination"]},
+    {"lemma": "af", "pos": "NOUN", "attributes": ["gemination"]},
+    {"lemma": "his", "pos": "NOUN", "attributes": ["gemination"]},
+    {"lemma": "hac", "pos": "NOUN", "attributes": ["gemination"]},
+    {"lemma": "zan", "pos": "NOUN", "attributes": ["gemination"]},
+    {"lemma": "ret", "pos": "NOUN", "attributes": ["gemination", "voicing"]},
+
+    {"lemma": "kalp", "pos": "NOUN", "attributes": ["voicing", "front_harmony"]},
+    {"lemma": "rol", "pos": "NOUN", "attributes": ["front_harmony"]},
+    {"lemma": "kabul", "pos": "NOUN", "attributes": ["front_harmony"]},
+    {"lemma": "usul", "pos": "NOUN", "attributes": ["front_harmony"]},
+    {"lemma": "meşgul", "pos": "ADJ", "attributes": ["front_harmony"]},
+    {"lemma": "hukuk", "pos": "NOUN"}
+  ]
+}

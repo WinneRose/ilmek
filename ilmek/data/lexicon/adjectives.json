@@ -78,5 +78,21 @@
   {"lemma": "parlak", "pos": "ADJ", "attributes": ["voicing"]},
   {"lemma": "sönük", "pos": "ADJ", "attributes": ["voicing"]},
   {"lemma": "çıplak", "pos": "ADJ", "attributes": ["voicing"]},
-  {"lemma": "uzak", "pos": "ADJ", "attributes": ["voicing"]}
+  {"lemma": "uzak", "pos": "ADJ", "attributes": ["voicing"]},
+
+  {"lemma": "son", "pos": "ADJ"},
+  {"lemma": "ilk", "pos": "ADJ"},
+  {"lemma": "tek", "pos": "ADJ"},
+  {"lemma": "özel", "pos": "ADJ"},
+  {"lemma": "genel", "pos": "ADJ"},
+  {"lemma": "farklı", "pos": "ADJ"},
+  {"lemma": "benzer", "pos": "ADJ"},
+  {"lemma": "basit", "pos": "ADJ"},
+  {"lemma": "hazır", "pos": "ADJ"},
+  {"lemma": "kapalı", "pos": "ADJ"},
+  {"lemma": "canlı", "pos": "ADJ"},
+  {"lemma": "ölü", "pos": "ADJ"},
+  {"lemma": "özgür", "pos": "ADJ"},
+  {"lemma": "gerekli", "pos": "ADJ"},
+  {"lemma": "memnun", "pos": "ADJ"}
 ]

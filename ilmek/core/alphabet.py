@@ -26,6 +26,15 @@ VOWELS_UPPER = frozenset("AEIİOÖUÜ")
 
 BACK_VOWELS = frozenset("aıou")
 FRONT_VOWELS = frozenset("eiöü")
+
+#: Back vowel -> its front counterpart on the same rounding/height axis (a<->e, ı<->i,
+#: o<->ö, u<->ü). Used by the *front-harmony loan* rule: a handful of loanwords are spelled
+#: with a back vowel but harmonize as if front (saat->saati/saate, kalp->kalbe, rol->rolü,
+#: kabul->kabulü, usul->usulü). A root flagged ``front_harmony`` has its final vowel mapped
+#: through this table for the FIRST suffix vowel; later suffixes then inherit front harmony
+#: from that emitted front vowel for free. Kept here (data) so the exception list lives with
+#: the other Turkish facts, not as a hardcoded branch in the phonology engine.
+FRONT_COUNTERPART = {"a": "e", "ı": "i", "o": "ö", "u": "ü"}
 ROUNDED_VOWELS = frozenset("oöuü")
 UNROUNDED_VOWELS = frozenset("aeıi")
 #: "wide"/open vowels vs. "narrow"/high vowels (used for -Iyor narrowing).

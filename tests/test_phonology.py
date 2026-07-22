@@ -56,3 +56,47 @@ def test_starts_with_vowel():
     assert starts_with_vowel("ım")
     assert not starts_with_vowel("lar")
     assert not starts_with_vowel("")
+
+
+# --- Front-harmony loan flag: realize(..., front_root=True) ---------------------------
+
+
+@pytest.mark.positive
+@pytest.mark.parametrize(
+    "template,ctx,expected",
+    [
+        ("(s)I", "saat", "i"),  # a -> fronted i (saati, not saatı)
+        ("lAr", "saat", "ler"),  # a -> fronted e (saatler)
+        ("(y)A", "saat", "e"),  # dative fronts too (saate)
+        ("DA", "kalp", "te"),  # front + D hardening after voiceless p (kalpte)
+        ("(s)I", "kabul", "ü"),  # u -> fronted ü (kabulü)
+        ("(s)I", "usul", "ü"),  # u -> fronted ü (usulü)
+    ],
+)
+def test_front_root_harmony(template, ctx, expected):
+    assert realize(template, ctx, front_root=True) == expected
+
+
+@pytest.mark.negative
+@pytest.mark.parametrize(
+    "template,ctx,expected",
+    [
+        ("(s)I", "saat", "ı"),  # flag off: back harmony (the parallel non-loan sanatı)
+        ("lAr", "saat", "lar"),
+        ("(s)I", "kabul", "u"),
+    ],
+)
+def test_front_root_flag_off_is_back_harmony(template, ctx, expected):
+    # Without the flag the very same context stays back-harmonic, so the flag is the only
+    # thing turning saat into a front-harmony root (no leakage into ordinary words).
+    assert realize(template, ctx) == expected
+
+
+@pytest.mark.consistency
+def test_front_root_clears_after_first_vowel():
+    # The fronting applies only to the FIRST emitted vowel; a following suffix reads the
+    # emitted front vowel and harmonizes normally. saat + ler + DA -> saatlerde: the DA is
+    # realized off "saatler" (already front), so no flag is needed for it.
+    ler = realize("lAr", "saat", front_root=True)
+    assert ler == "ler"
+    assert realize("DA", "saat" + ler) == "de"  # off "saatler", plain harmony -> de

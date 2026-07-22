@@ -7,6 +7,14 @@ derive the **bound form** — the allomorph a root shows before a vowel-initial 
   renk→reng for the ``nk`` case).
 * ``vowel_drop``: a medial vowel drops (burun→burn, ağız→ağz); given explicitly via
   ``forms`` since it is not predictable.
+* ``gemination``: a loanword's final consonant doubles before a vowel-initial suffix
+  (hak→hakk, af→aff, his→hiss, hac→hacc, zan→zann); combined with ``voicing`` the doubled
+  consonant also voices (ret→redd, so reddi). Before a consonant suffix the single free form
+  is kept (hakta). See :func:`_derive_bound_form`.
+* ``front_harmony``: a back-spelled loanword that harmonizes as if front — saat→saati/saate,
+  kalp→kalbe, rol→rolü, kabul→kabulü, usul→usulü. Handled in :mod:`.phonology` (the root's
+  final vowel is read through :data:`~ilmek.core.alphabet.FRONT_COUNTERPART` for the first
+  suffix vowel), not by a bound form; may be combined with ``voicing`` (kalp→kalbi).
 
 Candidate enumeration (:meth:`Lexicon.candidates`) buckets roots by their first surface
 character, which no root-boundary alternation ever changes — so a surface reshaped by a
@@ -95,6 +103,17 @@ def _derive_bound_form(
     if explicit_forms and len(explicit_forms) >= 2:
         # Second listed form is the bound allomorph (covers vowel_drop and irregulars).
         return explicit_forms[1]
+    if "gemination" in attributes and free:
+        # Loanword consonant gemination (ünsüz ikizleşmesi): the final consonant doubles
+        # before a vowel-initial suffix (hak->hakkı, af->affı, his->hissi, hac->haccı,
+        # zan->zannı). A few also voice as they double (``gemination`` + ``voicing``: ret->
+        # reddi), so the doubled consonant is the *voiced* one. Checked before the plain
+        # voicing branch so a geminating+voicing root does not fall through to it. Before a
+        # consonant suffix the analyzer keeps the single free form (hakta, not *hakkta).
+        c = free[-1]
+        if "voicing" in attributes:
+            c = VOICING.get(c, c)
+        return free[:-1] + c + c
     if "voicing" in attributes:
         if free.endswith("nk"):
             return free[:-2] + "ng"  # renk -> reng

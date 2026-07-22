@@ -19,7 +19,7 @@
   {"lemma": "bir", "pos": "NUM"},
   {"lemma": "iki", "pos": "NUM"},
   {"lemma": "üç", "pos": "NUM"},
-  {"lemma": "dört", "pos": "NUM"},
+  {"lemma": "dört", "pos": "NUM", "attributes": ["voicing"]},
   {"lemma": "beş", "pos": "NUM"},
   {"lemma": "altı", "pos": "NUM"},
   {"lemma": "yedi", "pos": "NUM"},
