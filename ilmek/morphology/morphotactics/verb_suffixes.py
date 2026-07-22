@@ -112,6 +112,19 @@ AOR_ABIL = Suffix("aor", "Ir", {tags.TENSE: "aorist"})
 #: AOR_ABIL) so the class fact is correctly ignored after voice.
 AOR_VOICE = Suffix("aor", "Ir", {tags.TENSE: "aorist"})
 
+# Denominal-stem aorist (temizler, taşlar, evlenir, güzelleşir). A NOUN/ADJ root has
+# aorist=None, so the lexically class-guarded root aorists (_AORISTS) can never fire after a
+# denominal verbalizer (-lA/-lAn/-lAş). Every denominal stem is polysyllabic, and the
+# polysyllabic aorist is fully DETERMINISTIC — vowel-final -> -r (temizle->temizler,
+# taşla->taşlar), consonant-final -> -Ir (evlen->evlenir, güzelleş->güzelleşir) — so two edges
+# guarded by the running surface's final-segment class (like the passive / post-voice
+# causatives, NOT a fabricated lexical class) cover it declaratively. Wired ONLY from V_DENOM
+# (see transitions); the vowel/consonant guards are disjoint, so exactly one fires per stem.
+AOR_DENOM_R = Suffix("aor", "r", {tags.TENSE: "aorist"}, stem_final_class=frozenset({"vowel"}))
+AOR_DENOM_IR = Suffix(
+    "aor", "Ir", {tags.TENSE: "aorist"}, stem_final_class=frozenset({"l", "r", "other"})
+)
+
 # Negative aorist -mAz (gelmez, yapmaz): a dedicated negative morpheme (not NEG + aorist).
 NEG_AOR = Suffix("neg_aor", "mAz", {tags.POLARITY: "negative", tags.TENSE: "aorist"})
 

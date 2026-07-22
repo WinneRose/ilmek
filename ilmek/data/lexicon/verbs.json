@@ -16,7 +16,7 @@
   {"lemma": "koş", "pos": "VERB", "attributes": ["reciprocal"]},
   {"lemma": "sev", "pos": "VERB", "attributes": ["reflexive"]},
   {"lemma": "sor", "pos": "VERB"},
-  {"lemma": "gül", "pos": "VERB"},
+  {"lemma": "gül", "pos": "VERB", "attributes": ["reciprocal"]},
   {"lemma": "bil", "pos": "VERB", "aorist": "Ir"},
   {"lemma": "yap", "pos": "VERB"},
   {"lemma": "aç", "pos": "VERB"},

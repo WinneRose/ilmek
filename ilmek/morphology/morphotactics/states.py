@@ -121,6 +121,16 @@ V_INF = "V_INF"  # infinitive -mAk (a noun); terminal this milestone (no case in
 # persons (gelmekteyim/gelmekteler), and the assertive -DIr (gelmektedir). -DIr sits HERE only,
 # never on V_T1, so the generalizing *gelirdir stays deferred.
 V_MAKTA = "V_MAKTA"
+# A denominal verb stem formed by -lA/-lAn/-lAş (taşla-, temizle-, evlen-, güzelleş-): a VERB
+# stem that takes the FULL verbal continuation (negation, tense, mood, ability, the
+# verb->nominal derivations, converbs) via _root_continuation, exactly like a voiced stem. Its
+# aorist is the two denominal (phonologically-guarded) edges, since a NOUN/ADJ root carries no
+# lexical aorist class. NOT final this milestone: a bare denominal stem would be a 2sg
+# imperative (temizle!, selamlaş!), but making it final would rank it above the homograph noun
+# reading (taşla = taş+instrumental), so bare imperatives are deferred (xfail), mirroring the
+# voice-state precedent (V_RECIP..V_PASS are non-final for the same reason). No voice edges are
+# wired off it this milestone (temizlendi-as-passive / evlendirdi-causative deferred).
+V_DENOM = "V_DENOM"
 
 # --- Adverbial (converb / zarf-fiil) state -------------------------------------------
 

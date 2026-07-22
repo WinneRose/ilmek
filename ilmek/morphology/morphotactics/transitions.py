@@ -15,6 +15,7 @@ from ...core import tags
 from .derivational_suffixes import (
     _CONVERBS,
     _CONVERBS_FROM_NEG,
+    _DENOMINAL_VERBALIZERS,
     _LIK_STACKABLE,
     _NOMINAL_DERIVATIONS,
     _PART_AORISTS,
@@ -68,6 +69,7 @@ from .states import (
     V_COND,
     V_COP1,
     V_COP2,
+    V_DENOM,
     V_IMPOSS,
     V_INF,
     V_MAKTA,
@@ -89,6 +91,8 @@ from .verb_suffixes import (
     _PERSON_T2,
     ABIL,
     AOR_ABIL,
+    AOR_DENOM_IR,
+    AOR_DENOM_R,
     AOR_VOICE,
     CAUS2_DIR,
     CAUS2_T,
@@ -275,6 +279,12 @@ def _nominal_graph(copula: list[tuple[Suffix, str]]) -> dict[str, list[tuple[Suf
             (ORD_SON, N_ORD),
             (D_CA, N_ADV_CA),
             *[(s, N_KI) for s in _TEMPORAL_KI],
+            # The denominal verbalizers -lA/-lAn/-lAş (taşla-, evlen-, güzelleş-), appended LAST
+            # (after the temporal -ki) so every pre-existing traversal prefix — and the
+            # derivation-free guesser — is byte-stable. They cross into the VERBAL V_DENOM state
+            # (which then inflects fully), gated by applies_to={NOUN,ADJ} + requires_attribute so
+            # they fire only on curated bases; being derivational, the guesser never walks them.
+            *[(s, V_DENOM) for s in _DENOMINAL_VERBALIZERS],
         ],
         N_PL: [*poss, *plain_case, *copula],
         N_POSS: [*plain_case, *copula],
@@ -417,6 +427,11 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
     # aorist is the single deterministic -Ir (AOR_VOICE), never the root's class.
     root_aorists = [(s, V_T1) for s in _AORISTS]
     voiced_aorist = [(AOR_VOICE, V_T1)]
+    # A denominal stem's aorist: -r after a vowel-final stem (temizler, taşlar), -Ir after a
+    # consonant-final one (evlenir, güzelleşir). Both are phonologically guarded (disjoint), so
+    # exactly one fires; a NOUN/ADJ root has aorist=None, so the class-guarded root aorists never
+    # apply here. Used only by V_DENOM's continuation.
+    denom_aorists = [(AOR_DENOM_R, V_T1), (AOR_DENOM_IR, V_T1)]
     # The aorist *participle* edges, parallel to the finite ones: the bare root uses the three
     # class-guarded -r/-Ar/-Ir (akar, gelir, okur), a voiced stem the deterministic -Ir
     # (okunur). All cross into the shared derived-nominal state N_DERIV (so akarlar/geçmişi
@@ -516,6 +531,13 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         # After the passive: the continuation only (voice is closed; no double passive here —
         # the impersonal double passive aranıldı is deferred).
         V_PASS: [*_root_continuation(voiced_aorist, part_voiced_aorist)],
+        # A denominal verb stem (taşla-, evlen-, güzelleş-): the FULL verbal continuation, with
+        # the denominal (phonologically-guarded) aorist since a NOUN/ADJ root carries no lexical
+        # aorist class. No aorist-participle slot ([]) and NO voice edges this milestone
+        # (temizlendi-as-passive / evlendirdi-causative deferred). NOT final (see states): a bare
+        # denominal stem is not accepted, so taşla stays taş+instrumental and the bare imperative
+        # temizle!/selamlaş! is deferred, mirroring the non-final voice states.
+        V_DENOM: [*_root_continuation(denom_aorists, [])],
         # The -ken converb attaches to a finished tense (gelirken, geliyorken, gelecekken,
         # gelmişken, gelmeliyken): V_T1 is where the aorist/progressive/future/evidential/
         # necessitative land, so one edge covers them all. Appended LAST so the pre-existing
@@ -640,6 +662,13 @@ def nominal_default_features() -> dict:
 
 def finalize_verbal_features(features: dict) -> dict:
     """Fill implicit verbal features at an accepting state."""
+    # A denominal verb (taşla-, evlen-, güzelleş-) is walked from a NOMINAL root, so the nominal
+    # default number/possessive/case were seeded at the start of the traversal. A finite verb
+    # never carries those, so drop them here before verbal finalization. This is a provable
+    # no-op for a plain verb root (its walk starts from empty base features and no verbal edge
+    # adds number/possessive/case), so every pre-existing verbal analysis is byte-identical.
+    for _k in (tags.NUMBER, tags.POSSESSIVE, tags.CASE):
+        features.pop(_k, None)
     features.setdefault(tags.POLARITY, "positive")
     # A mood (conditional/optative) counts as finite too, so gelse/gele are not mislabelled
     # imperative: without this, their personless 3sg path would be stamped mood=imperative.

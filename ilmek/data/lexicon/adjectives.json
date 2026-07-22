@@ -10,7 +10,7 @@
   {"lemma": "fakir", "pos": "ADJ"},
   {"lemma": "mutlu", "pos": "ADJ"},
   {"lemma": "yorgun", "pos": "ADJ"},
-  {"lemma": "hasta", "pos": "ADJ"},
+  {"lemma": "hasta", "pos": "ADJ", "attributes": ["verbalizer_lan"]},
   {"lemma": "güçlü", "pos": "ADJ"},
   {"lemma": "tatlı", "pos": "ADJ"},
   {"lemma": "acı", "pos": "ADJ"},

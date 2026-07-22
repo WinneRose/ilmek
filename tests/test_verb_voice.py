@@ -188,6 +188,7 @@ def test_yikandi_has_both_reflexive_and_passive(analyzer):
         ("görüştüler", "gör", ["üş", "tü", "ler"], "3pl"),  # milestone example
         ("dövüştü", "döv", ["üş", "tü"], "3sg"),  # new root
         ("bakıştılar", "bak", ["ış", "tı", "lar"], "3pl"),
+        ("gülüştü", "gül", ["üş", "tü"], "3sg"),  # gül gained the reciprocal attribute
     ],
 )
 def test_reciprocal(analyzer, word, lemma, morphemes, person):
@@ -196,6 +197,19 @@ def test_reciprocal(analyzer, word, lemma, morphemes, person):
     assert a.morphemes == morphemes
     assert a.features.get("tense") == "past"
     assert a.features.get("person") == person
+
+
+@pytest.mark.positive
+def test_gulustu_reciprocal_is_primary_over_noun_copula(analyzer):
+    # gülüştü: the verbal reciprocal reading (0 derivations) outranks the gülüş+copula noun
+    # reading (1 derivation), so it is primary; the -Iş verbal-noun reading survives alongside.
+    best = analyzer.analyze("gülüştü")[0]
+    assert best.lemma == "gül" and best.pos == "VERB"
+    assert best.features.get("voice") == ("reciprocal",)
+    # The bare -Iş verbal noun gülüş stays a NOUN (V_RECIP is non-final: no bare reciprocal verb).
+    bare = analyzer.analyze("gülüş")[0]
+    assert bare.lemma == "gül" and bare.pos == "NOUN"
+    assert bare.features.get("derivation") == ("is",)
 
 
 @pytest.mark.exception

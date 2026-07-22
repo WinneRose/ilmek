@@ -125,6 +125,53 @@ KU_TEMP = Suffix(
 _TEMPORAL_KI = [KI_TEMP, KU_TEMP]
 
 
+# --- Denominal verbalizers (NOUN/ADJ -> VERB) ----------------------------------------
+# -lA / -lAn / -lAş turn a noun or adjective into a VERB stem that then takes the FULL verbal
+# inflection (tense, negation, mood, the verb->nominal derivations, converbs) — taş->taşla-,
+# temiz->temizle-, ev->evlen-, süs->süslen-, güzel->güzelleş-, selam->selamlaş-. Each is
+# DERIVATIONAL (its ``name`` is recorded under features[tags.DERIVATION]; the lemma stays the
+# base noun/adjective) and DOUBLE-guarded against overgeneration exactly like the reciprocal /
+# temporal-ki precedent:
+#   * ``applies_to={NOUN, ADJ}`` blocks a NUM/PRON base structurally (no *birle-, and a VERB
+#     base is unreachable — these hang only off N_ROOT);
+#   * ``requires_attribute`` gates each to a CURATED per-base list declared in the lexicon
+#     (verbalizer_la / verbalizer_lan / verbalizer_las), so -lAş/-lAn fire only on plausible
+#     bases and no common word is flooded.
+# Because they are ``derivational=True``, the guesser (``allow_derivation=False``) never walks
+# them — zero OOV impact. They are root-adjacent (only on N_ROOT), so ``requires_attribute`` is
+# checked against the root's own attributes, and re-derivation is structurally impossible (a
+# derived stem lands in N_DERIV, which carries no verbalizer edge: no *güzellikleş-). They land
+# in the NON-final V_DENOM (see states/transitions), so a bare denominal stem is not accepted
+# (taşla stays taş+instrumental; the bare imperative temizle!/selamlaş! is deferred).
+D_V_LA = Suffix(
+    "la",
+    "lA",
+    derivational=True,
+    to_pos=tags.VERB,
+    applies_to=frozenset({tags.NOUN, tags.ADJ}),
+    requires_attribute="verbalizer_la",
+)
+D_V_LAN = Suffix(
+    "lan",
+    "lAn",
+    derivational=True,
+    to_pos=tags.VERB,
+    applies_to=frozenset({tags.NOUN, tags.ADJ}),
+    requires_attribute="verbalizer_lan",
+)
+D_V_LAS = Suffix(
+    "las",
+    "lAş",
+    derivational=True,
+    to_pos=tags.VERB,
+    applies_to=frozenset({tags.NOUN, tags.ADJ}),
+    requires_attribute="verbalizer_las",
+)
+#: The three denominal verbalizer edges (appended LAST to N_ROOT in :mod:`.transitions`, all
+#: landing in V_DENOM). Kept in DATA so widening/narrowing the productive set is a data change.
+_DENOMINAL_VERBALIZERS = [D_V_LA, D_V_LAN, D_V_LAS]
+
+
 # --- Verbal derivations (verb -> new nominal/adjectival stem) ------------------------
 # Gated by graph position (only reachable from V_ROOT/V_NEG), so no applies_to is needed.
 # verb -> noun:
