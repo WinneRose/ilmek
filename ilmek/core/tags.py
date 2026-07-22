@@ -69,6 +69,13 @@ QUESTION = "question"  # true (the interrogative particle mi and its inflections
 #: instrumentals ``benle``/``senle`` (standard: ``benimle``/``seninle``); the standard forms
 #: carry no ``register`` key at all, so the pair documents the variant split explicitly.
 REGISTER = "register"  # colloquial (a marked non-standard variant)
+#: Emphatic reduplication (pekiştirme): the intensified reading of an adjective whose first
+#: (C)V is copied and closed by a lexicalized linking consonant p/m/r/s (kara->kapkara,
+#: temiz->tertemiz). Carried ONLY by the enumerated reduplicated surfaces; the bare base
+#: adjective (kara, temiz) carries no ``intensity`` key at all, so the pair marks the split
+#: explicitly. Reduplication is a *prefix*, not one of the closed :data:`DERIVATION` suffix
+#: names, so it is recorded here rather than fabricating a derivation name.
+INTENSITY = "intensity"  # emphatic (pekiştirme reduplication)
 #: Derivational history: an ordered ``tuple`` of derivational-suffix *names* (a derived stem
 #: inflects normally afterwards, so this makes the derivation-vs-inflection boundary visible).
 #: The value is a tuple (not a list) so an :class:`AnalysisResult`'s features stay hashable
@@ -144,6 +151,9 @@ PERSONS = frozenset({"1sg", "2sg", "3sg", "1pl", "2pl", "3pl"})
 PRON_TYPES = frozenset({"personal", "demonstrative", "interrogative"})
 #: Register values (see :data:`REGISTER`). Closed set; only ``colloquial`` is used today.
 REGISTERS = frozenset({"colloquial"})
+#: Intensity values (see :data:`INTENSITY`). Closed set; only ``emphatic`` (the pekiştirme
+#: reduplication kapkara/tertemiz) is used today.
+INTENSITIES = frozenset({"emphatic"})
 CASES = frozenset(
     {
         "nominative",

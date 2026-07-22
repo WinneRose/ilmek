@@ -25,6 +25,8 @@
   {"lemma": "sarı", "pos": "ADJ"},
   {"lemma": "siyah", "pos": "ADJ"},
   {"lemma": "beyaz", "pos": "ADJ"},
+  {"lemma": "kara", "pos": "ADJ"},
+  {"lemma": "düz", "pos": "ADJ"},
 
   {"lemma": "taze", "pos": "ADJ"},
   {"lemma": "üzgün", "pos": "ADJ"},

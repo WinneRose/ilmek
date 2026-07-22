@@ -1,0 +1,38 @@
+{
+  "_doc": [
+    "Emphatic reduplication (pekiştirme): the intensified reading of an adjective whose first",
+    "(C)V is copied and closed by a linking consonant from {p, m, r, s}. Both the choice of",
+    "linker and the exact truncation are LEXICALIZED / irregular (kara->kapkara but temiz->",
+    "tertemiz, not *temptemiz), so the forms are enumerated whole as IrregularForm surfaces",
+    "(surface -> base ADJ lemma) matched before the FSM — never produced by a strip-and-check",
+    "rule, which would accept unattested linkers (*kamkara) and misparse coincidental non-",
+    "reduplicative words. Each row records the base lemma, pos=ADJ, features.intensity=emphatic,",
+    "the prefix as the sole morpheme, and stem == the whole surface (the derived-surface stem",
+    "contract, matching the intensive diminutives in diminutives.json). NOTE: the prefix (e.g.",
+    "'kap') is the codebase's first NON-SUFFIX morpheme; nothing reconstructs a surface from",
+    "root+morphemes for irregulars, so this is harmless, but a future consumer should not assume",
+    "morphemes are suffixes here. All 16 bases are lexicon ADJs. Common forms whose base is not",
+    "yet a lexicon ADJ are DEFERRED (correctness over coverage): simsiyah, kıpkırmızı, dopdolu,",
+    "besbelli, tastamam, and the extended-syllable ones (sırılsıklam, paramparça, çepeçevre).",
+    "Inflected reduplications (kapkaraydı, sımsıcaktı) are also deferred: IrregularForm matches",
+    "whole surfaces only, mirroring the sıcacıktı diminutive limitation."
+  ],
+  "irregular": [
+    {"surface": "kapkara", "lemma": "kara", "pos": "ADJ", "stem": "kapkara", "morphemes": ["kap"], "features": {"intensity": "emphatic"}},
+    {"surface": "yemyeşil", "lemma": "yeşil", "pos": "ADJ", "stem": "yemyeşil", "morphemes": ["yem"], "features": {"intensity": "emphatic"}},
+    {"surface": "tertemiz", "lemma": "temiz", "pos": "ADJ", "stem": "tertemiz", "morphemes": ["ter"], "features": {"intensity": "emphatic"}},
+    {"surface": "sımsıcak", "lemma": "sıcak", "pos": "ADJ", "stem": "sımsıcak", "morphemes": ["sım"], "features": {"intensity": "emphatic"}},
+    {"surface": "masmavi", "lemma": "mavi", "pos": "ADJ", "stem": "masmavi", "morphemes": ["mas"], "features": {"intensity": "emphatic"}},
+    {"surface": "bembeyaz", "lemma": "beyaz", "pos": "ADJ", "stem": "bembeyaz", "morphemes": ["bem"], "features": {"intensity": "emphatic"}},
+    {"surface": "upuzun", "lemma": "uzun", "pos": "ADJ", "stem": "upuzun", "morphemes": ["up"], "features": {"intensity": "emphatic"}},
+    {"surface": "sapsarı", "lemma": "sarı", "pos": "ADJ", "stem": "sapsarı", "morphemes": ["sap"], "features": {"intensity": "emphatic"}},
+    {"surface": "bomboş", "lemma": "boş", "pos": "ADJ", "stem": "bomboş", "morphemes": ["bom"], "features": {"intensity": "emphatic"}},
+    {"surface": "kupkuru", "lemma": "kuru", "pos": "ADJ", "stem": "kupkuru", "morphemes": ["kup"], "features": {"intensity": "emphatic"}},
+    {"surface": "dosdoğru", "lemma": "doğru", "pos": "ADJ", "stem": "dosdoğru", "morphemes": ["dos"], "features": {"intensity": "emphatic"}},
+    {"surface": "apaçık", "lemma": "açık", "pos": "ADJ", "stem": "apaçık", "morphemes": ["ap"], "features": {"intensity": "emphatic"}},
+    {"surface": "dapdar", "lemma": "dar", "pos": "ADJ", "stem": "dapdar", "morphemes": ["dap"], "features": {"intensity": "emphatic"}},
+    {"surface": "dümdüz", "lemma": "düz", "pos": "ADJ", "stem": "dümdüz", "morphemes": ["düm"], "features": {"intensity": "emphatic"}},
+    {"surface": "yepyeni", "lemma": "yeni", "pos": "ADJ", "stem": "yepyeni", "morphemes": ["yep"], "features": {"intensity": "emphatic"}},
+    {"surface": "ıpıslak", "lemma": "ıslak", "pos": "ADJ", "stem": "ıpıslak", "morphemes": ["ıp"], "features": {"intensity": "emphatic"}}
+  ]
+}
