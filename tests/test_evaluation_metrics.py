@@ -14,6 +14,7 @@ from ilmek.evaluation import metrics
 from ilmek.evaluation.metrics import (
     ItemRecord,
     analysis_matches,
+    candidate_count_stats,
     coverage,
     disambiguation_accuracy,
     lemma_accuracy,
@@ -249,6 +250,47 @@ def test_unknown_word_rate_fraction_of_guessed_primaries():
 def test_unknown_word_rate_is_zero_over_all_lexicon_records():
     records = [rec([mk("ev", "NOUN")], "ev", "NOUN"), rec([mk("kitap", "NOUN")], "kitap", "NOUN")]
     assert unknown_word_rate(records).value == 0.0
+
+
+# =====================================================================================
+# candidate-count diagnostics
+# =====================================================================================
+
+
+@pytest.mark.positive
+def test_candidate_count_stats_reports_ambiguity_and_empty_results():
+    records = [
+        rec([mk("ev", "NOUN")], "ev", "NOUN"),
+        rec(
+            [mk("yüz", "NOUN", source="guess"), mk("yüz", "VERB")],
+            "yüz",
+            "NOUN",
+        ),
+        rec([], "bilinmeyen", "X"),
+    ]
+
+    stats = candidate_count_stats(records)
+
+    assert stats.total == 3
+    assert stats.analyzable == 2
+    assert stats.zero == 1
+    assert stats.single == 1
+    assert stats.multiple == 1
+    assert stats.total_candidates == 3
+    assert stats.guessed_primary == 1
+    assert stats.mean == pytest.approx(1.0)
+    assert stats.max_candidates == 2
+
+
+@pytest.mark.negative
+def test_candidate_count_stats_empty_input_has_safe_sentinels():
+    stats = candidate_count_stats([])
+
+    assert stats.total == 0
+    assert stats.mean is None
+    assert stats.max_candidates == 0
+    assert stats.guessed_primary == 0
+    assert stats.to_dict()["mean"] is None
 
 
 # =====================================================================================

@@ -150,6 +150,42 @@ class Score:
 
 
 @dataclass(frozen=True)
+class CandidateStats:
+    """Candidate-count diagnostics for a collection of analyzed items.
+
+    These are deliberately descriptive rather than a quality score: a larger candidate set
+    can mean better coverage, but it also increases downstream disambiguation cost.  Empty
+    analysis results remain visible through ``zero`` instead of being silently discarded.
+    """
+
+    total: int
+    analyzable: int
+    zero: int
+    single: int
+    multiple: int
+    total_candidates: int
+    max_candidates: int
+    guessed_primary: int
+
+    @property
+    def mean(self) -> float | None:
+        return self.total_candidates / self.total if self.total else None
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "total": self.total,
+            "analyzable": self.analyzable,
+            "zero": self.zero,
+            "single": self.single,
+            "multiple": self.multiple,
+            "total_candidates": self.total_candidates,
+            "max_candidates": self.max_candidates,
+            "guessed_primary": self.guessed_primary,
+            "mean": self.mean,
+        }
+
+
+@dataclass(frozen=True)
 class Throughput:
     """Per-word latency and words/second from injected elapsed seconds (never measured here)."""
 
@@ -230,6 +266,41 @@ def unknown_word_rate(records: Iterable[ItemRecord]) -> Score:
         if is_unknown(rec):
             unknown += 1
     return Score(unknown, total)
+
+
+def candidate_count_stats(records: Iterable[ItemRecord]) -> CandidateStats:
+    """Summarize how many context-free candidates each record produced.
+
+    The input is consumed once.  The ``total`` denominator includes records with no
+    candidates, making empty analyses measurable rather than hiding them from the report.
+    """
+    total = analyzable = zero = single = multiple = total_candidates = max_candidates = 0
+    guessed_primary = 0
+    for rec in records:
+        count = len(rec.candidates)
+        total += 1
+        total_candidates += count
+        max_candidates = max(max_candidates, count)
+        if rec.best is not None and rec.best.source == "guess":
+            guessed_primary += 1
+        if count == 0:
+            zero += 1
+        else:
+            analyzable += 1
+            if count == 1:
+                single += 1
+            else:
+                multiple += 1
+    return CandidateStats(
+        total=total,
+        analyzable=analyzable,
+        zero=zero,
+        single=single,
+        multiple=multiple,
+        total_candidates=total_candidates,
+        max_candidates=max_candidates,
+        guessed_primary=guessed_primary,
+    )
 
 
 def throughput(total_seconds: float, n_words: int) -> Throughput:

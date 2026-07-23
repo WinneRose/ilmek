@@ -91,7 +91,7 @@ DERIVATION = "derivation"
 #: form) and ``converb`` (a verb->adverb form: gelerek, gelince, gelmeden, gelirken). A
 #: participle/converb keeps its verb lemma/stem and carries a :data:`DERIVATION` name; a
 #: participle then inflects nominally, while a converb is terminal (it takes no case/plural).
-VERBFORM = "verbform"  # participle (verb->adjective) | converb (verb->adverb)
+VERBFORM = "verbform"  # infinitive | participle (verb->adjective) | converb (verb->adverb)
 
 #: The closed vocabulary of derivational-suffix names recorded under :data:`DERIVATION`.
 #: Noun/adj-forming: li (-lI), siz (-sIz), lik (-lIk), ci (-CI), cik (diminutive -CIk),
@@ -182,7 +182,7 @@ MOODS = frozenset({"imperative", "conditional", "optative", "necessitative"})
 #: (the -(y)An/-DIk/-(y)AcAk/-mIş/aorist/-mAz verb->adjective forms) and ``converb`` (the
 #: zarf-fiil verb->adverb forms -(y)ArAk/-(y)Ip/-(y)IncA/-(y)AlI/-DIkçA/-mAdAn/-mAksIzIn and
 #: the finite-stem -ken: gelerek, gelince, gelmeden, gelirken).
-VERBFORMS = frozenset({"participle", "converb"})
+VERBFORMS = frozenset({"infinitive", "participle", "converb"})
 #: Verbal voice values recorded (in order) under :data:`VOICE`. ``causative`` is -DIr/-t/-Ir/
 #: -Ar (yaptır, okut, içir, çıkar; stacked as yaptırt); ``passive`` is -Il/-In/-n (yapıl,
 #: alın, okun); ``reflexive`` is -In (yıkan, giyin); ``reciprocal`` is -Iş (görüş, dövüş). The

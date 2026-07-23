@@ -10,8 +10,11 @@ from __future__ import annotations
 
 # --- Letters -------------------------------------------------------------------------
 
-LOWER = "abcçdefgğhıijklmnoöprsştuüvyz"
-UPPER = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ"
+# Circumflex vowels are retained in the surface alphabet.  They are folded only for
+# lexicon lookup (see ``normalization.fold_for_lookup``), never treated as punctuation by
+# tokenization.  This matters for standard spellings such as kâğıt, hâlâ, âlim and sûret.
+LOWER = "abcçdefgğhıijklmnoöprsştuüvyzâîû"
+UPPER = "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZÂÎÛ"
 
 #: The two case pairs that break locale-naive ``str.lower()`` / ``str.upper()``.
 #: dotless ı <-> I, dotted i <-> İ. Everything else in :data:`LOWER`/:data:`UPPER`
@@ -21,11 +24,11 @@ UPPER_TO_LOWER = dict(zip(UPPER, LOWER, strict=True))
 
 # --- Vowels --------------------------------------------------------------------------
 
-VOWELS = frozenset("aeıioöuü")
-VOWELS_UPPER = frozenset("AEIİOÖUÜ")
+VOWELS = frozenset("aeıioöuüâîû")
+VOWELS_UPPER = frozenset("AEIİOÖUÜÂÎÛ")
 
-BACK_VOWELS = frozenset("aıou")
-FRONT_VOWELS = frozenset("eiöü")
+BACK_VOWELS = frozenset("aıouâû")
+FRONT_VOWELS = frozenset("eiöüî")
 
 #: Back vowel -> its front counterpart on the same rounding/height axis (a<->e, ı<->i,
 #: o<->ö, u<->ü). Used by the *front-harmony loan* rule: a handful of loanwords are spelled
@@ -35,11 +38,11 @@ FRONT_VOWELS = frozenset("eiöü")
 #: from that emitted front vowel for free. Kept here (data) so the exception list lives with
 #: the other Turkish facts, not as a hardcoded branch in the phonology engine.
 FRONT_COUNTERPART = {"a": "e", "ı": "i", "o": "ö", "u": "ü"}
-ROUNDED_VOWELS = frozenset("oöuü")
+ROUNDED_VOWELS = frozenset("oöuüû")
 UNROUNDED_VOWELS = frozenset("aeıi")
 #: "wide"/open vowels vs. "narrow"/high vowels (used for -Iyor narrowing).
-WIDE_VOWELS = frozenset("aeoö")
-NARROW_VOWELS = frozenset("ıiuü")
+WIDE_VOWELS = frozenset("aeoöâ")
+NARROW_VOWELS = frozenset("ıiuüîû")
 
 # --- Consonants ----------------------------------------------------------------------
 

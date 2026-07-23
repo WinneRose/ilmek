@@ -45,6 +45,31 @@
 
   "context_rules": [
     {
+      "name": "bir_before_noun_as_determiner",
+      "doc": "An indeclinable bir before a noun is commonly the indefinite determiner rather than the cardinal numeral; both readings remain available.",
+      "bonus": 3.5,
+      "right": {"pos": "NOUN"},
+      "prefer": {"pos": "DET"}
+    },
+    {
+      "name": "infinitive_as_nonfinite_verb",
+      "doc": "Expose the UD-style VERB/VerbForm=Inf reading of -mAk in sentence context while retaining the traditional verbal-noun candidate.",
+      "bonus": 1.5,
+      "prefer": {"pos": "VERB", "feature_eq": {"verbform": "infinitive"}}
+    },
+    {
+      "name": "passive_participle_default",
+      "doc": "For the ambiguous -In participle, passive is the safer running-text default; reflexive remains an alternative.",
+      "bonus": 0.8,
+      "prefer": {"pos": "ADJ", "feature_eq": {"verbform": "participle", "voice": ["passive"]}}
+    },
+    {
+      "name": "locative_third_person_possessive",
+      "doc": "A noun+3sg-possessive locative reading such as tarihinde outranks an adjectival 2sg homograph in context.",
+      "bonus": 1.2,
+      "prefer": {"pos": "NOUN", "feature_eq": {"case": "locative", "possessive": "3sg"}}
+    },
+    {
       "name": "gen_before_poss",
       "doc": "R1: a token after a genitive-marked word prefers a possessive reading (onun evi -> ev+poss3sg; also noun genitives kitabin kapisi).",
       "bonus": 4.0,

@@ -66,6 +66,13 @@ class Suffix:
     #: so *yarımıncı/*çeyreğer never fire, without narrowing ``applies_to`` for every other
     #: cardinal (birinci, ikişer stay unaffected). ``None`` -> no exclusion.
     excludes_attribute: str | None = None
+    #: Feature guard for an edge that is valid only after a particular preceding analysis
+    #: feature, e.g. assertive -DIr after evidential -mIş. Kept declarative so the graph does
+    #: not grow a suffix-specific conditional in the analyzer.
+    requires_features: dict | None = None
+    #: Whether this edge depends on a lexicon-verified finite reading and must be disabled by
+    #: the conservative unknown-root guesser.
+    requires_lexicon: bool = False
     #: When this suffix is *root-adjacent* (first in the chain), realize it against the root's
     #: :attr:`~ilmek.morphology.lexicon.Root.raised_form` (de->di, ye->yi) instead of its free
     #: form. Models the irregular glide raising of de-/ye- before a vowel-initial suffix

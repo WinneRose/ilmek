@@ -1,0 +1,52 @@
+{
+  "_comment": [
+    "High-risk vocabulary taken from the TDK Sözlükleri 'Sıkça Karıştırılan Sözler'",
+    "(https://sozluk.tdk.gov.tr/).",
+    "surface. Entries are kept separate from the general seed lexicon so their source",
+    "and review rationale remain auditable. TDK GTS is the lexical authority; POS labels",
+    "are the engine's coarse-grained analysis classes.",
+    "",
+    "Circumflex pairs intentionally share the folded lookup key while retaining separate",
+    "lemmas. This preserves both candidates until a future accent-sensitive ranking layer.",
+    "The postposition karşın is frozen because ADP is not a regular FSM root."
+  ],
+  "entries": [
+    {"lemma": "meşruiyet", "pos": "NOUN"},
+    {"lemma": "meşrutiyet", "pos": "NOUN"},
+    {"lemma": "hakim", "pos": "ADJ"},
+    {"lemma": "hâkim", "pos": "NOUN"},
+    {"lemma": "irtica", "pos": "NOUN"},
+    {"lemma": "iltica", "pos": "NOUN"},
+    {"lemma": "muhasebe", "pos": "NOUN"},
+    {"lemma": "musahabe", "pos": "NOUN"},
+    {"lemma": "kâr", "pos": "NOUN"},
+    {"lemma": "mütevazi", "pos": "ADJ"},
+    {"lemma": "mütevazı", "pos": "ADJ"},
+    {"lemma": "aciz", "pos": "NOUN"},
+    {"lemma": "âciz", "pos": "ADJ"},
+    {"lemma": "hâk", "pos": "NOUN"},
+    {"lemma": "etken", "pos": "ADJ"},
+    {"lemma": "mürteci", "pos": "ADJ"},
+    {"lemma": "mülteci", "pos": "NOUN"},
+    {"lemma": "karşılık", "pos": "NOUN"},
+    {"lemma": "âmâ", "pos": "ADJ"},
+    {"lemma": "lam", "pos": "NOUN"},
+    {"lemma": "lâm", "pos": "NOUN"},
+    {"lemma": "berat", "pos": "NOUN"},
+    {"lemma": "beraat", "pos": "NOUN"},
+    {"lemma": "mütehassis", "pos": "ADJ"},
+    {"lemma": "mütehassıs", "pos": "ADJ"},
+    {"lemma": "muhabere", "pos": "NOUN"},
+    {"lemma": "muharebe", "pos": "NOUN"},
+    {"lemma": "kabil", "pos": "ADJ"},
+    {"lemma": "kabîl", "pos": "NOUN"},
+    {"lemma": "kânun", "pos": "NOUN"},
+    {"lemma": "mahsur", "pos": "ADJ"},
+    {"lemma": "mahzur", "pos": "NOUN"},
+    {"lemma": "vakıa", "pos": "NOUN"},
+    {"lemma": "vâkıâ", "pos": "ADV"}
+  ],
+  "irregular": [
+    {"surface": "karşın", "lemma": "karşın", "pos": "ADP", "morphemes": [], "features": {}}
+  ]
+}

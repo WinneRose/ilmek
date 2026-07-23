@@ -56,11 +56,19 @@ def _match_condition(cond: dict[str, Any], r: AnalysisResult) -> bool:
         return False
     if "pos_in" in cond and r.pos not in cond["pos_in"]:
         return False
+
+    def equal(actual: Any, expected: Any) -> bool:
+        # JSON has no tuple type, while ordered feature histories/voices are tuples in the
+        # public result. Treat list/tuple spellings as the same declarative value.
+        if isinstance(actual, tuple) and isinstance(expected, list):
+            expected = tuple(expected)
+        return actual == expected
+
     for key, value in cond.get("feature_eq", {}).items():
-        if r.features.get(key) != value:
+        if not equal(r.features.get(key), value):
             return False
     for key, value in cond.get("feature_ne", {}).items():
-        if r.features.get(key) == value:
+        if equal(r.features.get(key), value):
             return False
     for key in cond.get("feature_present", ()):
         if key not in r.features:

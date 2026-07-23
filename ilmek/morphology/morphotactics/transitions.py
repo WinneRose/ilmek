@@ -26,6 +26,7 @@ from .derivational_suffixes import (
     D_CA,
     D_LIK,
     INF,
+    INF_VERB,
     KI,
     KI_PRON,
     PART_AOR_VOICE,
@@ -108,6 +109,7 @@ from .verb_suffixes import (
     COP_PAST,
     COP_PAST_BARE,
     DIR,
+    DIR_EVID,
     EVID,
     FUT,
     IMPOSS,
@@ -411,7 +413,8 @@ def _root_continuation(
         (OPT, V_OPT),
         *[(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL],
         (INF, V_INF),
-        # Appended at the end so the pre-existing traversal prefix (and the guesser's ordering)
+        (INF_VERB, V_INF),
+        # Appended at the end so the pre-existing traversal prefix (and the guesser’s ordering)
         # is byte-stable: the necessitative mood and the impossibilitive voice-negative.
         (NECESS, V_T1),
         (IMPOSS, V_IMPOSS),
@@ -450,7 +453,10 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
     # inflect like the other participles); no aorist participle from V_NEG/V_ABIL this milestone.
     part_root_aorists = [(s, N_DERIV) for s in _PART_AORISTS]
     part_voiced_aorist = [(PART_AOR_VOICE, N_DERIV)]
-    deriv = [(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL] + [(INF, V_INF)]
+    deriv = [(s, N_DERIV) for s in _VERBAL_DERIVATIONS_TO_NOMINAL] + [
+        (INF, V_INF),
+        (INF_VERB, V_INF),
+    ]
     # The copular layer that stacks on a *finished* verbal tense: the evidential -(y)mIş, the
     # past -(y)DI, and — this milestone — the copular conditional -(y)sA (gelirse, geldiyse,
     # gelecekse, geliyorsa, gelmezse). All three take the (y) buffer after a vowel and feed the
@@ -556,7 +562,10 @@ def _verbal_graph() -> dict[str, list[tuple[Suffix, str]]]:
         # V_T1 prefix (copula + persons) is byte-stable. NOT on V_T2 (the past -DI): *geldiyken
         # is not a word (a negative test pins this). -ken is consonant-initial, so a preceding
         # FUT's voice_final never fires (gelecek + ken -> gelecekken, no k-softening).
-        V_T1: [*copula, *pers_t1, (CVB_KEN, ADV_CVB)],
+        # The assertive -DIr also follows a lexicon-backed evidential form:
+        # başlanmıştır, gelmiştir. The evidential guard keeps guessed roots from
+        # overgenerating; progressive/future variants remain separate.
+        V_T1: [*copula, *pers_t1, (DIR_EVID, N_COP_DIR), (CVB_KEN, ADV_CVB)],
         # V_T2 is reached only by the past -DI, so its copula CAN include COP_COND (geldiyse).
         V_T2: [*copula, *pers_t2],
         # V_COND is reached by the bare conditional -sA; its copula omits COP_COND to block the
@@ -691,6 +700,14 @@ def finalize_verbal_features(features: dict) -> dict:
         features[tags.PERSON] = "2sg"
     else:
         features.setdefault(tags.PERSON, "3sg")
+    return features
+
+
+def finalize_infinitive_features(features: dict) -> dict:
+    """Close the UD-style non-finite infinitive without fabricating person or mood."""
+    for _k in (tags.NUMBER, tags.POSSESSIVE, tags.CASE):
+        features.pop(_k, None)
+    features.setdefault(tags.POLARITY, "positive")
     return features
 
 

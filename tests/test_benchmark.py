@@ -149,10 +149,23 @@ def test_every_category_is_reported(report):
 @pytest.mark.positive
 def test_report_text_names_metrics_and_categories(report):
     text = report.format_report()
-    for token in ("lemma", "stem", "cover", "disamb", "words/sec", "OVERALL"):
+    for token in ("lemma", "stem", "cover", "disamb", "cand", "words/sec", "OVERALL"):
         assert token in text
     for cat in CATEGORIES:
         assert cat in text
+
+
+@pytest.mark.positive
+def test_benchmark_reports_candidate_count_diagnostics(report):
+    stats = report.candidate_counts
+    assert stats.total == len(report.scored_records)
+    assert stats.analyzable + stats.zero == stats.total
+    assert stats.total_candidates >= stats.analyzable
+    assert stats.max_candidates >= 1
+
+    payload = report.to_dict()
+    assert payload["candidate_counts"]["total"] == len(report.scored_records)
+    assert set(payload["candidate_counts_by_category"]) == set(CATEGORIES)
 
 
 # =====================================================================================

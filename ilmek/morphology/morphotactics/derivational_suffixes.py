@@ -227,7 +227,18 @@ _DENOMINAL_VERBALIZERS = [D_V_LA, D_V_LAN, D_V_LAS]
 # verb -> noun:
 VN_MA = Suffix("ma", "mA", derivational=True, to_pos=tags.NOUN)  # gelme (verbal noun / act)
 VN_IS = Suffix("is", "(y)Iş", derivational=True, to_pos=tags.NOUN)  # geliş, yürüyüş
-INF = Suffix("mak", "mAk", derivational=True, to_pos=tags.NOUN)  # gelmek (infinitive)
+# Keep the traditional verbal-noun reading for compatibility, and also expose the UD-style
+# non-finite VERB reading. Turkish infinitives are routinely used nominally, but consumers that
+# distinguish ``VerbForm=Inf`` need the verbal candidate as well; disambiguation can select it
+# in sentence context without dropping the nominal analysis.
+INF = Suffix("mak", "mAk", derivational=True, to_pos=tags.NOUN)  # gelmek (verbal noun)
+INF_VERB = Suffix(
+    "mak",
+    "mAk",
+    {tags.VERBFORM: "infinitive"},
+    derivational=True,
+    to_pos=tags.VERB,
+)  # gelmek (non-finite verb)
 # verb -> adjective (participles / sıfat-fiil). Every participle carries verbform=participle so
 # the inventory is uniformly queryable AND each is distinguished from the homographous finite
 # tense it shares a surface with (the -mIş participle vs the finite evidential; the aorist

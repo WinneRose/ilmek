@@ -17,7 +17,7 @@ from __future__ import annotations
 from ..core import tags
 from ..core.alphabet import VOICING, VOWELS
 from ..core.document import AnalysisResult
-from ..core.normalization import fold_for_lookup
+from ..core.normalization import fold_for_lookup, normalize, turkish_lower
 from ..core.tokenization import classify_numeric
 from . import morphotactics as mt
 from .lexicon import Lexicon, Root
@@ -26,6 +26,47 @@ from .phonology import realize, starts_with_vowel
 
 def _has_vowel(text: str) -> bool:
     return any(ch in VOWELS for ch in text)
+
+
+_CIRCUMFLEXES = frozenset("âîû")
+
+
+def _circumflex_pattern(text: str) -> tuple[tuple[int, str], ...]:
+    lowered = turkish_lower(normalize(text))
+    return tuple((index, char) for index, char in enumerate(lowered) if char in _CIRCUMFLEXES)
+
+
+def _accent_matches_surface(result: AnalysisResult, original: str) -> bool:
+    """Whether a candidate root preserves the circumflex pattern of the input prefix."""
+    lemma = turkish_lower(normalize(result.lemma))
+    surface = turkish_lower(normalize(original))
+    if not fold_for_lookup(surface).startswith(fold_for_lookup(lemma)):
+        return False
+    surface_pattern = tuple((i, c) for i, c in _circumflex_pattern(surface) if i < len(lemma))
+    return _circumflex_pattern(lemma) == surface_pattern
+
+
+def _prefer_surface_accents(results: list[AnalysisResult], original: str) -> None:
+    """Prefer an accent-matching root only when a folded homograph is also present.
+
+    Lookup intentionally folds circumflexes so ``kâğıt`` can reach the plain lexicon root
+    ``kağıt``. When TDK supplies both sides of a contrast (``kar``/``kâr``), however, the
+    preserved surface is enough evidence to rank the matching lemma first. Stable sorting
+    keeps the existing data-order ranking for every non-contrasting word.
+    """
+    exact = [result for result in results if _accent_matches_surface(result, original)]
+    if not exact:
+        return
+    exact_keys = {fold_for_lookup(result.lemma) for result in exact}
+    if not any(
+        fold_for_lookup(result.lemma) in exact_keys and result not in exact for result in results
+    ):
+        return
+    results.sort(
+        key=lambda result: (
+            0 if result in exact and fold_for_lookup(result.lemma) in exact_keys else 1,
+        )
+    )
 
 
 def _stem_final_class(surface: str) -> str:
@@ -220,6 +261,11 @@ def _generate(
                 # (güzelce carries only derivation=ca, not a fabricated case=nominative).
                 for _k in (tags.NUMBER, tags.POSSESSIVE, tags.CASE):
                     feats.pop(_k, None)
+            elif state == mt.V_INF and cur_pos == tags.VERB:
+                # The infinitive has both a traditional verbal-noun candidate and a
+                # non-finite VERB candidate. Only the latter takes this closure: it must not
+                # inherit nominal number/possessive/case or a fabricated finite person/mood.
+                mt.finalize_infinitive_features(feats)
             elif state in mt.NOMINAL_STATES:
                 # Nominal-side acceptance: fill nominal defaults *under* whatever was
                 # accrued, so a verb-derived nominal keeps its polarity (gelmeyen) yet
@@ -321,6 +367,12 @@ def _generate(
                 and suffix.excludes_attribute in root.attributes
             ):
                 continue
+            if suffix.requires_features is not None and any(
+                features.get(key) != value for key, value in suffix.requires_features.items()
+            ):
+                continue
+            if suffix.requires_lexicon and source != tags.SOURCE_LEXICON:
+                continue
             # Declarative phonological guard (passive allomorphy, post-voice causatives): the
             # running surface's final-segment class must be allowed by the edge.
             if (
@@ -418,15 +470,18 @@ def _sort_key(r: AnalysisResult):
         and r.features.get(tags.PERSON) in _ARCHAIC_OPTATIVE_PERSONS
         else 0
     )
-    poss_rank = 0 if r.features.get(tags.POSSESSIVE, "none") in _UNMARKED_POSSESSIVES else 1
+    poss = r.features.get(tags.POSSESSIVE, "none")
+    # In an isolated noun chain, 3sg possession is the default interpretation of the
+    # homographic -(s)I form. Bare case remains a candidate and sentence context can promote it.
+    poss_rank = {"3sg": 0, "none": 0}.get(poss, 1)
     return (
         src_rank.get(r.source, 3),
+        n_pred,
+        poss_rank,
         -len(r.lemma),
         rare_rank,
         n_deriv,
-        n_pred,
         len(r.morphemes),
-        poss_rank,
         r.pos,
         r.lemma,
     )
@@ -586,7 +641,9 @@ class Analyzer:
 
         for r in results:
             r.surface = original
-        return irregulars + results
+        ordered = irregulars + results
+        _prefer_surface_accents(ordered, original)
+        return ordered
 
     def _analyze_numeric(self, original: str, folded: str, num_kind: str) -> list[AnalysisResult]:
         """A bare numeric token (digits / percent / date / time): resolve as NUM by rule.

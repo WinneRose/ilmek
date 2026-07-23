@@ -40,6 +40,15 @@ COP_PAST = Suffix("cop_past", "(y)DI", {tags.COPULA: "past"})
 # own N_COP_DIR. The VERBAL copular conditional (gelirse) stays deferred and untouched.
 COP_COND = Suffix("cop_cond", "(y)sA", {tags.MOOD: "conditional"})
 DIR = Suffix("cop_dir", "DIr", {tags.COPULA: "assertive"})
+# Assertive stacking after a finite evidential (başlanmıştır, gelmiştir). The feature guard
+# keeps this distinct from the nominal ek-fiil's later milestone and from *gelirdir.
+DIR_EVID = Suffix(
+    "cop_dir",
+    "DIr",
+    {tags.COPULA: "assertive"},
+    requires_features={tags.EVIDENTIAL: True},
+    requires_lexicon=True,
+)
 
 # BUFFERLESS copula variants for the STANDALONE substantive verb i- (idi, imiş, ise). The
 # free-standing ek-fiil is vowel-final ("i") yet takes NO (y) buffer — the forms are idi/imiş/

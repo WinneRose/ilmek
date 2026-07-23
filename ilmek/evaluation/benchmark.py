@@ -27,7 +27,7 @@ from typing import Any
 
 from ..core.normalization import turkish_lower
 from . import metrics
-from .metrics import ItemRecord, Score, Throughput
+from .metrics import CandidateStats, ItemRecord, Score, Throughput
 
 #: The packaged gold dataset (force-included in the wheel via pyproject, so an installed
 #: ``ilmek benchmark`` finds it too).
@@ -161,6 +161,8 @@ class BenchmarkReport:
     overall: dict[str, Score]
     by_category: dict[str, dict[str, Score]]
     throughput: Throughput
+    candidate_counts: CandidateStats
+    candidate_counts_by_category: dict[str, CandidateStats]
     known_gaps: list[ItemRecord] = field(default_factory=list)
 
     @property
@@ -175,6 +177,11 @@ class BenchmarkReport:
         v = score.value
         return "n/a" if v is None else f"{v * 100:5.1f}%"
 
+    @staticmethod
+    def _candidate_label(stats: CandidateStats) -> str:
+        mean = "n/a" if stats.mean is None else f"{stats.mean:.2f}"
+        return f"{mean}/{stats.max_candidates}"
+
     def format_report(self) -> str:
         lines: list[str] = []
         lines.append(
@@ -184,7 +191,7 @@ class BenchmarkReport:
         lines.append("")
         header = (
             f"{'category':<14} {'n':>4} {'lemma':>7} {'stem':>7} "
-            f"{'cover':>7} {'disamb':>7} {'unk':>7}"
+            f"{'cover':>7} {'disamb':>7} {'unk':>7} {'cand μ/max':>10}"
         )
         lines.append(header)
         lines.append("-" * len(header))
@@ -193,13 +200,15 @@ class BenchmarkReport:
             if not block:
                 continue
             n = block["lemma_accuracy"].total
+            candidate_stats = self.candidate_counts_by_category[cat]
             lines.append(
                 f"{cat:<14} {n:>4} "
                 f"{self._pct(block['lemma_accuracy']):>7} "
                 f"{self._pct(block['stem_accuracy']):>7} "
                 f"{self._pct(block['coverage']):>7} "
                 f"{self._pct(block['disambiguation_accuracy']):>7} "
-                f"{self._pct(block['unknown_word_rate']):>7}"
+                f"{self._pct(block['unknown_word_rate']):>7} "
+                f"{self._candidate_label(candidate_stats):>10}"
             )
         lines.append("-" * len(header))
         n = self.overall["lemma_accuracy"].total
@@ -209,7 +218,8 @@ class BenchmarkReport:
             f"{self._pct(self.overall['stem_accuracy']):>7} "
             f"{self._pct(self.overall['coverage']):>7} "
             f"{self._pct(self.overall['disambiguation_accuracy']):>7} "
-            f"{self._pct(self.overall['unknown_word_rate']):>7}"
+            f"{self._pct(self.overall['unknown_word_rate']):>7} "
+            f"{self._candidate_label(self.candidate_counts):>10}"
         )
         lines.append("")
         tp = self.throughput
@@ -235,6 +245,10 @@ class BenchmarkReport:
             "categories": {
                 cat: {k: v.to_dict() for k, v in block.items()}
                 for cat, block in self.by_category.items()
+            },
+            "candidate_counts": self.candidate_counts.to_dict(),
+            "candidate_counts_by_category": {
+                cat: stats.to_dict() for cat, stats in self.candidate_counts_by_category.items()
             },
             "throughput": self.throughput.to_dict(),
             "known_gaps": [
@@ -269,15 +283,19 @@ def run_benchmark(
     known_gaps = [r for r in records if r.known_gap]
 
     by_category: dict[str, dict[str, Score]] = {}
+    candidate_counts_by_category: dict[str, CandidateStats] = {}
     for cat in CATEGORIES:
         cat_records = [r for r in scored if r.category == cat]
         if cat_records:
             by_category[cat] = _metric_block(cat_records)
+            candidate_counts_by_category[cat] = metrics.candidate_count_stats(cat_records)
 
     return BenchmarkReport(
         records=records,
         overall=_metric_block(scored),
         by_category=by_category,
         throughput=tp,
+        candidate_counts=metrics.candidate_count_stats(scored),
+        candidate_counts_by_category=candidate_counts_by_category,
         known_gaps=known_gaps,
     )

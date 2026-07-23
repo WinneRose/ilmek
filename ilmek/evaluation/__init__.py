@@ -6,6 +6,7 @@ Two halves:
   (:func:`~.metrics.analysis_matches`, :func:`~.metrics.lemma_accuracy`,
   :func:`~.metrics.coverage`, :func:`~.metrics.disambiguation_accuracy`,
   :func:`~.metrics.unknown_word_rate`, :func:`~.metrics.throughput`);
+  :func:`~.metrics.candidate_count_stats` reports ambiguity and analysis-load diagnostics;
 * :mod:`.benchmark` — :func:`~.benchmark.load_gold` / :func:`~.benchmark.run_benchmark`
   over the packaged gold dataset, producing a :class:`~.benchmark.BenchmarkReport` with a
   readable per-category report and a JSON ``to_dict`` for regression comparison.
@@ -19,10 +20,12 @@ from __future__ import annotations
 
 from .benchmark import BenchmarkReport, GoldError, load_gold, run_benchmark
 from .metrics import (
+    CandidateStats,
     ItemRecord,
     Score,
     Throughput,
     analysis_matches,
+    candidate_count_stats,
     coverage,
     disambiguation_accuracy,
     lemma_accuracy,
@@ -37,9 +40,11 @@ __all__ = [
     "load_gold",
     "run_benchmark",
     "ItemRecord",
+    "CandidateStats",
     "Score",
     "Throughput",
     "analysis_matches",
+    "candidate_count_stats",
     "coverage",
     "disambiguation_accuracy",
     "lemma_accuracy",

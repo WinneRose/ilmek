@@ -123,7 +123,7 @@ derived stem then inflects normally. The productive, high-frequency derivations 
 | `-CI`  | noun → noun | `yolcu`, `kitapçı`, `işçi` | `ci` |
 | `-mA`  | verb → noun | `gelme`              | `ma`  |
 | `-(y)Iş` | verb → noun | `geliş`, `yürüyüş`  | `is`  |
-| `-mAk` | verb → noun (infinitive) | `gelmek` | `mak` |
+| `-mAk` | verb → noun / non-finite VERB (infinitive) | `gelmek` | `mak` |
 | `-(y)An` | verb → adj (participle) | `gelen` | `an` |
 | `-DIk`   | verb → adj (participle) | `yaşadık`, `bildiği` | `dik` |
 | `-(y)AcAk` | verb → adj (participle) | `gelecek` | `acak` |
@@ -188,15 +188,46 @@ when the ending is short and ambiguous (`teminatı`, so it never mis-strips `kal
 Every candidate is kept and ranked. Because it reuses the morphotactic FSM, it improves
 automatically as morphology grows.
 
+## Alpha review follow-up
+
+The review regression set is now included in `tests/test_feedback_regressions.py`. It covers:
+
+- circumflex vowels (`â`, `î`, `û`) as word characters while preserving lookup folding;
+- TDK-checked core vocabulary such as `posta`, `antiye`, `gönderi`, `makine`, `pul`, `zarf`,
+  `kart`, `etiket`, `damga`, `yazı`, `diğer`, `birleşik`, `yazılı`, `en` and `çoğunlukla`;
+- noun chains with plural + 3sg possessive + case, including `gönderilerinde`,
+  `makinesinden`, `tarihinde` and `pulları`;
+- sentence-level preferences for determiner `bir`, passive participles, temporal `geçmişte`,
+  and the non-finite `VERB/verbform=infinitive` reading of `-mAk`.
+- TDK's high-risk confusion pairs such as `meşruiyet/meşrutiyet`, `irtica/iltica`,
+  `muhasebe/musahabe`, `kar/kâr`, `hak/hâk`, `berat/beraat`, `kabil/kabîl` and
+  `mahsur/mahzur`.
+
+The additions are kept in `ilmek/data/lexicon/feedback_core.json` so review-driven vocabulary
+remains auditable; the TDK confusion set is in `ilmek/data/lexicon/tdk_frequently_confused.json`.
+Lexical decisions were checked against the Turkish Language Association's Güncel Türkçe Sözlük;
+this is a seed lexicon, not a claim of complete TDK coverage.
+
+The first high-yield expansion batch is stored separately in
+`ilmek/data/lexicon/common_core3.json`: 296 regular roots (132 nouns, 85 verbs, 79
+adjectives) plus 25 frozen adverbs/determiners. The batch is data-only and deliberately adds
+no unverified voicing or vowel-drop attributes. Every root has a source test, and the benchmark
+now reports mean/max candidate counts alongside accuracy, coverage, unknown-word rate, and
+throughput. The lexical review uses the [TDK Sözlükleri](https://sozluk.tdk.gov.tr/) portal;
+there is no runtime TDK scraping or network dependency.
+
 **Not yet (named milestones):** derivational *stacking* and infinitive inflection (the
 productive single-slot derivations above already reach `yaşadıklarımızın → yaşa`); the
 impossibilitive `-(y)AmA` (`gelemez`), the copular conditional `-(y)sA` (`gelirse`), and the
 negative-aorist 1sg/1pl (`gelmem`/`gelmeyiz`) — deferred (strict `xfail`) rather than
 overgenerated; voice and the remaining mood inventory; the irregular `de-→diyor` /
-`ye-→yiyor` glide raising; sentence-level disambiguation (candidates returned unranked,
-`confidence=None`); Stanza/Zemberek backends;
+`ye-→yiyor` glide raising; context-free `analyze()` returns candidates unranked with
+`confidence=None`; sentence-level `Pipeline` disambiguation remains heuristic and optional;
+Stanza/Zemberek backends;
 CoNLL-U I/O. The seed lexicon is intentionally small — the single biggest lever for cutting
-`guess` rates on common words.
+`guess` rates on common words. Sentence disambiguation is available as an optional heuristic
+layer through `Pipeline`; it does not change the context-free candidate list returned by
+`analyze()`.
 
 ## Roadmap
 

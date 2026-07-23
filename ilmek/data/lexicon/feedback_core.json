@@ -1,0 +1,47 @@
+{
+  "_comment": [
+    "Core vocabulary added from the alpha review. Lemmas and lexical classes were checked",
+    "against the TDK Güncel Türkçe Sözlük (2023, 12th edition); this file is intentionally",
+    "separate from the larger seed lists so each review-driven addition remains auditable.",
+    "Frozen adverbs and the determiner bir are irregular forms because they must not license",
+    "open-class inflectional parses. The temporal lexicalized form geçmişte is enumerated so",
+    "the common temporal-noun reading outranks the homographic geç-miş participle."
+  ],
+  "entries": [
+    {"lemma": "posta", "pos": "NOUN"},
+    {"lemma": "antiye", "pos": "NOUN"},
+    {"lemma": "gönderi", "pos": "NOUN"},
+    {"lemma": "makine", "pos": "NOUN"},
+    {"lemma": "pul", "pos": "NOUN"},
+    {"lemma": "zarf", "pos": "NOUN"},
+    {"lemma": "kart", "pos": "NOUN"},
+    {"lemma": "etiket", "pos": "NOUN"},
+    {"lemma": "damga", "pos": "NOUN"},
+    {"lemma": "yazı", "pos": "NOUN"},
+    {"lemma": "ek", "pos": "NOUN"},
+    {"lemma": "idare", "pos": "NOUN"},
+    {"lemma": "malzeme", "pos": "NOUN"},
+    {"lemma": "diğer", "pos": "ADJ"},
+    {"lemma": "birleşik", "pos": "ADJ"},
+    {"lemma": "yazılı", "pos": "ADJ"},
+    {"lemma": "yapışkanlı", "pos": "ADJ"}
+  ],
+  "irregular": [
+    {"surface": "bir", "lemma": "bir", "pos": "DET", "morphemes": [], "features": {}},
+    {"surface": "en", "lemma": "en", "pos": "ADV", "morphemes": [], "features": {}},
+    {
+      "surface": "çoğunlukla",
+      "lemma": "çoğunlukla",
+      "pos": "ADV",
+      "morphemes": [],
+      "features": {}
+    },
+    {
+      "surface": "geçmişte",
+      "lemma": "geçmiş",
+      "pos": "NOUN",
+      "morphemes": ["te"],
+      "features": {"number": "singular", "possessive": "none", "case": "locative"}
+    }
+  ]
+}
